@@ -2,14 +2,19 @@ import '@/global.css';
 
 import { BricolageGrotesque_600SemiBold, BricolageGrotesque_700Bold } from '@expo-google-fonts/bricolage-grotesque';
 import { Figtree_400Regular, Figtree_500Medium, Figtree_700Bold } from '@expo-google-fonts/figtree';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import { db } from '@/db/client';
 import { useTheme } from '@/hooks/use-theme';
+import { useSettings } from '@/stores/settings';
+
+import migrations from '../../drizzle/migrations';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,11 +28,21 @@ export default function RootLayout() {
     Figtree_700Bold,
   });
 
-  useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+  const { success: migrated, error: migrationError } = useMigrations(db, migrations);
+  const [hydrated, setHydrated] = useState(false);
 
-  if (!loaded) return null;
+  useEffect(() => {
+    if (migrated) useSettings.getState().hydrate().finally(() => setHydrated(true));
+  }, [migrated]);
+
+  const ready = loaded && hydrated;
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (migrationError) throw migrationError;
+  if (!ready) return null;
 
   return (
     <ThemeProvider>
