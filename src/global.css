@@ -1,9 +1,42 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+/*
+ * Token di Forma (vedi design.md). I valori reali dei colori li fornisce ThemeProvider
+ * (VariableContextProvider) da src/constants/theme.ts: qui c'è il default chiaro, che serve
+ * a Tailwind per generare le utility (bg-card, text-ink, …). Aggiungere ogni nuovo colore
+ * anche in metro.config.js (inlineVariables.exclude).
+ */
+@theme {
+  --color-bg: #ebeae8;
+  --color-card: #eeedeb;
+  --color-ink: #262320;
+  --color-ink-2: #5c5751;
+  --color-line: #d6d3cf;
+  --color-accent: #f0863a;
+  --color-accent-ink: #3b1e0a;
+  --color-ok: #4fa57b;
+
+  --font-display: BricolageGrotesque_700Bold;
+  --font-display-medium: BricolageGrotesque_600SemiBold;
+  --font-sans: Figtree_400Regular;
+  --font-sans-medium: Figtree_500Medium;
+  --font-sans-bold: Figtree_700Bold;
+
+  --radius-card: 28px;
+  --radius-inner: 20px;
+}
+
 :root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+  --color-bg: #ebeae8;
+  --color-card: #eeedeb;
+  --color-ink: #262320;
+  --color-ink-2: #5c5751;
+  --color-line: #d6d3cf;
+  --color-accent: #f0863a;
+  --color-accent-ink: #3b1e0a;
+  --color-ok: #4fa57b;
 }

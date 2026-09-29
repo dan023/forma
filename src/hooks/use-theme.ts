@@ -1,14 +1,14 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ACCENT_INK, Accents, Palette, type Colors, type Scheme } from '@/constants/theme';
+import { useSettings } from '@/stores/settings';
 
-export function useTheme() {
-  const scheme = useColorScheme();
-  const theme = scheme === 'unspecified' ? 'light' : scheme;
+export type Theme = Colors & { scheme: Scheme; accent: string; accentInk: string };
 
-  return Colors[theme];
+export function useTheme(): Theme {
+  const system = useColorScheme();
+  const mode = useSettings((s) => s.themeMode);
+  const accent = useSettings((s) => s.accent);
+  const scheme: Scheme = mode === 'system' ? (system === 'dark' ? 'dark' : 'light') : mode;
+  return { ...Palette[scheme], scheme, accent: Accents[accent], accentInk: ACCENT_INK };
 }

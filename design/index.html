@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it" data-theme="neve">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forma — Prototipo design</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<aside class="stage-side">
+  <div>
+    <h1>For<span>ma</span></h1>
+    <p style="margin-top:14px">Allenamento e alimentazione in un’unica app. Prototipo navigabile in stile Neve, chiaro e scuro. Tocca la barra in basso, spunta le serie, scegli l’accento.</p>
+  </div>
+  <div>
+    <div class="group-label">Tema</div>
+    <div class="chips" id="variants" role="group" aria-label="Tema">
+      <button class="chip" data-v="neve" aria-pressed="true">Chiaro</button>
+      <button class="chip" data-v="neve-scura" aria-pressed="false">Scuro</button>
+    </div>
+  </div>
+  <div>
+    <div class="group-label">Schermate principali</div>
+    <div class="chips" id="screens" role="group" aria-label="Schermate principali">
+      <button class="chip" data-s="onb">Onboarding</button>
+      <button class="chip" data-s="oggi" aria-pressed="true">Oggi</button>
+      <button class="chip" data-s="allenamento">Allenamento</button>
+      <button class="chip" data-s="pasti">Pasti</button>
+      <button class="chip" data-s="stats">Statistiche</button>
+      <button class="chip" data-s="impostazioni">Impostazioni</button>
+    </div>
+  </div>
+  <div>
+    <div class="group-label">Dettagli</div>
+    <div class="chips" id="screens2" role="group" aria-label="Schermate di dettaglio">
+      <button class="chip" data-s="esercizi">Catalogo esercizi</button>
+      <button class="chip" data-s="muscoli">Mappa muscolare</button>
+      <button class="chip" data-s="cibo">Aggiungi alimento</button>
+      <button class="chip" data-s="scan">Barcode</button>
+      <button class="chip" data-s="ricette">Ricette</button>
+    </div>
+  </div>
+  <p class="stage-note" id="note"></p>
+</aside>
+
+<main class="stage-phone">
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div class="statusbar"><span>9:41</span><span>●●● 92%</span></div>
+      <div class="pages" id="pages"></div>
+      <nav class="nav glass" id="nav" aria-label="Sezioni"></nav>
+    </div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

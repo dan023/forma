@@ -1,56 +1,39 @@
-# Welcome to your Expo app 👋
+# Forma
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App mobile open source per tracciare **allenamenti e alimentazione** in un'unica app: diario dei pasti con macro, schede di allenamento con progressione, e statistiche unificate (peso, calorie, volume). Tutto locale sul telefono, dati esportabili in JSON, nessun account.
 
-## Get started
+> Stato: in sviluppo iniziale. Il design è prototipato in [`design/`](design/) e descritto in [`design.md`](design.md).
 
-1. Install dependencies
+## Funzionalità previste
+- **Palestra:** catalogo di ~1.300 esercizi, regole di progressione (lineare, Greyskull LP, doppia progressione), 1RM, RIR/RPE, superset, mappa muscolare, import da Strong/Hevy/FitNotes.
+- **Alimentazione:** diario per pasto, obiettivi kcal/macro diversi tra giorni di allenamento e riposo, alimenti e porzioni personalizzati, ricette, barcode.
+- **Personalizzazione:** tema chiaro/scuro, colore d'accento, pasti configurabili.
 
-   ```bash
-   npm install
-   ```
+## Stack
+Expo SDK 57 · TypeScript · Expo Router · NativeWind v5 · expo-sqlite + Drizzle ORM (in arrivo) · Zustand · Reanimated.
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Sviluppo
 ```bash
-npm run reset-project
+bun install
+bunx expo start        # poi i/a/w per iOS, Android, web
+bunx tsc --noEmit      # typecheck
+bunx expo lint
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Anteprima del design (HTML statico):
+```bash
+cd design && python3 -m http.server 8080
+```
 
-### Other setup steps
+## Struttura
+```
+src/app/(tabs)/     Oggi · Allenamento · Pasti · Statistiche · Impostazioni
+src/components/     ui/ (Card, Text, Screen…) e pill-tab-bar
+src/constants/      token di design (theme.ts)
+src/hooks/  stores/ tema e impostazioni (Zustand)
+design/  design.md  prototipo e linee guida
+scripts/            (in arrivo) build del catalogo alimenti
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Licenza
+[AGPL v3](LICENSE) con eccezione per la distribuzione negli app store, vedi [NOTICE.md](NOTICE.md). Dati e media di terze parti hanno licenze proprie, elencate lì.

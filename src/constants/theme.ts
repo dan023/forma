@@ -1,65 +1,43 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+/** Token di design di Forma (vedi design.md). Valori in OKLCH convertiti in sRGB. Font, raggi e spaziature stanno in src/global.css (Tailwind). */
 
-import '@/global.css';
+export type Scheme = 'light' | 'dark';
 
-import { Platform } from 'react-native';
-
-export const Colors = {
+export const Palette = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    bg: '#EBEAE8',
+    card: '#EEEDEB',
+    ink: '#262320',
+    ink2: '#5C5751',
+    line: '#D6D3CF',
+    shadowDark: 'rgba(196,190,182,0.75)',
+    shadowLight: 'rgba(255,253,250,0.95)',
+    frame: '#1F1D1B',
+    ok: '#4FA57B',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    bg: '#2C2A28',
+    card: '#302E2C',
+    ink: '#F1EFEC',
+    ink2: '#C1BCB6',
+    line: '#4A4744',
+    shadowDark: 'rgba(28,26,24,0.9)',
+    shadowLight: 'rgba(80,76,72,0.55)',
+    frame: '#151413',
+    ok: '#6BC496',
   },
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type Colors = (typeof Palette)[Scheme];
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
-
-export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
+/** Accenti preset. `ink` = testo sopra l'accento (sempre scuro). */
+export const Accents = {
+  arancio: '#F0863A',
+  corallo: '#EE7F72',
+  ambra: '#E9B23C',
+  salvia: '#6DBE8C',
+  oceano: '#4BA6D8',
+  viola: '#A67DD9',
 } as const;
+export type AccentName = keyof typeof Accents;
+export const ACCENT_INK = '#3B1E0A';
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
