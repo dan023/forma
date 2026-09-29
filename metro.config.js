@@ -4,6 +4,9 @@ const { withNativewind } = require('nativewind/metro');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
+// Migrazioni Drizzle (drizzle/*.sql).
+config.resolver.sourceExts.push('sql');
+
 module.exports = withNativewind(config, {
   // Variabili cambiate a runtime da ThemeProvider (tema chiaro/scuro, accento).
   inlineVariables: {

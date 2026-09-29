@@ -2,6 +2,12 @@
 
 App mobile open per tracciare allenamenti e alimentazione in un'unica app. Owner: Daniele (GitHub `dan023`), scrive in italiano: rispondi in italiano.
 
+## Workflow Git
+- `main`: solo codice stabile. `dev`: integrazione, parte da `main`.
+- Ogni funzionalità o modifica va su una branch dedicata creata da `dev`: `feature/<nome>` (nuove funzioni), `fix/<nome>` (bug), `chore/<nome>` (config, dipendenze, docs). Mai lavorare direttamente su `main` o `dev`.
+- Prima di iniziare una modifica: `git switch dev && git switch -c feature/<nome>`. Commit piccoli e descrittivi (`feat:`, `fix:`, `chore:`).
+- Finita la modifica: merge della branch in `dev`; `dev` confluisce in `main` solo quando stabile. Non fare merge né push senza che Daniele lo chieda.
+
 ## Obiettivo
 Unire le funzionalità di openGym (github.com/arvids-unavailable/openGym) con un tracker alimentare stile FatSecret (pasti, macro), con catalogo alimenti esteso quanto il catalogo esercizi di openGym. Tutto molto personalizzabile e open.
 
@@ -31,7 +37,7 @@ Direzione **scelta: Neve** (grigio morbido/neumorfico, accento arancione, titoli
 
 ## Prossimi passi
 1. ~~Design~~ fatto. ~~LICENSE AGPL + NOTICE, README, scheletro app (token, tab a pillola, 5 schermate segnaposto)~~ fatto.
-2. Schema DB (expo-sqlite + Drizzle), persistenza impostazioni.
+2. ~~Schema DB (expo-sqlite + Drizzle), persistenza impostazioni~~ fatto: schema in `src/db/schema/`, client in `src/db/client.ts`, migrazioni in `drizzle/` (dopo ogni modifica allo schema: `bunx drizzle-kit generate`), impostazioni salvate in tabella `settings` da `useSettings`. Da verificare su dispositivo/emulatore.
 3. Script di build del catalogo alimenti, poi catalogo esercizi.
 4. Schermate reali, in ordine: Pasti/diario, Allenamento, Oggi, Statistiche, Impostazioni, onboarding.
 5. Styling: **NativeWind v5 RC** (Tailwind v4). Token in `src/global.css` (`@theme`) + valori runtime (tema chiaro/scuro, accento) in `src/constants/theme.ts` via `ThemeProvider`. Ogni nuovo colore va aggiunto anche a `inlineVariables.exclude` in `metro.config.js`. Solo le ombre neumorfiche restano helper JS (`raised`/`inset`). Non rimuovere gli override `lightningcss` 1.30.1 in package.json (senza, la build native fallisce).
