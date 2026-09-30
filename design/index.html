@@ -22,8 +22,7 @@
   </div>
   <div>
     <div class="group-label">Schermate principali</div>
-    <div class="chips" id="screens" role="group" aria-label="Schermate principali">
-      <button class="chip" data-s="onb">Onboarding</button>
+    <div class="chips" role="group" aria-label="Schermate principali">
       <button class="chip" data-s="oggi" aria-pressed="true">Oggi</button>
       <button class="chip" data-s="allenamento">Allenamento</button>
       <button class="chip" data-s="pasti">Pasti</button>
@@ -32,13 +31,56 @@
     </div>
   </div>
   <div>
-    <div class="group-label">Dettagli</div>
-    <div class="chips" id="screens2" role="group" aria-label="Schermate di dettaglio">
-      <button class="chip" data-s="esercizi">Catalogo esercizi</button>
+    <div class="group-label">Primo avvio</div>
+    <div class="chips" role="group" aria-label="Primo avvio">
+      <button class="chip" data-s="onb">Onboarding 1</button>
+      <button class="chip" data-s="onb2">2</button>
+      <button class="chip" data-s="onb3">3</button>
+      <button class="chip" data-s="onb4">4</button>
+      <button class="chip" data-s="oggi-vuoto">Oggi vuoto</button>
+    </div>
+  </div>
+  <div>
+    <div class="group-label">Allenamento</div>
+    <div class="chips" role="group" aria-label="Allenamento">
+      <button class="chip" data-s="sessione">Sessione</button>
+      <button class="chip" data-s="riepilogo">Riepilogo</button>
+      <button class="chip" data-s="programma">Programma</button>
+      <button class="chip" data-s="esercizio">Esercizio</button>
+      <button class="chip" data-s="esercizi">Catalogo</button>
+      <button class="chip" data-s="crea-esercizio">Crea esercizio</button>
       <button class="chip" data-s="muscoli">Mappa muscolare</button>
-      <button class="chip" data-s="cibo">Aggiungi alimento</button>
+    </div>
+  </div>
+  <div>
+    <div class="group-label">Pasti</div>
+    <div class="chips" role="group" aria-label="Pasti">
+      <button class="chip" data-s="cerca">Ricerca</button>
+      <button class="chip" data-s="cibo">Scheda alimento</button>
+      <button class="chip" data-s="versioni">Versioni</button>
+      <button class="chip" data-s="crea-alimento">Crea alimento</button>
       <button class="chip" data-s="scan">Barcode</button>
       <button class="chip" data-s="ricette">Ricette</button>
+      <button class="chip" data-s="pasti-config">Pasti configurabili</button>
+    </div>
+  </div>
+  <div>
+    <div class="group-label">Altro</div>
+    <div class="chips" role="group" aria-label="Altro">
+      <button class="chip" data-s="peso">Peso</button>
+      <button class="chip" data-s="obiettivi">Obiettivi</button>
+      <button class="chip" data-s="promemoria">Promemoria</button>
+      <button class="chip" data-s="dati">Dati</button>
+    </div>
+  </div>
+  <div>
+    <div class="group-label">Ricerca alimenti: stati</div>
+    <div class="chips" id="search-states" role="group" aria-label="Stati della ricerca">
+      <button class="chip" data-ss="vuoto">Vuota</button>
+      <button class="chip" data-ss="risultati">Risultati</button>
+      <button class="chip" data-ss="nessuno">Nessun risultato</button>
+      <button class="chip" data-ss="caricamento">Caricamento</button>
+      <button class="chip" data-ss="offline">Offline</button>
     </div>
   </div>
   <p class="stage-note" id="note"></p>
@@ -54,6 +96,9 @@
   </div>
 </main>
 
+<script src="sample-foods.js"></script>
+<script src="screens-extra.js"></script>
 <script src="app.js"></script>
+<script src="tweaks.js"></script>
 </body>
 </html>
