@@ -8,31 +8,14 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import type { CatalogFood } from '../../src/db/catalog-food';
 import { translateName } from './names';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const RAW = join(ROOT, 'data', 'raw');
 const OUT = join(ROOT, 'assets', 'data', 'foods.json');
+const META = join(ROOT, 'assets', 'data', 'foods.meta.json');
 
-type CatalogFood = {
-  id: string;
-  source: 'ciqual' | 'usda';
-  sourceId: string;
-  nameFr: string | null;
-  nameIt: string;
-  nameEn: string;
-  category: string | null;
-  kcal: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber: number | null;
-  sugar: number | null;
-  saturatedFat: number | null;
-  sodium: number | null;
-  micros: Record<string, number>;
-  portions: { label: string; grams: number }[];
-};
 
 const round = (n: number) => Math.round(n * 100) / 100;
 
@@ -231,7 +214,10 @@ const foundation = buildUsda('foundation', 'foundation_food');
 const sr = buildUsda('sr', 'sr_legacy_food');
 
 const foods = [...ciqual, ...foundation, ...sr];
-writeFileSync(OUT, JSON.stringify(foods));
+const json = JSON.stringify(foods);
+writeFileSync(OUT, json);
+// Piccolo file letto all'avvio dall'app per sapere se il catalogo nel DB è aggiornato, senza caricare foods.json.
+writeFileSync(META, JSON.stringify({ version: Bun.hash(json).toString(36), count: foods.length }) + '\n');
 
 console.log(`CIQUAL: ${ciqual.length} · USDA Foundation: ${foundation.length} · USDA SR Legacy: ${sr.length}`);
 console.log(`Totale: ${foods.length} alimenti → ${OUT} (${(readFileSync(OUT).length / 1e6).toFixed(1)} MB)`);

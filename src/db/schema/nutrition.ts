@@ -14,6 +14,7 @@ export const foods = sqliteTable(
     /** Id nella fonte originale (codice CIQUAL, fdcId, barcode OFF). */
     sourceId: text('source_id'),
     nameIt: text('name_it'),
+    nameFr: text('name_fr'),
     nameEn: text('name_en'),
     brand: text('brand'),
     category: text('category'),

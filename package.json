@@ -59,6 +59,7 @@
     "lint": "expo lint",
     "catalog:build": "bun scripts/catalog/build-food-catalog.ts",
     "catalog:review": "bun scripts/catalog/review-translations.ts",
+    "test": "bun test scripts/tests",
     "typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json"
   },
   "private": true,

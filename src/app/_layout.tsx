@@ -11,10 +11,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import type { CatalogFood } from '@/db/catalog-food';
 import { db } from '@/db/client';
+import { seedFoods } from '@/db/seed-foods';
 import { useTheme } from '@/hooks/use-theme';
 import { useSettings } from '@/stores/settings';
 
+import foodsMeta from '../../assets/data/foods.meta.json';
 import migrations from '../../drizzle/migrations';
 
 SplashScreen.preventAutoHideAsync();
@@ -33,7 +36,14 @@ export default function RootLayout() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (migrated) useSettings.getState().hydrate().finally(() => setHydrated(true));
+    if (!migrated) return;
+    (async () => {
+      await useSettings.getState().hydrate();
+      // Primo avvio (o catalogo aggiornato): importa gli alimenti. foods.json (7 MB) si carica solo qui.
+      await seedFoods(db, foodsMeta, () => require('../../assets/data/foods.json') as CatalogFood[]);
+    })()
+      .catch((e) => console.warn('Avvio: impostazioni o catalogo alimenti non caricati', e))
+      .finally(() => setHydrated(true));
   }, [migrated]);
 
   const ready = loaded && hydrated;
