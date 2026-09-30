@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# catalogo alimenti: dati grezzi scaricati (vedi scripts/catalog)
+data/raw/
