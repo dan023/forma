@@ -8,6 +8,8 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { translateName } from './names';
+
 const ROOT = join(import.meta.dir, '..', '..');
 const RAW = join(ROOT, 'data', 'raw');
 const OUT = join(ROOT, 'assets', 'data', 'foods.json');
@@ -33,53 +35,6 @@ type CatalogFood = {
 };
 
 const round = (n: number) => Math.round(n * 100) / 100;
-
-// ---------- Nomi italiani ----------
-// Il nome inglese è una lista di descrittori ("Beef, loin, raw"): si traduce segmento per segmento.
-// Precedenza: glossario a mano (glossary-it.json) → traduzione automatica (translations-it.json,
-// vedi translate-it.py) → testo originale. Tutto avviene qui, in build: a runtime non si traduce nulla.
-const CATALOG_DIR = join(ROOT, 'scripts', 'catalog');
-const machine: Record<string, string> = JSON.parse(readFileSync(join(CATALOG_DIR, 'translations-it.json'), 'utf8'));
-const glossary = new Map(
-  Object.entries(JSON.parse(readFileSync(join(CATALOG_DIR, 'glossary-it.json'), 'utf8')) as Record<string, string>).map(
-    ([k, v]) => [k.toLowerCase(), v],
-  ),
-);
-
-/** Divide sulle virgole fuori da parentesi. */
-function splitSegments(name: string): string[] {
-  const out: string[] = [];
-  let depth = 0;
-  let cur = '';
-  for (const ch of name) {
-    if (ch === '(' || ch === '[') depth++;
-    if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
-    if (ch === ',' && depth === 0) { out.push(cur.trim()); cur = ''; }
-    else cur += ch;
-  }
-  out.push(cur.trim());
-  return out.filter(Boolean);
-}
-
-/** Marchi in maiuscolo (QUAKER, ABBOTT NUTRITION) restano invariati. */
-const isBrand = (s: string) => s.length > 1 && s === s.toUpperCase() && s !== s.toLowerCase();
-
-/** "congelato congelato" → "congelato": la traduzione automatica a volte ripete le parole. */
-const dedupeWords = (s: string) => s.replace(/\b(\p{L}+)(?: \1\b)+/giu, '$1');
-
-const lowerFirst = (s: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s[0].toLowerCase() + s.slice(1) : s);
-const upperFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-function translateName(nameEn: string): string {
-  const parts = splitSegments(nameEn).map((seg, i) => {
-    let out: string;
-    if (isBrand(seg)) out = seg;
-    else if (glossary.has(seg.toLowerCase())) out = glossary.get(seg.toLowerCase())!;
-    else out = dedupeWords((machine[seg] ?? seg).replace(/[.!]+$/, ''));
-    return i === 0 ? upperFirst(out) : lowerFirst(out);
-  });
-  return parts.join(', ');
-}
 
 // ---------- CSV ----------
 function parseCsv(text: string): Record<string, string>[] {
