@@ -40,11 +40,11 @@ Direzione **scelta: Neve** (grigio morbido/neumorfico, accento arancione, titoli
 - `i18next` + `react-i18next` + `expo-localization`. Lingue: **it** (base) ed **en**; preferenza `language` (`system` | `it` | `en`) nello store `useSettings`, salvata in DB.
 - Nessuna stringa visibile hardcoded: `const { t } = useTranslation()` e chiavi in `src/i18n/locales/it.ts`. `en.ts` deve avere le stesse chiavi (lo impone il tipo `Translation`). Chiavi tipizzate via `src/i18n/i18next.d.ts`.
 - Date e numeri con `toLocaleDateString(i18n.language, ...)` / `Intl`, mai formati fissi.
-- I nomi degli alimenti seguono la lingua (`nameIt`/`nameEn`); traduzione italiana del catalogo ancora da fare.
+- I nomi degli alimenti seguono la lingua (`nameIt`/`nameEn`); la traduzione italiana è precalcolata nel catalogo (`nameIt`); si migliora aggiungendo voci a `scripts/catalog/glossary-it.json` (flusso in `scripts/catalog/README.md`).
 
 ## Prossimi passi
 1. ~~Design~~ fatto. ~~LICENSE AGPL + NOTICE, README, scheletro app (token, tab a pillola, 5 schermate segnaposto)~~ fatto.
 2. ~~Schema DB (expo-sqlite + Drizzle), persistenza impostazioni~~ fatto: schema in `src/db/schema/`, client in `src/db/client.ts`, migrazioni in `drizzle/` (dopo ogni modifica allo schema: `bunx drizzle-kit generate`), impostazioni salvate in tabella `settings` da `useSettings`. Da verificare su dispositivo/emulatore.
-3. Catalogo alimenti: ~~script di build~~ fatto (`bun run catalog:build` → `assets/data/foods.json`, 11.512 alimenti; sorgenti con `scripts/catalog/fetch-sources.sh`). Mancano: nomi italiani, seed nel DB al primo avvio, Open Food Facts. Poi catalogo esercizi.
+3. Catalogo alimenti: ~~script di build e nomi italiani~~ fatti (`bun run catalog:build` → `assets/data/foods.json`, 11.512 alimenti; sorgenti con `scripts/catalog/fetch-sources.sh`). Nomi italiani (`nameIt`) precalcolati in build: traduzione automatica offline per segmento + `glossary-it.json` a mano (precedenza), `bun run catalog:review` per trovare cosa correggere; nessuna traduzione a runtime. Mancano: seed nel DB al primo avvio (con colonna `name_fr`), Open Food Facts, correzione del nome in-app (override locale), accordo di genere nelle traduzioni. Poi catalogo esercizi.
 4. Schermate reali, in ordine: Pasti/diario, Allenamento, Oggi, Statistiche, Impostazioni, onboarding.
 5. Styling: **NativeWind v5 RC** (Tailwind v4). Token in `src/global.css` (`@theme`) + valori runtime (tema chiaro/scuro, accento) in `src/constants/theme.ts` via `ThemeProvider`. Ogni nuovo colore va aggiunto anche a `inlineVariables.exclude` in `metro.config.js`. Solo le ombre neumorfiche restano helper JS (`raised`/`inset`). Non rimuovere gli override `lightningcss` 1.30.1 in package.json (senza, la build native fallisce).
