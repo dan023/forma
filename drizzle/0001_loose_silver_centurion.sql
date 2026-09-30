@@ -1,0 +1,1 @@
+ALTER TABLE `foods` ADD `name_fr` text;
