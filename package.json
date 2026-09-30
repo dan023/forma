@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.12",
+    "@types/bun": "^1.4.2",
     "@types/react": "~19.2.2",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.11",
@@ -55,7 +56,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "catalog:build": "bun scripts/catalog/build-food-catalog.ts",
+    "catalog:review": "bun scripts/catalog/review-translations.ts",
+    "typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json"
   },
   "private": true,
   "overrides": {
