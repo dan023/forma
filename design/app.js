@@ -243,9 +243,10 @@ navEl.innerHTML = '<div class="nav-blob" id="blob"></div>' + tabs.map(([k, l]) =
   `<button class="tab" role="tab" data-go="${k}" aria-selected="false"><svg viewBox="0 0 24 24">${icon[k]}</svg>${l}</button>`).join("");
 
 let current = null;
-function go(k) {
+function go(k, silent) {
   if (current === k) return;
   current = k;
+  lastTop = 0; navEl.classList.remove("min");
   $$(".page").forEach(p => p.classList.toggle("on", p.id === "p-" + k));
   const parent = {
     sessione: "allenamento", riepilogo: "allenamento", programma: "allenamento", esercizio: "allenamento", esercizi: "allenamento", "crea-esercizio": "allenamento",
@@ -260,6 +261,7 @@ function go(k) {
   $$(".chips [data-s]").forEach(c => c.setAttribute("aria-pressed", c.dataset.s === k));
   $("#p-" + k).scrollTop = 0;
   if (k === "stats") drawChart(chartKind);
+  if (!silent) syncOut(k);
 }
 
 document.addEventListener("click", e => {
@@ -495,5 +497,70 @@ $("#side").addEventListener("click", e => {
 });
 drawBody();
 
-const init = new URLSearchParams(location.search).get("s") || "oggi";
-go(pages[init] ? init : "oggi");
+/* ---------- PIATTAFORMA: iOS 26 (Liquid Glass) / Android ---------- */
+const root = document.documentElement;
+const qs = new URLSearchParams(location.search);
+const SOLO = qs.has("solo"); // anteprima incorporata nell'altra (vista "Affianca")
+if (SOLO) document.body.classList.add("solo");
+const PLATFORM_NOTES = {
+  ios: "iOS 26: barra delle tab di sistema in Liquid Glass. Si riduce quando scorri e si riapre toccandola. Tasto indietro in vetro. Card e campi restano Neve. Il browser imita il vetro, non è identico a quello di Apple.",
+  android: "Android e iOS precedenti: barra a pillola Neve con indicatore d'accento, freccia di ritorno e avviso in stile Material.",
+  both: "A sinistra iOS 26, a destra Android. Le due anteprime navigano insieme.",
+};
+const SB = {
+  signal: '<svg viewBox="0 0 18 12" width="17" height="11" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>',
+  wifi: '<svg viewBox="0 0 16 12" width="16" height="12" aria-hidden="true"><path d="M8 11.5 5.8 9.1a3.2 3.2 0 0 1 4.4 0zM2.9 6.2a7.2 7.2 0 0 1 10.2 0l-1.3 1.4a5.3 5.3 0 0 0-7.6 0zM.3 3.4a10.9 10.9 0 0 1 15.4 0l-1.3 1.4a9 9 0 0 0-12.8 0z"/></svg>',
+  battery: '<svg viewBox="0 0 27 12" width="26" height="12" aria-hidden="true"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24" y="4" width="2" height="4" rx="1" opacity=".45"/></svg>',
+};
+function setPlatform(p) {
+  root.dataset.platform = p;
+  $("#statusbar").innerHTML = p === "ios"
+    ? `<span>9:41</span><span class="sb-r">${SB.signal}${SB.wifi}${SB.battery}</span>`
+    : `<span>12:30</span><span class="sb-r">${SB.wifi}${SB.signal}${SB.battery}</span>`;
+  navEl.classList.remove("min");
+  document.dispatchEvent(new CustomEvent("platformchange", { detail: p }));
+}
+function applyPlatformChoice(c) {
+  $$("#platforms .chip").forEach(x => x.setAttribute("aria-pressed", x.dataset.plat === c));
+  const both = c === "both", twin = $("#twin");
+  document.body.classList.toggle("compare", both);
+  setPlatform(both ? "ios" : c);
+  twin.hidden = !both;
+  if (both) { const u = new URL(location.href); u.search = `?solo=1&p=android&s=${current}`; twin.src = u.href; }
+  else twin.removeAttribute("src");
+  $("#plat-note").textContent = PLATFORM_NOTES[c];
+  try { localStorage.setItem("forma-platform", c); } catch {}
+}
+if (SOLO) setPlatform(qs.get("p") === "ios" ? "ios" : "android");
+else {
+  $("#platforms").addEventListener("click", e => { const c = e.target.closest("[data-plat]"); if (c) applyPlatformChoice(c.dataset.plat); });
+  let saved = "ios"; try { saved = localStorage.getItem("forma-platform") || saved; } catch {}
+  applyPlatformChoice(["ios", "android", "both"].includes(saved) ? saved : "ios");
+}
+
+/* le due anteprime navigano insieme; tema e ritocchi si propagano con l'evento `storage` */
+const otherWin = () => (SOLO ? window.parent : $("#twin").hidden ? null : $("#twin").contentWindow);
+function syncOut(k) {
+  const w = otherWin();
+  if (w && w !== window) w.postMessage({ forma: "go", k }, location.origin === "null" ? "*" : location.origin);
+}
+window.addEventListener("message", e => {
+  if (e.data?.forma !== "go" || e.source !== otherWin()) return;
+  go(e.data.k, true);
+});
+window.addEventListener("storage", e => {
+  if (e.key === "forma-v" && e.newValue) $(`#variants [data-v="${e.newValue}"]`)?.click();
+});
+
+/* iOS 26: la barra di sistema si riduce scorrendo verso il basso e si riapre toccandola o scorrendo verso l'alto */
+let lastTop = 0;
+$("#pages").addEventListener("scroll", e => {
+  if (root.dataset.platform !== "ios") return;
+  const top = e.target.scrollTop, d = top - lastTop; lastTop = top;
+  if (top > 80 && d > 6) navEl.classList.add("min");
+  else if (d < -6 || top < 40) navEl.classList.remove("min");
+}, true);
+navEl.addEventListener("click", e => { if (navEl.classList.contains("min")) { navEl.classList.remove("min"); e.stopPropagation(); } }, true);
+
+const init = qs.get("s") || "oggi";
+go(pages[init] ? init : "oggi", true);

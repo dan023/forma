@@ -16,7 +16,7 @@ export function raised(t: Theme, size = 9): ViewStyle {
   };
 }
 
-export function inset(t: Theme, size = 4): ViewStyle {
+export function inset(t: Theme, size = 2): ViewStyle {
   return {
     boxShadow: [
       { offsetX: size, offsetY: size, blurRadius: size * 2.2, color: t.shadowDark, inset: true },

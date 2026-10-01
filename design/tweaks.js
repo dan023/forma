@@ -13,7 +13,7 @@
   };
   const DEFAULTS = {
     theme: "neve", l: 70, c: 0.17, h: 48,
-    surface: "neu", depth: 9, idepth: 4, rCard: 28, rInner: 20,
+    surface: "neu", depth: 9, idepth: 2, rCard: 28, rInner: 20,
     btnStyle: "solid", btnShape: 999, btnH: 48, btnGlow: 45, navShape: 999,
     font: "Bricolage + Figtree", titleSize: 2.6,
     density: "normal", motion: "on",
@@ -45,6 +45,7 @@
     return n;
   };
   const controls = []; // funzioni che riallineano la UI allo stato
+  let navRow, navHint;
 
   const seg = (id, label, options) => {
     const box = el("div", { className: "tw-seg", role: "group", ariaLabel: label });
@@ -96,7 +97,8 @@
       seg("btnStyle", "Stile", [["solid", "Pieno"], ["soft", "Soffice"], ["outline", "Contorno"]]),
       seg("btnShape", "Forma", [[999, "Pillola"], [16, "Arrotondato"], [6, "Squadrato"]]),
       range("btnH", "Altezza", 44, 60, 1, " px"), range("btnGlow", "Alone colorato", 0, 80, 1, "%")),
-    section("Navigazione", seg("navShape", "Barra", [[999, "Pillola"], [24, "Arrotondata"], [8, "Squadrata"]])),
+    section("Navigazione", (navRow = seg("navShape", "Barra", [[999, "Pillola"], [24, "Arrotondata"], [8, "Squadrata"]])),
+      (navHint = el("p", { className: "tw-hint", hidden: true, textContent: "Su iOS 26 la barra è di sistema e la sua forma non si cambia. Questa scelta vale per Android e iOS precedenti." }))),
     section("Tipografia",
       el("div", { className: "tw-row" }, el("label", { htmlFor: "tw-font", textContent: "Font" }), fontSel),
       range("titleSize", "Titoli", 2, 3.4, 0.05, " rem", 2)),
@@ -148,6 +150,18 @@
     navigator.clipboard?.writeText(text).then(() => (foot.lastChild.textContent = "Copiato"), () => {});
     setTimeout(() => (foot.lastChild.textContent = "Copia token"), 1600);
   }
+
+  const platformHint = () => { const ios = root.dataset.platform === "ios"; navHint.hidden = !ios; navRow.classList.toggle("tw-dim", ios); };
+  document.addEventListener("platformchange", platformHint);
+  platformHint();
+  // l'altra anteprima (vista "Affianca") ha cambiato i ritocchi: riallinea senza risalvare
+  window.addEventListener("storage", e => {
+    if (e.key !== KEY || !e.newValue) return;
+    try { t = { ...DEFAULTS, ...JSON.parse(e.newValue) }; } catch { return; }
+    apply(); controls.forEach(f => f());
+    const b = document.querySelector(`#variants [data-v="${t.theme}"]`);
+    if (b && root.dataset.theme !== t.theme) b.click();
+  });
 
   apply();
   controls.forEach(f => f());

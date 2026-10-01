@@ -21,6 +21,15 @@
     </div>
   </div>
   <div>
+    <div class="group-label">Piattaforma</div>
+    <div class="chips" id="platforms" role="group" aria-label="Piattaforma">
+      <button class="chip" data-plat="ios">iOS 26</button>
+      <button class="chip" data-plat="android">Android</button>
+      <button class="chip" data-plat="both">Affianca</button>
+    </div>
+    <p class="stage-note" id="plat-note" style="margin-top:10px"></p>
+  </div>
+  <div>
     <div class="group-label">Schermate principali</div>
     <div class="chips" role="group" aria-label="Schermate principali">
       <button class="chip" data-s="oggi" aria-pressed="true">Oggi</button>
@@ -87,13 +96,15 @@
 </aside>
 
 <main class="stage-phone">
-  <div class="phone">
+  <div class="phone" id="phone-main">
     <div class="screen" id="screen">
-      <div class="statusbar"><span>9:41</span><span>●●● 92%</span></div>
+      <div class="statusbar" id="statusbar"></div>
       <div class="pages" id="pages"></div>
       <nav class="nav glass" id="nav" aria-label="Sezioni"></nav>
+      <i class="home-ind" aria-hidden="true"></i>
     </div>
   </div>
+  <iframe class="twin" id="twin" title="Anteprima Android" hidden></iframe>
 </main>
 
 <script src="sample-foods.js"></script>

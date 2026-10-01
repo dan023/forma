@@ -34,7 +34,7 @@ Macro nei grafici: proteine = `accent`, carboidrati `oklch(72% .11 85)`, grassi 
 | Ruolo | Neve | Neve scura |
 |---|---|---|
 | Rialzato | `9 9 20 oklch(80% .01 65 /.75)` + `-9 -9 20 oklch(99% .004 80 /.95)` | `9 9 20 oklch(16% .008 55 /.9)` + `-8 -8 18 oklch(34% .01 65 /.55)` |
-| Incassato | come sopra, `inset`, raggio 9 e offset 4 | idem |
+| Incassato | come sopra, `inset`, offset 2 e sfocatura 4,4 (token `--idepth: 2`, scelto con la tweakbar) | idem |
 
 Su React Native le ombre doppie non esistono in un solo `boxShadow`: usare due layer sovrapposti (luce e ombra) o `boxShadow` con più valori, dove supportato da RN 0.86. Da verificare su Android.
 
@@ -133,6 +133,23 @@ Il campo di ricerca è **incassato** (è un campo), con anello accento al focus 
 - Le etichette delle porzioni USDA sono in inglese ("1 cup, whole"): vanno tradotte e normalizzate prima di mostrarle.
 - Alcune traduzioni sono ancora sbagliate (es. "Oat bran" → "Reggiseno d'avena", "Plantain" → "Pianifica la banana"): correggerle nel glossario partendo dai cibi più comuni.
 - La classifica ha bisogno di un segnale "comune" più forte dei soli caratteri del nome; valutare un elenco di alimenti generici da favorire.
+## Anteprima per piattaforma (iOS 26 / Android)
+Nel prototipo, la colonna sinistra ha il gruppo **Piattaforma**: *iOS 26*, *Android*, *Affianca* (le due anteprime una accanto all'altra; navigano insieme, e tema e ritocchi si propagano). Serve a decidere cosa è chrome di sistema, che cambia per piattaforma, e cosa è contenuto, che è sempre Neve.
+
+| Elemento | iOS 26 (Liquid Glass) | Android e iOS precedenti |
+|---|---|---|
+| Cornice e barra di stato | Isola dinamica, orario a sinistra, indicatore home largo | Punch-hole, orario a sinistra, gesto di sistema sottile |
+| Barra delle tab | Di sistema, in vetro, galleggiante. Voce attiva con capsula in vetro tinta d'accento. Si riduce a una capsula scorrendo verso il basso e si riapre toccandola o scorrendo verso l'alto | Barra a pillola Neve con indicatore d'accento che scorre |
+| Tasto indietro | Cerchio in vetro con chevron | Cerchio Neve con freccia ← |
+| Avviso (toast) | Capsula in vetro | Barra scura con raggio 14 |
+| Card, campi, numeri, pulsanti d'azione | Neve | Neve |
+
+Regole:
+- Il vetro è solo **chrome di sistema** (barra, tasto indietro nell'header, avvisi, in futuro sheet e pulsanti flottanti sopra il contenuto). Mai dentro le card.
+- La forma della barra su iOS 26 è decisa dal sistema: la tweakbar lo segnala e disattiva il controllo "Barra" quando è attiva l'anteprima iOS.
+- Il browser **imita** il vetro (sfocatura, saturazione, bordo e riflesso): non coincide con quello di Apple. Con `prefers-reduced-transparency` il vetro diventa pieno.
+- Ogni schermata o componente nuovo va guardato in entrambe le piattaforme prima di dirlo finito.
+
 
 ## Accessibilità
 - Contrasto testo ≥ 4.5:1 (`ink2` è stato scurito per questo). Verificare `accentInk` su `accent` e le cifre su superfici incassate.
