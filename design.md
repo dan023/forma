@@ -5,7 +5,7 @@ Direzione: **Neve**. Superfici morbide e tattili (neumorfismo controllato), un s
 Prototipo di riferimento: `design/index.html` (`cd design && python3 -m http.server 8080`). In caso di dubbio, vale il prototipo; questo documento ne spiega le regole.
 
 ## Principi
-1. **Calma, non decorazione.** Ogni ombra deve dire "questo si può toccare" o "questo contiene un valore". Niente vetro, niente gradienti decorativi.
+1. **Calma, non decorazione.** Ogni ombra deve dire "questo si può toccare" o "questo contiene un valore". Niente gradienti decorativi. Niente vetro nel contenuto: l'unica eccezione è il Liquid Glass di sistema su iOS 26 (vedi sotto).
 2. **Un solo accento.** L'arancione segna l'azione principale e lo stato attivo. Il resto è neutro. L'accento è personalizzabile dall'utente (6 preset), quindi mai codificare l'arancione nei componenti: usare il token `accent`.
 3. **Rilievo = significato.** *Rialzato* = azionabile o contenitore. *Incassato* = campo, valore, traccia, stato "premuto". Non invertire i ruoli.
 4. **I numeri sono protagonisti.** Calorie, kg e rip usano il font display con cifre tabulari.
@@ -156,6 +156,13 @@ Regole:
 - Ogni controllo ha etichetta accessibile; stato (`selected`, `checked`) esposto, mai solo tramite colore o ombra.
 - Bersagli ≥ 44 px. Testo scalabile con le impostazioni di sistema: nessuna altezza fissa sulle righe di testo.
 - Tema: segue il sistema, sovrascrivibile in Impostazioni.
+
+## iOS 26: Liquid Glass (ibrido)
+Su iOS 26 e successivi il **chrome di sistema** usa il Liquid Glass nativo; il **contenuto resta Neve** (card, campi, numeri, accento).
+- **Barra delle tab:** nativa (`NativeTabs` di Expo Router, `src/components/glass-tabs.tsx`), con SF Symbols, etichette tradotte e accento per la voce attiva. Si nasconde in parte allo scorrimento (`minimizeBehavior`).
+- **Altre piattaforme** (Android, web, iOS precedenti): barra a pillola Neve, invariata. La scelta sta in `src/constants/glass.ts` (`USE_LIQUID_GLASS`).
+- **Da fare quando esistono le schermate:** header e sheet di sistema (stesso materiale), pulsanti flottanti con `GlassView` solo se sopra al contenuto. Il vetro non va mai dentro le card.
+- Il prototipo web lo imita (vedi "Anteprima per piattaforma"), ma non è fedele: per vederlo davvero serve un build iOS 26 (EAS Simulator o iPhone).
 
 ## Tweakbar (solo prototipo)
 Il pulsante **Ritocchi** in alto a destra apre un pannello che cambia dal vivo i token di stile e salva le scelte nel browser. Serve a decidere prima di scrivere il tema dell'app.
