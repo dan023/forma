@@ -34,7 +34,7 @@ Home e statistiche unificate: peso, calorie, volume di allenamento.
 Script che unisce CIQUAL 2025 (Licence Ouverte) + USDA FDC (CC0, da verificare) in un dataset unico (nomi IT/EN, categoria, macro/micro per 100 g, porzioni tipiche) incluso nell'app. Open Food Facts (ODbL, da verificare) per il barcode online con cache locale. Evitare CREA (licenza poco chiara).
 
 ## Design
-Direzione **scelta: Neve** (grigio morbido/neumorfico, accento arancione, titoli grandi, nav a pillola), con tema chiaro e **Neve scura**. Glassmorfismo scartato. Regole e token in `design.md`; prototipo navigabile in `design/index.html` (`cd design && python3 -m http.server 8080`).
+Direzione **scelta: Neve** (grigio morbido/neumorfico, accento arancione, titoli grandi, nav a pillola), con tema chiaro e **Neve scura**. Glassmorfismo scartato nel contenuto; su **iOS 26 la barra delle tab è nativa con Liquid Glass** (ibrido, vedi `design.md`). Regole e token in `design.md`; prototipo navigabile in `design/index.html` (`cd design && python3 -m http.server 8080`).
 
 ## i18n
 - `i18next` + `react-i18next` + `expo-localization`. Lingue: **it** (base) ed **en**; preferenza `language` (`system` | `it` | `en`) nello store `useSettings`, salvata in DB.

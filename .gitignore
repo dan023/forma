@@ -44,3 +44,6 @@ example
 
 # catalogo alimenti: dati grezzi scaricati (vedi scripts/catalog)
 data/raw/
+
+# sessione EAS Simulator (contiene un token)
+.env.eas-simulator
