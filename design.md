@@ -34,7 +34,7 @@ Macro nei grafici: proteine = `accent`, carboidrati `oklch(72% .11 85)`, grassi 
 | Ruolo | Neve | Neve scura |
 |---|---|---|
 | Rialzato | `9 9 20 oklch(80% .01 65 /.75)` + `-9 -9 20 oklch(99% .004 80 /.95)` | `9 9 20 oklch(16% .008 55 /.9)` + `-8 -8 18 oklch(34% .01 65 /.55)` |
-| Incassato | come sopra, `inset`, raggio 9 e offset 4 | idem |
+| Incassato | come sopra, `inset`, offset 2 e sfocatura 4,4 (token `--idepth: 2`, scelto con la tweakbar) | idem |
 
 Su React Native le ombre doppie non esistono in un solo `boxShadow`: usare due layer sovrapposti (luce e ombra) o `boxShadow` con più valori, dove supportato da RN 0.86. Da verificare su Android.
 
@@ -69,27 +69,107 @@ Su React Native le ombre doppie non esistono in un solo `boxShadow`: usare due l
 - Rispettare "riduci movimento": durate azzerate. In app: `useReducedMotion` di Reanimated.
 
 ## Schermate
-Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**.
+Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**. Ogni schermata di dettaglio evidenzia la voce della sua sezione. Il prototipo le raccoglie in gruppi nella colonna sinistra: 28 schermate.
 
-| Schermata | Contenuto | Note |
+| Sezione | Schermata | Contenuto e note |
 |---|---|---|
-| Onboarding | 4 passi: obiettivo, dati, giorni allenamento, accento/tema | Barra segmentata, una scelta per schermata |
-| Oggi | Saluto, anello kcal + macro, allenamento del giorno, peso | Obiettivi diversi giorno allenamento/riposo |
-| Allenamento | Timer recupero, serie, prossimi esercizi | Progressione (lineare, Greyskull, doppia), 1RM, RIR |
-| ↳ Catalogo esercizi | Ricerca, filtri muscolo, crea personalizzato | ~1.324 esercizi |
-| Pasti | Selettore giorno, ricerca, barcode, ricette, pasti configurabili | |
-| ↳ Aggiungi alimento | Grammi/porzioni, macro live, valori per 100 g e fonte | |
-| ↳ Barcode | Mirino, inserimento manuale | Open Food Facts + cache locale |
-| ↳ Ricette | Ingredienti, macro per porzione, salvate | |
-| Statistiche | Peso / calorie / volume, volume settimanale, costanza | |
-| ↳ Mappa muscolare | Fronte/retro, intensità per muscolo, dettaglio serie | Soglia "ottimo" 10–20 serie/sett. |
-| Impostazioni | Accento, tema, obiettivi, promemoria, unità, export/import JSON | |
+| Primo avvio | Onboarding, 4 passi | 1 obiettivo · 2 dati (sesso, età, altezza, peso) · 3 giorni di allenamento · 4 tema, accento e punto di partenza. Barra segmentata, una scelta per schermata, nav nascosta |
+| | Oggi vuoto | Anello a zero e tre azioni che insegnano da dove partire (primo pasto, programma, peso) |
+| Oggi | Oggi | Saluto, anello kcal + macro, allenamento del giorno, peso. Obiettivi diversi giorno allenamento/riposo |
+| | Registra il peso | Stepper grande ±0,1 kg, nota facoltativa, recenti |
+| Allenamento | Allenamento (home) | Allenamento di oggi, programmi, ultimi allenamenti, allenamento libero |
+| | Sessione | Timer recupero, serie con spunta, prossimi esercizi. Si apre da "Inizia allenamento" |
+| | Riepilogo | Durata, volume, serie, record, muscoli lavorati |
+| | Programma | Esercizi con schema e regola di progressione, superset (SS A), riordino |
+| | Esercizio | Grafico 1RM, scelta della progressione (lineare, Greyskull LP, doppia) con i suoi parametri, storico |
+| | Catalogo esercizi / Crea esercizio | Ricerca, filtri per muscolo. Nuovo esercizio: tipo (carico, corpo libero, a tempo), muscolo, attrezzo |
+| | Mappa muscolare | Fronte/retro, intensità per muscolo, soglia "ottimo" 10-20 serie/sett. |
+| Pasti | Pasti | Selettore giorno, diario per pasto, ricerca, barcode, ricette, configurazione pasti |
+| | Ricerca alimento | Vedi "Ricerca alimenti" |
+| | Scheda alimento | Grammi o porzioni, macro live, valori per 100 g, fonte e versioni |
+| | Versioni | Stesso alimento da più fonti (CIQUAL, USDA): si sceglie quale usare |
+| | Crea alimento | Valori per 100 g con controllo di coerenza kcal/macro, campi facoltativi a scomparsa, porzioni |
+| | Barcode / Ricette | Mirino e inserimento manuale (Open Food Facts + cache). Ricetta con ingredienti e macro per porzione |
+| | Pasti configurabili | Ordine, visibilità, aggiunta |
+| Statistiche | Statistiche | Peso / calorie / volume, volume settimanale, costanza |
+| Impostazioni | Impostazioni | Lingua (Sistema, Italiano, English), accento, tema, timer, unità, accessi alle pagine sotto |
+| | Obiettivi giornalieri | Allenamento / riposo, macro con calorie che si ricalcolano, suggerimento dal peso |
+| | Promemoria | Pasti, allenamento, peso, fine recupero |
+| | I tuoi dati | Esporta in JSON, importa da Forma / Strong / Hevy / FitNotes, alimenti personalizzati, licenze delle fonti |
+
+
+## Ricerca alimenti
+Prototipo: `design/index.html`, schermata "Ricerca" (i dati sono un campione **reale** del catalogo, `design/sample-foods.js`). Il codice di `searchFoods` in `design/app.js` è la specifica da reimplementare in TypeScript sul DB locale.
+
+**Come si cerca**
+- Le parole si scrivono in **qualsiasi ordine**, ognuna come **inizio di parola**: "pol pet" trova "Pollo, petto, …". Accenti e maiuscole ignorati.
+- Parole vuote ignorate (`di, del, della, da, con, e, il, la, le, in, al, a`): "petto di pollo" trova "Pollo, petto, senza pelle, crudo". Senza questa regola non lo troverebbe, perché i nomi USDA hanno un altro ordine.
+- Si cerca in nome italiano, inglese e francese. Una corrispondenza solo in inglese o francese pesa meno.
+
+**Ordine dei risultati** (in questo ordine di importanza)
+1. Corrispondenza nel nome italiano, non solo in EN/FR.
+2. Il nome comincia con una delle parole cercate (il "sostantivo" del cibo).
+3. Parole intere uguali a quelle cercate.
+4. Fonte CIQUAL leggermente avanti (più vicina alla dieta europea).
+5. Nomi più corti (gli alimenti generici prima di quelli molto specifici o di marca).
+
+**Duplicati:** lo stesso nome italiano da fonti diverse è **una riga sola**, con "N versioni" nella riga secondaria; le versioni si scelgono nella scheda. Nel catalogo "Broccoli, crudo" compare 4 volte.
+
+**Riga risultato:** nome con le parole trovate in grassetto e sottolineate dall'accento · riga secondaria `100 g · kcal · P · C · G` con cifre tabulari · a destra pulsante rotondo "+" (rialzato, 44 px) che aggiunge 100 g al pasto e diventa accento con spunta, con avviso "Aggiunto al pranzo" per 1,8 s. Toccare la riga apre la scheda.
+
+**Stati** (tutti presenti nel prototipo, pannello laterale "Ricerca alimenti: stati")
+| Stato | Cosa mostra |
+|---|---|
+| Vuota | "Recenti" del pasto in corso + una riga di aiuto |
+| Risultati | Conteggio in eyebrow + elenco (max 20) |
+| Nessun risultato | Titolo con la ricerca, come correggerla, azioni "Crea «…»" (primaria) e "Scansiona il barcode" |
+| Caricamento | Cinque righe scheletro con la forma delle righe reali; movimento azzerato con "riduci movimento" |
+| Offline | Avviso incassato "Cerco solo tra gli alimenti sul telefono" sopra i risultati locali |
+| Preferiti / Miei vuoti | Spiegano come popolarli, non si limitano a "nessun dato" |
+
+Il campo di ricerca è **incassato** (è un campo), con anello accento al focus e "✕" per cancellare. Il filtro "Recenti" restringe anche i risultati.
+
+**Da risolvere nei dati** (emersi disegnando la schermata con i dati veri)
+- Le etichette delle porzioni USDA sono in inglese ("1 cup, whole"): vanno tradotte e normalizzate prima di mostrarle.
+- Alcune traduzioni sono ancora sbagliate (es. "Oat bran" → "Reggiseno d'avena", "Plantain" → "Pianifica la banana"): correggerle nel glossario partendo dai cibi più comuni.
+- La classifica ha bisogno di un segnale "comune" più forte dei soli caratteri del nome; valutare un elenco di alimenti generici da favorire.
+## Anteprima per piattaforma (iOS 26 / Android)
+Nel prototipo, la colonna sinistra ha il gruppo **Piattaforma**: *iOS 26*, *Android*, *Affianca* (le due anteprime una accanto all'altra; navigano insieme, e tema e ritocchi si propagano). Serve a decidere cosa è chrome di sistema, che cambia per piattaforma, e cosa è contenuto, che è sempre Neve.
+
+| Elemento | iOS 26 (Liquid Glass) | Android e iOS precedenti |
+|---|---|---|
+| Cornice e barra di stato | Isola dinamica, orario a sinistra, indicatore home largo | Punch-hole, orario a sinistra, gesto di sistema sottile |
+| Barra delle tab | Di sistema, in vetro, galleggiante. Voce attiva con capsula in vetro tinta d'accento. Si riduce a una capsula scorrendo verso il basso e si riapre toccandola o scorrendo verso l'alto | Barra a pillola Neve con indicatore d'accento che scorre |
+| Tasto indietro | Cerchio in vetro con chevron | Cerchio Neve con freccia ← |
+| Avviso (toast) | Capsula in vetro | Barra scura con raggio 14 |
+| Card, campi, numeri, pulsanti d'azione | Neve | Neve |
+
+Regole:
+- Il vetro è solo **chrome di sistema** (barra, tasto indietro nell'header, avvisi, in futuro sheet e pulsanti flottanti sopra il contenuto). Mai dentro le card.
+- La forma della barra su iOS 26 è decisa dal sistema: la tweakbar lo segnala e disattiva il controllo "Barra" quando è attiva l'anteprima iOS.
+- Il browser **imita** il vetro (sfocatura, saturazione, bordo e riflesso): non coincide con quello di Apple. Con `prefers-reduced-transparency` il vetro diventa pieno.
+- Ogni schermata o componente nuovo va guardato in entrambe le piattaforme prima di dirlo finito.
+
 
 ## Accessibilità
 - Contrasto testo ≥ 4.5:1 (`ink2` è stato scurito per questo). Verificare `accentInk` su `accent` e le cifre su superfici incassate.
 - Ogni controllo ha etichetta accessibile; stato (`selected`, `checked`) esposto, mai solo tramite colore o ombra.
 - Bersagli ≥ 44 px. Testo scalabile con le impostazioni di sistema: nessuna altezza fissa sulle righe di testo.
 - Tema: segue il sistema, sovrascrivibile in Impostazioni.
+
+## Tweakbar (solo prototipo)
+Il pulsante **Ritocchi** in alto a destra apre un pannello che cambia dal vivo i token di stile e salva le scelte nel browser. Serve a decidere prima di scrivere il tema dell'app.
+
+| Gruppo | Cosa cambia | Token |
+|---|---|---|
+| Colore | Tema chiaro/scuro, accento (6 preset o tonalità, intensità e luminosità liberi) | `--accent` |
+| Card e superfici | Stile neumorfico, piatto o solo contorno · raggio card · raggio campi · rilievo · incavo dei campi | `--r-lg`, `--r-md`, `--depth`, `--idepth`, `data-surface` |
+| Pulsanti | Pieno, soffice o contorno · forma (pillola, arrotondato, squadrato) · altezza · alone colorato | `data-btn`, `--r-btn`, `--btn-h`, `--btn-glow` |
+| Navigazione | Barra a pillola, arrotondata o squadrata | `--r-nav` |
+| Tipografia | Coppia di font (Bricolage + Figtree, Outfit + DM Sans, Geist, Sora + Figtree) · dimensione dei titoli | `--font-display`, `--font-body`, `--title-size` |
+| Densità e movimento | Compatta, normale, ariosa · movimento spento | `data-density`, `data-motion` |
+
+"Copia token" esporta i valori in JSON, da portare in `src/constants/theme.ts`. "Ripristina" torna ai valori di Neve. Le ombre neumorfiche sono calcolate dai token (`--depth`, `--idepth`) per ogni tema, quindi il rilievo resta coerente in chiaro e scuro.
 
 ## Implementazione (Expo / NativeWind v5)
 - Token statici (font, raggi) e nomi dei colori in `src/global.css` (`@theme`); valori dei colori per tema e accento in `src/constants/theme.ts`, iniettati come variabili CSS da `ThemeProvider` (`VariableContextProvider`). Classi: `bg-card`, `text-ink-2`, `text-accent`, `rounded-card`, `font-display`…
