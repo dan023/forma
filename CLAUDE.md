@@ -9,6 +9,15 @@ App mobile open per tracciare allenamenti e alimentazione in un'unica app. Owner
 - Prima di iniziare una modifica: `git switch dev && git switch -c feature/<nome>`. Commit piccoli e descrittivi (`feat:`, `fix:`, `chore:`).
 - Finita la modifica: merge della branch in `dev`; `dev` confluisce in `main` solo quando stabile. Non fare merge né push senza che Daniele lo chieda.
 
+## Strumenti per Claude Code (`.claude/`, `.mcp.json`)
+- **Permessi** (`.claude/settings.json`): `git commit`, `merge`, `push`, `rebase` e `reset --hard` chiedono sempre conferma. La regola "niente commit senza approvazione" è così imposta dall'harness, non solo scritta qui.
+- **Hook** (`.claude/hooks/block-generated-files.sh`): blocca le modifiche a mano ai file generati (`drizzle/`, `assets/data/foods*.json`, `scripts/catalog/translations-it.json`, `.expo/types`) e dice quale comando usare.
+- **Skill**: `/verifica` (tipi, lint, `check:runtime`, test, bundle iOS e Android, da lanciare a fine lavoro) e `forma-convenzioni` (le regole di codice e design, caricata da Claude quando serve).
+- **Subagent**: `rn-runtime-reviewer` cerca ciò che funziona nei test (Bun/Node) ma non sul telefono (Hermes). Va lanciato sui file modificati prima di un commit.
+- **MCP** (`.mcp.json`, da approvare al primo avvio): `playwright` per aprire e fare screenshot del prototipo `design/` (serve `npx playwright install chromium`), `context7` per la documentazione delle librerie. In più il plugin Expo (da autenticare con `/mcp`).
+- **Emulatore Android** (`bun run emulator start|stop|status|shot`): AVD `forma_pixel` (Pixel 7, Android 15) senza finestra, per far girare l'app (`bunx expo start --go --android`) e fare screenshot con `shot`. Usa `-gpu swangle_indirect`: con le altre modalità qemu va in crash su questo computer. Per iOS non c'è alternativa locale (niente Mac).
+- `bun run check:runtime` cerca in `src/` API assenti in Hermes (`crypto.randomUUID`, `structuredClone`, `node:*`…). Un file usato sia dall'app sia dai test ha due versioni: `x.ts` e `x.native.ts`.
+
 ## Obiettivo
 Unire le funzionalità di openGym (github.com/arvids-unavailable/openGym) con un tracker alimentare stile FatSecret (pasti, macro), con catalogo alimenti esteso quanto il catalogo esercizi di openGym. Tutto molto personalizzabile e open.
 
