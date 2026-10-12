@@ -31,7 +31,7 @@ const windows: any[] = [];
 // Il prototipo ha un setInterval (timer di recupero): senza chiudere le finestre Node non termina.
 after(() => windows.forEach((w) => w.close()));
 
-function boot(search = '') {
+function boot(search = '', storage: Record<string, string> = {}) {
   const errors: string[] = [];
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (e: Error) => errors.push(e.message));
@@ -39,6 +39,7 @@ function boot(search = '') {
   const w = dom.window as any;
   windows.push(w);
   w.matchMedia = () => ({ matches: false });
+  for (const [k, v] of Object.entries(storage)) w.localStorage.setItem(k, v);
   for (const f of ['sample-foods.js', 'screens-extra.js', 'app.js', 'tweaks.js']) w.eval(read(f).replace('const SAMPLE_FOODS', 'var SAMPLE_FOODS'));
   const $ = (s: string): any => w.document.querySelector(s);
   const $$ = (s: string): any[] => [...w.document.querySelectorAll(s)];
@@ -194,6 +195,16 @@ describe('piattaforme iOS 26 / Android', () => {
     expect(p.$('#nav').classList.contains('min')).toBe(false);
     scroll(300), scroll(400), scroll(380);
     expect(p.$('#nav').classList.contains('min')).toBe(false);
+  });
+  test('all’avvio in "Affianca" l’anteprima Android parte sulla stessa schermata', () => {
+    const s = boot('?s=cerca', { 'forma-platform': 'both' });
+    expect(s.$('.page.on').id).toBe('p-cerca');
+    expect(s.$('#twin').src).toContain('s=cerca');
+    expect(s.errors).toEqual([]);
+  });
+  test('il telefono resta in vista: la colonna del telefono è sticky', () => {
+    const css = read('styles.css');
+    expect(css).toContain('.stage-phone { position: sticky; top: 24px; align-self: start; }');
   });
   test('l’anteprima incorporata parte su Android, nella schermata richiesta', () => {
     const s = boot('?solo=1&p=android&s=cerca');

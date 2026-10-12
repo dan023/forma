@@ -606,3 +606,7 @@ body.solo .phone { max-height: none; height: 844px; }
 .tw-hint[hidden] { display: none; }
 .tw-dim { opacity: 0.4; pointer-events: none; }
 [data-platform="ios"] .nav-blob { top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / 5); }
+
+/* Il telefono resta in vista mentre la colonna dei controlli scorre. */
+.stage-phone { position: sticky; top: 24px; align-self: start; }
+@media (max-width: 860px) { .stage-phone { position: static; } }
