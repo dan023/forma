@@ -526,7 +526,7 @@ function applyPlatformChoice(c) {
   document.body.classList.toggle("compare", both);
   setPlatform(both ? "ios" : c);
   twin.hidden = !both;
-  if (both) { const u = new URL(location.href); u.search = `?solo=1&p=android&s=${current}`; twin.src = u.href; }
+  if (both) { const u = new URL(location.href); u.search = `?solo=1&p=android&s=${current || qs.get("s") || "oggi"}`; twin.src = u.href; }
   else twin.removeAttribute("src");
   $("#plat-note").textContent = PLATFORM_NOTES[c];
   try { localStorage.setItem("forma-platform", c); } catch {}
