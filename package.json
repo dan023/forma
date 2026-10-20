@@ -63,7 +63,9 @@
     "catalog:build": "bun scripts/catalog/build-food-catalog.ts",
     "catalog:review": "bun scripts/catalog/review-translations.ts",
     "test": "bun test scripts/tests/seed-foods.test.ts && node --test scripts/tests/prototype.test.ts",
-    "typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json"
+    "typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json",
+    "check:runtime": "bun scripts/check-runtime-apis.ts",
+    "emulator": "bash scripts/android-emulator.sh"
   },
   "private": true,
   "overrides": {

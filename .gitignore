@@ -47,3 +47,6 @@ data/raw/
 
 # sessione EAS Simulator (contiene un token)
 .env.eas-simulator
+
+# impostazioni personali di Claude Code
+.claude/settings.local.json
