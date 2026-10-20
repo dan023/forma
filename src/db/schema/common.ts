@@ -1,10 +1,12 @@
 import { integer, text } from 'drizzle-orm/sqlite-core';
 
+import { uuid } from '../../lib/uuid';
+
 /** Chiave primaria testuale (uuid): stabile tra dispositivi, comoda per export/import JSON. */
 export const id = () =>
   text('id')
     .primaryKey()
-    .$defaultFn(() => globalThis.crypto.randomUUID());
+    .$defaultFn(uuid);
 
 /** Timestamp in millisecondi. */
 export const createdAt = () =>

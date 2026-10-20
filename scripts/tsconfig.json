@@ -6,7 +6,16 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["bun"]
+    "types": [
+      "bun"
+    ],
+    "paths": {
+      "@/*": [
+        "../src/*"
+      ]
+    }
   },
-  "include": ["./**/*.ts"]
+  "include": [
+    "./**/*.ts"
+  ]
 }
