@@ -1,12 +1,14 @@
 import { eq, sql } from 'drizzle-orm';
-import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
+
+import { searchText } from '@/lib/text';
 
 import type { CatalogFood, CatalogMeta } from './catalog-food';
 import { foodPortions, foods, settings } from './schema';
-
-type Db = BaseSQLiteDatabase<'sync', unknown, typeof import('./schema')>;
+import type { Db } from './types';
 
 const VERSION_KEY = 'foodCatalogVersion';
+/** Da aumentare quando cambia il modo di importare (es. nuove colonne calcolate): forza un nuovo import. */
+const SEED_REVISION = 2;
 // SQLite limita le variabili per statement: righe per insert = limite / colonne (foods: 19, food_portions: 4).
 const FOODS_PER_INSERT = 40;
 const PORTIONS_PER_INSERT = 200;
@@ -31,7 +33,8 @@ export async function seedFoods(
   onProgress?: (done: number, total: number) => void,
 ): Promise<boolean> {
   const current = db.select().from(settings).where(eq(settings.key, VERSION_KEY)).get();
-  if (current && JSON.parse(current.value) === meta.version) return false;
+  const version = `${meta.version}:${SEED_REVISION}`;
+  if (current && JSON.parse(current.value) === version) return false;
 
   const catalog = loadFoods();
   for (let start = 0; start < catalog.length; start += FOODS_PER_TRANSACTION) {
@@ -57,6 +60,7 @@ export async function seedFoods(
               saturatedFat: f.saturatedFat,
               sodium: f.sodium,
               micros: f.micros,
+              searchText: searchText(f.nameIt, f.nameEn, f.nameFr),
             })),
           )
           .onConflictDoUpdate({
@@ -75,6 +79,7 @@ export async function seedFoods(
               saturatedFat: sql`excluded.saturated_fat`,
               sodium: sql`excluded.sodium`,
               micros: sql`excluded.micros`,
+              searchText: sql`excluded.search_text`,
             },
           })
           .run();
@@ -99,7 +104,7 @@ export async function seedFoods(
   }
 
   db.insert(settings)
-    .values({ key: VERSION_KEY, value: JSON.stringify(meta.version) })
+    .values({ key: VERSION_KEY, value: JSON.stringify(version) })
     .onConflictDoUpdate({ target: settings.key, set: { value: sql`excluded.value` } })
     .run();
   return true;

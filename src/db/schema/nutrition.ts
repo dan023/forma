@@ -4,6 +4,8 @@ import { createdAt, day, id } from './common';
 
 export const FOOD_SOURCES = ['ciqual', 'usda', 'off', 'custom'] as const;
 export const DAY_TYPES = ['training', 'rest'] as const;
+/** Pasti predefiniti: il nome si traduce finché l'utente non lo rinomina. */
+export const MEAL_PRESETS = ['breakfast', 'lunch', 'snack', 'dinner'] as const;
 
 /** Alimenti: catalogo incluso (ciqual/usda), cache Open Food Facts e alimenti personalizzati. Valori per 100 g. */
 export const foods = sqliteTable(
@@ -29,6 +31,8 @@ export const foods = sqliteTable(
     sodium: real('sodium'),
     /** Altri micronutrienti per 100 g, JSON `{ chiave: valore }`. */
     micros: text('micros', { mode: 'json' }).$type<Record<string, number>>(),
+    /** Parole di tutti i nomi, normalizzate (vedi `searchText` in src/lib/text.ts). */
+    searchText: text('search_text'),
     createdAt: createdAt(),
   },
   (t) => [
@@ -56,7 +60,9 @@ export const foodPortions = sqliteTable(
 /** Pasti configurabili (colazione, pranzo, ...). */
 export const mealSlots = sqliteTable('meal_slots', {
   id: id(),
+  /** Vuoto per i pasti predefiniti non rinominati: si mostra la traduzione di `preset`. */
   name: text('name').notNull(),
+  preset: text('preset', { enum: MEAL_PRESETS }),
   position: integer('position').notNull(),
   archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
 });
