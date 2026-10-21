@@ -1,31 +1,38 @@
-import '@/global.css';
-import '@/i18n';
+import "@/global.css";
+import "@/i18n";
 
-import { BricolageGrotesque_600SemiBold, BricolageGrotesque_700Bold } from '@expo-google-fonts/bricolage-grotesque';
-import { Figtree_400Regular, Figtree_500Medium, Figtree_700Bold } from '@expo-google-fonts/figtree';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import {
+  BricolageGrotesque_600SemiBold,
+  BricolageGrotesque_700Bold,
+} from "@expo-google-fonts/bricolage-grotesque";
+import {
+  Figtree_400Regular,
+  Figtree_500Medium,
+  Figtree_700Bold,
+} from "@expo-google-fonts/figtree";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 
-import { ThemeProvider } from '@/components/theme-provider';
-import type { CatalogFood } from '@/db/catalog-food';
-import { db } from '@/db/client';
-import { ensureDefaultMealSlots } from '@/db/meal-slots';
-import { seedFoods } from '@/db/seed-foods';
-import { useTheme } from '@/hooks/use-theme';
-import { useSettings } from '@/stores/settings';
+import { ThemeProvider } from "@/components/theme-provider";
+import type { CatalogFood } from "@/db/catalog-food";
+import { db } from "@/db/client";
+import { ensureDefaultMealSlots } from "@/db/meal-slots";
+import { seedFoods } from "@/db/seed-foods";
+import { useTheme } from "@/hooks/use-theme";
+import { useSettings } from "@/stores/settings";
 
-import foodsMeta from '../../assets/data/foods.meta.json';
-import migrations from '../../drizzle/migrations';
+import foodsMeta from "../../assets/data/foods.meta.json";
+import migrations from "../../drizzle/migrations";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const t = useTheme();
-  const [loaded, fontError] = useFonts({
+  const [loaded] = useFonts({
     BricolageGrotesque_600SemiBold,
     BricolageGrotesque_700Bold,
     Figtree_400Regular,
@@ -33,7 +40,10 @@ export default function RootLayout() {
     Figtree_700Bold,
   });
 
-  const { success: migrated, error: migrationError } = useMigrations(db, migrations);
+  const { success: migrated, error: migrationError } = useMigrations(
+    db,
+    migrations,
+  );
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -42,14 +52,19 @@ export default function RootLayout() {
       await useSettings.getState().hydrate();
       ensureDefaultMealSlots(db);
       // Primo avvio (o catalogo aggiornato): importa gli alimenti. foods.json (7 MB) si carica solo qui.
-      await seedFoods(db, foodsMeta, () => require('../../assets/data/foods.json') as CatalogFood[]);
+      await seedFoods(
+        db,
+        foodsMeta,
+        () => require("../../assets/data/foods.json") as CatalogFood[],
+      );
     })()
-      .catch((e) => console.warn('Avvio: impostazioni o catalogo alimenti non caricati', e))
+      .catch((e) =>
+        console.warn("Avvio: impostazioni o catalogo alimenti non caricati", e),
+      )
       .finally(() => setHydrated(true));
   }, [migrated]);
 
-  // Se i font non si caricano si prosegue con quelli di sistema: meglio un'app brutta che una splash infinita.
-  const ready = (loaded || !!fontError) && hydrated;
+  const ready = loaded && hydrated;
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
@@ -60,8 +75,13 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <StatusBar style={t.scheme === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: t.bg } }} />
+      <StatusBar style={t.scheme === "dark" ? "light" : "dark"} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: t.bg },
+        }}
+      />
     </ThemeProvider>
   );
 }
