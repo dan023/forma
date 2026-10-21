@@ -23,7 +23,7 @@ Unire le funzionalità di openGym (github.com/arvids-unavailable/openGym) con un
 
 ## Decisioni già prese
 - Nome: **Forma** (icona da definire più avanti).
-- Riscrittura da zero (NO fork di openGym), Expo SDK più recente (57) + TypeScript.
+- Riscrittura da zero (NO fork di openGym), Expo SDK **58** (React Native 0.88, React 19.3) + TypeScript.
 - Licenza: **AGPL v3** con la stessa eccezione per gli store di openGym. Il codice di openGym è AGPL: reimplementare la logica in TS, non copiare.
 - Repo: `dan023/forma`.
 - MVP **solo locale** sul telefono, export/import dati in JSON, nessun backend.
@@ -44,6 +44,14 @@ Script che unisce CIQUAL 2025 (Licence Ouverte) + USDA FDC (CC0, da verificare) 
 
 ## Design
 Direzione **scelta: Neve** (grigio morbido/neumorfico, accento arancione, titoli grandi, nav a pillola), con tema chiaro e **Neve scura**. Glassmorfismo scartato nel contenuto; su **iOS 26 la barra delle tab è nativa con Liquid Glass** (ibrido, vedi `design.md`). Regole e token in `design.md`; prototipo navigabile in `design/index.html` (`cd design && python3 -m http.server 8080`).
+
+## Aggiornamenti di SDK (note dal passaggio 57 → 58)
+- Procedura: `bunx expo install expo@^58.0.0`, `bunx expo install --fix`, `rm -rf node_modules && bun install` (dopo un aggiornamento parziale restano moduli duplicati), `bunx expo-doctor@latest`, poi `tsc`, lint, `bun run test`, `bun run check:runtime` e una prova su emulatore (`bun run emulator start`, `bunx expo start --go --android`). Leggere sempre il changelog su expo.dev/changelog e la guida di migrazione di Expo Router.
+- **Workaround in `metro.config.js`**: `react-native-css` 3.1.0-rc.0 (NativeWind v5 RC) reindirizza `react-native` a un modulo che perde `AssetRegistry` (novità di RN 0.88). `expo-asset` ed `expo-font` importano quindi il vero `react-native`. Senza, `useFonts` fallisce e l'app resta sulla splash. Da togliere quando `react-native-css` lo risolve.
+- `src/app/_layout.tsx` non aspetta più i font all'infinito: se falliscono si prosegue con quelli di sistema.
+- La barra personalizzata (`PillTabBar`) usa l'interfaccia di SDK 58: `emitter`, `navigateToTab(route.key)` e `insets` come proprietà (non c'è più `navigation`). Le tab native vengono da `expo-router/native-tabs` (il percorso `unstable-native-tabs` è deprecato).
+- I `Pressable` con `style` come funzione perdono lo stile con questa combinazione di versioni: usare `style` statico e `active:` di NativeWind per la pressione (vedi `Button`, `Chip`, `IconButton`).
+- Nel componente `Text` la variante di base (`font-sans`) vince su una `className` con `font-display`: per un titolo diverso aggiungere una variante (es. `titleSm`), non una classe.
 
 ## i18n
 - `i18next` + `react-i18next` + `expo-localization`. Lingue: **it** (base) ed **en**; preferenza `language` (`system` | `it` | `en`) nello store `useSettings`, salvata in DB.

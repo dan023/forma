@@ -6,7 +6,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { inset } from "@/components/ui/surface";
 import { Text } from "@/components/ui/text";
@@ -21,10 +20,9 @@ const LABELS = {
 } as const;
 
 /** Nav a pillola: vaschetta incassata + indicatore accento che scorre. */
-export function PillTabBar({ state, navigation }: BottomTabBarProps) {
+export function PillTabBar({ state, emitter, navigateToTab, insets }: BottomTabBarProps) {
   const t = useTheme();
   const { t: tr } = useTranslation();
-  const insets = useSafeAreaInsets();
   const [width, setWidth] = useState(0);
   const pad = 6; // = p-1.5
   const slot = (width - pad * 2) / state.routes.length;
@@ -73,13 +71,12 @@ export function PillTabBar({ state, navigation }: BottomTabBarProps) {
             accessibilityRole="tab"
             accessibilityState={{ selected: focused }}
             onPress={() => {
-              const e = navigation.emit({
+              const e = emitter.emit({
                 type: "tabPress",
                 target: route.key,
                 canPreventDefault: true,
               });
-              if (!focused && !e.defaultPrevented)
-                navigation.navigate(route.name);
+              if (!focused && !e.defaultPrevented) navigateToTab(route.key);
             }}
             className="min-h-[52px] flex-1 items-center justify-center"
           >

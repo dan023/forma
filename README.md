@@ -10,7 +10,7 @@ App mobile open source per tracciare **allenamenti e alimentazione** in un'unica
 - **Personalizzazione:** tema chiaro/scuro, colore d'accento, pasti configurabili.
 
 ## Stack
-Expo SDK 57 · TypeScript · Expo Router · NativeWind v5 · expo-sqlite + Drizzle ORM (in arrivo) · Zustand · Reanimated.
+Expo SDK 58 · TypeScript · Expo Router · NativeWind v5 · expo-sqlite + Drizzle ORM (in arrivo) · Zustand · Reanimated.
 
 ## Sviluppo
 ```bash

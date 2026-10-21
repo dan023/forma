@@ -25,7 +25,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const t = useTheme();
-  const [loaded] = useFonts({
+  const [loaded, fontError] = useFonts({
     BricolageGrotesque_600SemiBold,
     BricolageGrotesque_700Bold,
     Figtree_400Regular,
@@ -48,7 +48,8 @@ export default function RootLayout() {
       .finally(() => setHydrated(true));
   }, [migrated]);
 
-  const ready = loaded && hydrated;
+  // Se i font non si caricano si prosegue con quelli di sistema: meglio un'app brutta che una splash infinita.
+  const ready = (loaded || !!fontError) && hydrated;
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();

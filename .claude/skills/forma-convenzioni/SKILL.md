@@ -24,7 +24,7 @@ La fonte di verità sono `CLAUDE.md` e `design.md`; qui l'elenco da controllare 
 - Logica di dati (ricerca, diario, seed) in `src/features/` e `src/db/`, senza React, così si testa con `bun:sqlite` (tipo `Db` in `src/db/types.ts`). Le schermate la chiamano.
 - Modifica allo schema = `bunx drizzle-kit generate`. Mai a mano: `drizzle/`, `assets/data/foods*.json`, `translations-it.json`, `.expo/types` (c'è un hook che lo blocca).
 - Pacchetti Expo con `bunx expo install`; tutto il resto con `bun add`. Mai `npx`/`npm` per il progetto. Non rimuovere gli override `lightningcss` 1.30.1.
-- Prima di usare un'API Expo/React Native: SDK **57**, controlla la documentazione (Expo MCP o docs.expo.dev/versions/v57.0.0), non la memoria.
+- Prima di usare un'API Expo/React Native: SDK **58**, controlla la documentazione (Expo MCP o docs.expo.dev/versions/v58.0.0), non la memoria.
 
 **Git**
 - Una branch per modifica da `dev` (`feature/`, `fix/`, `chore/`). **Mai commit, merge o push senza l'ok esplicito di Daniele.**
