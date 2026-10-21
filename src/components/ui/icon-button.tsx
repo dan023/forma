@@ -38,11 +38,8 @@ export function IconButton({ label, onPress, children, glass, selected }: Props)
       accessibilityLabel={label}
       accessibilityState={selected === undefined ? undefined : { selected }}
       onPress={onPress}
-      className={`h-11 w-11 items-center justify-center rounded-full ${selected ? 'bg-accent' : 'bg-card'}`}
-      style={({ pressed }) => [
-        selected ? { boxShadow: [{ offsetX: 0, offsetY: 6, blurRadius: 14, color: `${t.accent}73` }] } : raised(t, 5),
-        { transform: [{ scale: pressed ? 0.93 : 1 }] },
-      ]}>
+      className={`h-11 w-11 items-center justify-center rounded-full active:scale-[0.93] ${selected ? 'bg-accent' : 'bg-card'}`}
+      style={selected ? { boxShadow: [{ offsetX: 0, offsetY: 6, blurRadius: 14, color: `${t.accent}73` }] } : raised(t, 5)}>
       {glyph}
     </Pressable>
   );

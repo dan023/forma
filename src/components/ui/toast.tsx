@@ -11,11 +11,12 @@ import { Text } from './text';
 export function Toast({ message }: { message: string | null }) {
   const insets = useSafeAreaInsets();
   // Con la tastiera aperta l'avviso salirebbe sotto di essa: lo si alza dell'altezza della tastiera.
-  const keyboard = useAnimatedKeyboard();
+  // L'app è a tutto schermo con barra di stato traslucida: va dichiarato, altrimenti Reanimated scala il layout.
+  const keyboard = useAnimatedKeyboard({ isStatusBarTranslucentAndroid: true });
   const lift = useAnimatedStyle(() => ({ transform: [{ translateY: -keyboard.height.value }] }));
   if (!message) return null;
   const text = (
-    <Text className={`text-center font-sans-bold text-[15px] ${USE_LIQUID_GLASS ? 'text-ink' : 'text-bg'}`}>{message}</Text>
+    <Text inverse={!USE_LIQUID_GLASS} className="text-center font-sans-bold text-[15px]">{message}</Text>
   );
   return (
     <Animated.View className="absolute left-5 right-5" style={[{ bottom: insets.bottom + 24 }, lift]} pointerEvents="none">

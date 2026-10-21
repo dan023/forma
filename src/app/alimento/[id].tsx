@@ -76,7 +76,8 @@ export default function Alimento() {
           {fav ? '★' : '☆'}
         </IconButton>
       }
-      title={<Text className="font-display text-[32px] leading-[34px] tracking-[-1px] text-ink">{foodName(food, i18n.language)}</Text>}>
+      compactTitle
+      title={foodName(food, i18n.language)}>
       <Card className="gap-[22px]">
         <View className="flex-row items-center justify-center gap-[18px]">
           <IconButton label={t('food.less')} onPress={() => setG(grams - 10)}>

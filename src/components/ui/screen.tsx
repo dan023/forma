@@ -17,6 +17,7 @@ export function Screen({
   back,
   right,
   tabBar = true,
+  compactTitle,
   children,
   footer,
 }: {
@@ -25,6 +26,8 @@ export function Screen({
   back?: boolean;
   right?: ReactNode;
   tabBar?: boolean;
+  /** Titolo più piccolo, per testi lunghi. */
+  compactTitle?: boolean;
   children?: ReactNode;
   /** Elementi sopra lo scorrimento (es. un avviso). */
   footer?: ReactNode;
@@ -56,7 +59,7 @@ export function Screen({
             </Text>
           )}
           {title ? (
-            <Text variant="title" className={back ? '' : 'mt-1.5'} accessibilityRole="header">
+            <Text variant={compactTitle ? 'titleSm' : 'title'} className={back ? '' : 'mt-1.5'} accessibilityRole="header">
               {title}
             </Text>
           ) : null}

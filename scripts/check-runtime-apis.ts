@@ -3,10 +3,11 @@
  * Il caso reale: `crypto.randomUUID()` funzionava nei test e faceva crollare l'app sul telefono.
  *
  * Uso: bun run check:runtime
- * Eccezioni: i file `*.native.ts(x)` non vengono controllati (sono già solo per iOS/Android);
+ * Eccezioni: i file `*.native.ts(x)` non vengono controllati (sono già solo per iOS/Android) e nemmeno quelli
+ * che hanno un gemello `.native` (su iOS/Android Metro usa sempre il gemello, es. uuid.ts / uuid.native.ts);
  * una riga con il commento `// runtime-ok: motivo` viene saltata.
  */
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const SRC = join(import.meta.dirname, '..', 'src');
@@ -22,11 +23,14 @@ const RULES: { pattern: RegExp; why: string; fix: string }[] = [
   { pattern: /\bprocess\.(?:cwd|argv|exit|stdout|stdin)\b/, why: 'process.* di Node non esiste nell\'app', fix: 'sposta il codice in scripts/' },
 ];
 
+/** `x.ts` ha un gemello `x.native.ts` (o .tsx): sul telefono si usa quello. */
+const hasNativeTwin = (file: string) => existsSync(file.replace(/\.(tsx?)$/, '.native.$1'));
+
 function* files(dir: string): Generator<string> {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
     if (statSync(p).isDirectory()) yield* files(p);
-    else if (/\.(?:ts|tsx)$/.test(name) && !/\.native\.tsx?$/.test(name) && !/\.d\.ts$/.test(name)) yield p;
+    else if (/\.(?:ts|tsx)$/.test(name) && !/\.native\.tsx?$/.test(name) && !/\.d\.ts$/.test(name) && !hasNativeTwin(p)) yield p;
   }
 }
 
