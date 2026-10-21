@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verifica:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      # prototype.test.ts gira con `node --test` direttamente su file .ts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: bun install --frozen-lockfile
+      - name: Tipi (app)
+        run: bunx tsc --noEmit
+      - name: Tipi (script)
+        run: bun run typecheck:scripts
+      - name: Lint
+        run: bunx expo lint
+      - name: API non disponibili in Hermes
+        run: bun run check:runtime
+      - name: Test
+        run: bun run test
+      - name: Migrazioni aggiornate
+        run: |
+          bunx drizzle-kit generate
+          git diff --exit-code drizzle/ || { echo "Lo schema è cambiato senza una migrazione: lancia 'bunx drizzle-kit generate' e fai commit."; exit 1; }
+          test -z "$(git ls-files --others --exclude-standard drizzle/)" || { echo "Migrazione non committata in drizzle/."; exit 1; }
