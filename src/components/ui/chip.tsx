@@ -13,11 +13,8 @@ export function Chip({ label, selected, onPress }: { label: string; selected?: b
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected }}
       onPress={onPress}
-      className={`min-h-11 justify-center rounded-full px-[18px] ${selected ? 'bg-accent' : 'bg-card'}`}
-      style={({ pressed }) => [
-        selected ? { boxShadow: [{ offsetX: 0, offsetY: 6, blurRadius: 16, color: `${t.accent}73` }] } : raised(t, 5),
-        { transform: [{ scale: pressed ? 0.96 : 1 }] },
-      ]}>
+      className={`min-h-11 justify-center rounded-full px-[18px] active:scale-[0.96] ${selected ? 'bg-accent' : 'bg-card'}`}
+      style={selected ? { boxShadow: [{ offsetX: 0, offsetY: 6, blurRadius: 16, color: `${t.accent}73` }] } : raised(t, 5)}>
       <Text className={`font-sans-bold text-sm ${selected ? 'text-accent-ink' : 'text-ink'}`}>{label}</Text>
     </Pressable>
   );
