@@ -175,7 +175,9 @@ export default function Alimento() {
 
       {entry && (
         <Button
-          variant="ghost"
+          variant="danger"
+          soft
+          icon="trash"
           label={t('food.delete')}
           onPress={() => {
             deleteEntry(db, entry.id);

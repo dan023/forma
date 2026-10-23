@@ -62,7 +62,7 @@
     "lint": "expo lint",
     "catalog:build": "bun scripts/catalog/build-food-catalog.ts",
     "catalog:review": "bun scripts/catalog/review-translations.ts",
-    "test": "bun test scripts/tests/seed-foods.test.ts scripts/tests/pasti.test.ts scripts/tests/macros.test.ts && node --test scripts/tests/prototype.test.ts",
+    "test": "bun test scripts/tests/seed-foods.test.ts scripts/tests/pasti.test.ts scripts/tests/macros.test.ts scripts/tests/theme.test.ts && node --test scripts/tests/prototype.test.ts",
     "typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json",
     "check:runtime": "bun scripts/check-runtime-apis.ts",
     "emulator": "bash scripts/android-emulator.sh"

@@ -28,11 +28,22 @@ Prototipo di riferimento: `design/index.html` (`cd design && python3 -m http.ser
 | `track` | `#EEECEA` | `#2A2A2D` | binario neutro degli anelli |
 
 ### Accento, una scala
-L'accento pieno va **solo sui piccoli segni**: il giorno scelto, l'anello e la barra delle kcal, le spunte, la fiamma. Le sue **tinte** fanno le aree: `tint` (card da notare, una per schermata: la settimana, l'allenamento di oggi, il recupero) e `tintStrong` (chip e pulsante rotondo selezionati). Il testo sopra le tinte è `accentInk`. Le tinte si calcolano dall'accento (`accentScale` in `src/constants/theme.ts`), quindi qualunque accento funziona in entrambi i temi.
+L'accento pieno va **solo sui piccoli segni**: il giorno scelto, l'anello e la barra delle kcal, le spunte, la fiamma. Le sue **tinte** fanno le aree: `tint` (card da notare, una per schermata: la settimana, l'allenamento di oggi, il recupero) e `tintStrong` (chip e pulsante rotondo selezionati). Il testo sopra le tinte è `accentInk` (nel tema scuro è l'accento schiarito del 45%: con meno, tre accenti su quattro non raggiungevano 4,5:1 sul chip selezionato). Le tinte si calcolano dall'accento (`accentScale` in `src/constants/theme.ts`), quindi qualunque accento funziona in entrambi i temi.
 
 Il pulsante principale **non** è d'accento: è `primary`, quasi nero (bianco nel tema scuro), come la barra delle tab.
 
 Accenti tra cui sceglie l'utente: **Corallo** `#EF5F3C` (predefinito), **Lampone** `#E0446A`, **Fucsia** `#C93D9B`, **Ardesia** `#4F5D73`. Niente accenti blu, verdi o ambra: sono i colori dei macro e si confonderebbero.
+
+### Colori di stato
+Per pulsanti e avvisi, **mai nei dati** (il verde e l'ambra dei macro sono un'altra cosa). Uguali nei due temi.
+
+| Stato | Pieno | Testo sul pieno | Tinta e testo (soft) |
+|---|---|---|---|
+| Pericolo `danger` | `#C93535` | bianco | tinta pallida + inchiostro rosso scuro (chiaro) o rosato (scuro) |
+| Avviso `warning` | `#EBA21C` | quasi nero `#2B1B00` | idem, ambra |
+| Successo `success` | `#0F7A69` (verde acqua, diverso dal verde dei grassi) | bianco | idem, verde acqua |
+
+Tinte e inchiostri si calcolano da `statusScale` in `src/constants/theme.ts`. Il contrasto del testo è ≥ 4,5:1 ovunque, ed è fissato dal test `scripts/tests/theme.test.ts`.
 
 ### Macro, colori fissi
 | Macro | Chiaro | Scuro |
@@ -64,7 +75,7 @@ Cifre sempre tabulari. Un solo h1 per schermata.
 
 ## Componenti
 - **Card** (`Card`): bianca, piatta. `tint` per la card da notare. Mai card dentro card: dentro si usano righe con filetto `line` o blocchi del colore del fondo (`Well`).
-- **Pulsante principale** (`Button`): pillola `primary` alta 56, uno per schermata, di solito fisso in basso. Secondario `ghost` con bordo.
+- **Pulsante** (`Button`), varianti come in shadcn/ui: `primary` (quasi nero, uno per schermata, di solito fisso in basso), `secondary` (grigio), `accent` (tinta dell'accento: l'accento pieno resta sui piccoli segni), `outline` (bordo), `ghost` (nessuno sfondo), `link` (sottolineato), `danger`, `warning`, `success`. Con `soft` le tre di stato diventano tinta con testo colorato (es. "Elimina dal diario" è `danger soft`). Misure `sm` 44, `md` 48, `lg` 56 (predefinita): tutte bersagli ≥ 44. Icona facoltativa prima del testo. Una sola azione piena per schermata; le altre `secondary`, `outline` o `ghost`.
 - **Pulsante rotondo** (`IconButton`): neutro; selezionato = `tintStrong` con icona `accentInk` (stella dei preferiti, "+" diventato spunta).
 - **Chip** (`Chip`): sul fondo bianchi, dentro una card grigi; selezionato = `tintStrong`.
 - **Settimana** (`DaySelector`): card tinta con mese e frecce; sette giorni come pillole bianche, quello scelto pieno d'accento, punto sotto oggi.

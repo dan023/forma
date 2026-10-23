@@ -22,11 +22,21 @@
   --color-track: #eeecea;
   --color-accent: #ef5f3c;
   --color-accent-ink: #943b25;
-  --color-tint: #fdeeea;
-  --color-tint-strong: #fcdcd4;
+  --color-tint: #fdedea;
+  --color-tint-strong: #fbdcd4;
   --color-prot: #3b7fd9;
   --color-carb: #e9a019;
   --color-fat: #33a46c;
+  --color-danger: #c93535;
+  --color-danger-tint: #f9e9e9;
+  --color-danger-ink: #651b1b;
+  --color-warning: #eba21c;
+  --color-warning-tint: #fdf5e6;
+  --color-warning-ink: #76510e;
+  --color-warning-on: #2b1b00;
+  --color-success: #0f7a69;
+  --color-success-tint: #e5f0ef;
+  --color-success-ink: #083d35;
 
   /* un solo carattere, Figtree, in quattro pesi */
   --font-sans: Figtree_400Regular;
@@ -50,9 +60,19 @@
   --color-track: #eeecea;
   --color-accent: #ef5f3c;
   --color-accent-ink: #943b25;
-  --color-tint: #fdeeea;
-  --color-tint-strong: #fcdcd4;
+  --color-tint: #fdedea;
+  --color-tint-strong: #fbdcd4;
   --color-prot: #3b7fd9;
   --color-carb: #e9a019;
   --color-fat: #33a46c;
+  --color-danger: #c93535;
+  --color-danger-tint: #f9e9e9;
+  --color-danger-ink: #651b1b;
+  --color-warning: #eba21c;
+  --color-warning-tint: #fdf5e6;
+  --color-warning-ink: #76510e;
+  --color-warning-on: #2b1b00;
+  --color-success: #0f7a69;
+  --color-success-tint: #e5f0ef;
+  --color-success-ink: #083d35;
 }

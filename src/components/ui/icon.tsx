@@ -24,6 +24,12 @@ const GLYPHS = {
   plus: <Path d="M12 5v14M5 12h14" />,
   minus: <Path d="M5 12h14" />,
   check: <Path d="m5 12.5 4.5 4.5L19 7.5" />,
+  trash: (
+    <>
+      <Path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l.8 12.5h9.4L17.5 7" />
+      <Path d="M10 11v5M14 11v5" />
+    </>
+  ),
   close: <Path d="M6 6l12 12M18 6 6 18" />,
   search: (
     <>
