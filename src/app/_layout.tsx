@@ -2,12 +2,9 @@ import "@/global.css";
 import "@/i18n";
 
 import {
-  BricolageGrotesque_600SemiBold,
-  BricolageGrotesque_700Bold,
-} from "@expo-google-fonts/bricolage-grotesque";
-import {
   Figtree_400Regular,
   Figtree_500Medium,
+  Figtree_600SemiBold,
   Figtree_700Bold,
 } from "@expo-google-fonts/figtree";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
@@ -33,10 +30,9 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const t = useTheme();
   const [loaded] = useFonts({
-    BricolageGrotesque_600SemiBold,
-    BricolageGrotesque_700Bold,
     Figtree_400Regular,
     Figtree_500Medium,
+    Figtree_600SemiBold,
     Figtree_700Bold,
   });
 

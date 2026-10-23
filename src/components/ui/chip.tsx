@@ -1,21 +1,19 @@
 import { Pressable } from 'react-native';
 
-import { useTheme } from '@/hooks/use-theme';
-
-import { raised } from './surface';
 import { Text } from './text';
 
-/** Chip filtro/scelta: rialzato; selezionato = accento. */
-export function Chip({ label, selected, onPress }: { label: string; selected?: boolean; onPress: () => void }) {
-  const t = useTheme();
+/**
+ * Chip filtro/scelta: selezionato = tinta forte dell'accento. `onCard`: dentro una card prende il colore del
+ * fondo, sul fondo prende quello delle card.
+ */
+export function Chip({ label, selected, onPress, onCard }: { label: string; selected?: boolean; onPress: () => void; onCard?: boolean }) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected }}
       onPress={onPress}
-      className={`min-h-11 justify-center rounded-full px-[18px] active:scale-[0.96] ${selected ? 'bg-accent' : 'bg-card'}`}
-      style={selected ? { boxShadow: [{ offsetX: 0, offsetY: 6, blurRadius: 16, color: `${t.accent}73` }] } : raised(t, 5)}>
-      <Text className={`font-sans-bold text-sm ${selected ? 'text-accent-ink' : 'text-ink'}`}>{label}</Text>
+      className={`min-h-11 justify-center rounded-full px-4 active:opacity-70 ${selected ? 'bg-tint-strong' : onCard ? 'bg-bg' : 'bg-card'}`}>
+      <Text className={`font-sans-semibold text-sm ${selected ? 'text-accent-ink' : 'text-ink'}`}>{label}</Text>
     </Pressable>
   );
 }

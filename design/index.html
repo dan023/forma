@@ -1,115 +1,64 @@
 <!doctype html>
-<html lang="it" data-theme="neve">
+<html lang="it" data-os="android" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Forma — Prototipo design</title>
-<link rel="stylesheet" href="styles.css">
+<title>Forma Calma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<aside class="stage-side">
-  <div>
-    <h1>For<span>ma</span></h1>
-    <p style="margin-top:14px">Allenamento e alimentazione in un’unica app. Prototipo navigabile in stile Neve, chiaro e scuro. Tocca la barra in basso, spunta le serie, scegli l’accento.</p>
+<header class="bar">
+  <strong class="brand">Forma · Calma</strong>
+  <div class="grp" role="group" aria-label="Piattaforma"><span>Piattaforma</span>
+    <button data-k="os" data-v="android">Android</button><button data-k="os" data-v="ios">iOS 26</button></div>
+  <div class="grp" role="group" aria-label="Tema"><span>Tema</span>
+    <button data-k="theme" data-v="light">Chiaro</button><button data-k="theme" data-v="dark">Scuro</button></div>
+  <div class="grp" role="group" aria-label="Accento"><span>Accento</span>
+    <button class="dot" data-k="accent" data-v="#ef5f3c" style="--c:#ef5f3c" aria-label="Corallo"></button>
+    <button class="dot" data-k="accent" data-v="#e0446a" style="--c:#e0446a" aria-label="Lampone"></button>
+    <button class="dot" data-k="accent" data-v="#c93d9b" style="--c:#c93d9b" aria-label="Fucsia"></button>
+    <button class="dot" data-k="accent" data-v="#4f5d73" style="--c:#4f5d73" aria-label="Ardesia"></button>
   </div>
-  <div>
-    <div class="group-label">Tema</div>
-    <div class="chips" id="variants" role="group" aria-label="Tema">
-      <button class="chip" data-v="neve" aria-pressed="true">Chiaro</button>
-      <button class="chip" data-v="neve-scura" aria-pressed="false">Scuro</button>
-    </div>
-  </div>
-  <div>
-    <div class="group-label">Piattaforma</div>
-    <div class="chips" id="platforms" role="group" aria-label="Piattaforma">
-      <button class="chip" data-plat="ios">iOS 26</button>
-      <button class="chip" data-plat="android">Android</button>
-      <button class="chip" data-plat="both">Affianca</button>
-    </div>
-    <p class="stage-note" id="plat-note" style="margin-top:10px"></p>
-  </div>
-  <div>
-    <div class="group-label">Schermate principali</div>
-    <div class="chips" role="group" aria-label="Schermate principali">
-      <button class="chip" data-s="oggi" aria-pressed="true">Oggi</button>
-      <button class="chip" data-s="allenamento">Allenamento</button>
-      <button class="chip" data-s="pasti">Pasti</button>
-      <button class="chip" data-s="stats">Statistiche</button>
-      <button class="chip" data-s="impostazioni">Impostazioni</button>
-    </div>
-  </div>
-  <div>
-    <div class="group-label">Primo avvio</div>
-    <div class="chips" role="group" aria-label="Primo avvio">
-      <button class="chip" data-s="onb">Onboarding 1</button>
-      <button class="chip" data-s="onb2">2</button>
-      <button class="chip" data-s="onb3">3</button>
-      <button class="chip" data-s="onb4">4</button>
-      <button class="chip" data-s="oggi-vuoto">Oggi vuoto</button>
-    </div>
-  </div>
-  <div>
-    <div class="group-label">Allenamento</div>
-    <div class="chips" role="group" aria-label="Allenamento">
-      <button class="chip" data-s="sessione">Sessione</button>
-      <button class="chip" data-s="riepilogo">Riepilogo</button>
-      <button class="chip" data-s="programma">Programma</button>
-      <button class="chip" data-s="esercizio">Esercizio</button>
-      <button class="chip" data-s="esercizi">Catalogo</button>
-      <button class="chip" data-s="crea-esercizio">Crea esercizio</button>
-      <button class="chip" data-s="muscoli">Mappa muscolare</button>
-    </div>
-  </div>
-  <div>
-    <div class="group-label">Pasti</div>
-    <div class="chips" role="group" aria-label="Pasti">
-      <button class="chip" data-s="cerca">Ricerca</button>
-      <button class="chip" data-s="cibo">Scheda alimento</button>
-      <button class="chip" data-s="versioni">Versioni</button>
-      <button class="chip" data-s="crea-alimento">Crea alimento</button>
-      <button class="chip" data-s="scan">Barcode</button>
-      <button class="chip" data-s="ricette">Ricette</button>
-      <button class="chip" data-s="pasti-config">Pasti configurabili</button>
-    </div>
-  </div>
-  <div>
-    <div class="group-label">Altro</div>
-    <div class="chips" role="group" aria-label="Altro">
-      <button class="chip" data-s="peso">Peso</button>
-      <button class="chip" data-s="obiettivi">Obiettivi</button>
-      <button class="chip" data-s="promemoria">Promemoria</button>
-      <button class="chip" data-s="dati">Dati</button>
-    </div>
-  </div>
-  <div>
-    <div class="group-label">Ricerca alimenti: stati</div>
-    <div class="chips" id="search-states" role="group" aria-label="Stati della ricerca">
-      <button class="chip" data-ss="vuoto">Vuota</button>
-      <button class="chip" data-ss="risultati">Risultati</button>
-      <button class="chip" data-ss="nessuno">Nessun risultato</button>
-      <button class="chip" data-ss="caricamento">Caricamento</button>
-      <button class="chip" data-ss="offline">Offline</button>
-    </div>
-  </div>
-  <p class="stage-note" id="note"></p>
-</aside>
-
-<main class="stage-phone">
-  <div class="phone" id="phone-main">
-    <div class="screen" id="screen">
-      <div class="statusbar" id="statusbar"></div>
-      <div class="pages" id="pages"></div>
-      <nav class="nav glass" id="nav" aria-label="Sezioni"></nav>
-      <i class="home-ind" aria-hidden="true"></i>
-    </div>
-  </div>
-  <iframe class="twin" id="twin" title="Anteprima Android" hidden></iframe>
-</main>
-
-<script src="sample-foods.js"></script>
-<script src="screens-extra.js"></script>
-<script src="app.js"></script>
-<script src="tweaks.js"></script>
+</header>
+<div class="bench" id="bench"></div>
+<section class="note">
+  <h2>Come è fatta</h2>
+  <ul>
+    <li>Una domanda per schermata: Oggi “quanto mi resta?”, Pasti “cosa ho mangiato?”, Scheda “quanto ne aggiungo?”, Allenamento “qual è la prossima serie?”, Statistiche “come sto andando?”.</li>
+    <li>Un solo carattere (Figtree) in quattro pesi; titoli fino a 28 px, cifre fino a 40 px, sempre tabulari.</li>
+    <li>L’accento è una scala: pieno solo su barre, anelli e spunte; le sue tinte pallide sulle card da ricordare (allenamento di oggi, recupero). Bottoni principali quasi neri. Cambia accento: niente si rompe.</li>
+    <li>I macro hanno colori fissi, uguali ovunque: proteine blu, carboidrati ambra, grassi verde. L’icona di un alimento prende il colore del macro che gli dà più kcal. Per questo gli accenti scelti non sono blu, verdi o ambra.</li>
+    <li>Superfici piatte: card bianche su grigio caldo, nessuna ombra. Su iOS 26 solo la barra delle tab è in vetro (nativa); su Android è la pillola scura.</li>
+  </ul>
+</section>
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<script src="screens.js"></script>
+<script>
+(() => {
+  const V = window.FORMA_SCREENS, root = document.documentElement, q = new URLSearchParams(location.search);
+  const store = { get: (k) => { try { return localStorage.getItem('forma-design-' + k); } catch { return null; } },
+    set: (k, v) => { try { localStorage.setItem('forma-design-' + k, v); } catch {} } };
+  const state = { os: q.get('os') || store.get('os') || 'android', theme: q.get('theme') || store.get('theme') || 'light', accent: q.get('accent') || store.get('accent') || '#ef5f3c' };
+  const only = q.get('s');
+  if (only) document.body.classList.add('solo');
+  const bench = document.getElementById('bench');
+  const draw = () => {
+    root.dataset.os = state.os; root.dataset.theme = state.theme; root.style.setProperty('--accent', state.accent);
+    document.querySelectorAll('[data-k]').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.k] === b.dataset.v)));
+    bench.innerHTML = V.order.filter(([id]) => !only || id === only)
+      .map(([id, n]) => `<div class="cell"><p>${n}</p><div class="phone" data-s="${id}">${V.render(id)}</div></div>`).join('');
+    bench.querySelectorAll('.phone').forEach(V.charts);
+  };
+  document.querySelector('.bar').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-k]'); if (!b) return;
+    state[b.dataset.k] = b.dataset.v; store.set(b.dataset.k, b.dataset.v); draw();
+  });
+  document.fonts.ready.then(draw); draw();
+})();
+</script>
 </body>
 </html>

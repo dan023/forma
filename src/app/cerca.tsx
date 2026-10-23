@@ -7,7 +7,8 @@ import { Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { Chip } from '@/components/ui/chip';
 import { Screen } from '@/components/ui/screen';
-import { Card, Inset } from '@/components/ui/surface';
+import { Icon } from '@/components/ui/icon';
+import { Card } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
 import { Toast } from '@/components/ui/toast';
 import { db } from '@/db/client';
@@ -95,7 +96,7 @@ export default function Cerca() {
     if (hits.length) {
       body = (
         <>
-          <Text variant="eyebrow" muted>
+          <Text variant="label" className="mx-1">
             {t('search.results', { count: hits.length })}
           </Text>
           <Card>{rows(hits.map((h) => ({ food: h.food, versions: h.versions.length })), true)}</Card>
@@ -118,7 +119,7 @@ export default function Cerca() {
         <Card>
           <View className="mb-1 flex-row items-baseline justify-between">
             <Text variant="h2">{t('search.recent')}</Text>
-            <Text muted className="text-sm">
+            <Text variant="label">
               {t('search.recentFor', { meal })}
             </Text>
           </View>
@@ -140,10 +141,8 @@ export default function Cerca() {
       <Text className="absolute h-px w-px opacity-0" accessibilityRole="header">
         {t('search.title')}
       </Text>
-      <Inset className="min-h-[52px] flex-row items-center gap-2.5 rounded-full px-4">
-        <Text muted aria-hidden>
-          ⌕
-        </Text>
+      <View className="min-h-[52px] flex-row items-center gap-2.5 rounded-full bg-card pl-4">
+        <Icon name="search" color={theme.ink2} size={20} />
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -158,11 +157,11 @@ export default function Cerca() {
         />
         {query ? (
           <Pressable accessibilityRole="button" accessibilityLabel={t('search.clear')} onPress={() => setQuery('')} className="h-11 w-11 items-center justify-center">
-            <Text muted>✕</Text>
+            <Icon name="close" color={theme.ink2} size={18} />
           </Pressable>
         ) : null}
-      </Inset>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-5" contentContainerClassName="gap-2.5 px-5 py-2">
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-5" contentContainerClassName="items-center gap-2 px-5 py-1">
         {FILTERS.map((f) => (
           <Chip key={f} label={t(`search.filters.${f}`)} selected={filter === f} onPress={() => setFilter(f)} />
         ))}

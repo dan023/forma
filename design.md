@@ -1,192 +1,153 @@
 # Forma — Design
 
-Direzione: **Neve**. Superfici morbide e tattili (neumorfismo controllato), un solo accento arancione, titoli grandi, nav a pillola. Due temi: **Neve** (chiaro) e **Neve scura**.
+Direzione: **Calma**. Interfaccia calma e concentrata: la tipografia guida, superfici piatte (card bianche su un fondo grigio caldo), un accento usato con misura e colori fissi per i macro. Tema chiaro e scuro.
 
-Prototipo di riferimento: `design/index.html` (`cd design && python3 -m http.server 8080`). In caso di dubbio, vale il prototipo; questo documento ne spiega le regole.
+Ispirazione: tavole Dribbble scelte da Daniele (ottobre 2026): card bianche su grigio, accento corallo usato poco, barra delle tab scura a pillola, anelli e barre colorate per la nutrizione, icone degli alimenti su tinta. La direzione Neve (neumorfismo, arancione) è stata scartata: troppo grigia, gerarchia debole, confusionaria.
+
+Prototipo di riferimento: `design/index.html` (`cd design && python3 -m http.server 8080`). In caso di dubbio vale il prototipo; questo documento ne spiega le regole. In alto si cambiano piattaforma (Android / iOS 26), tema e accento; `?s=<schermata>` mostra una schermata sola a tutta pagina (per screenshot e controlli).
 
 ## Principi
-1. **Calma, non decorazione.** Ogni ombra deve dire "questo si può toccare" o "questo contiene un valore". Niente gradienti decorativi. Niente vetro nel contenuto: l'unica eccezione è il Liquid Glass di sistema su iOS 26 (vedi sotto).
-2. **Un solo accento.** L'arancione segna l'azione principale e lo stato attivo. Il resto è neutro. L'accento è personalizzabile dall'utente (6 preset), quindi mai codificare l'arancione nei componenti: usare il token `accent`.
-3. **Rilievo = significato.** *Rialzato* = azionabile o contenitore. *Incassato* = campo, valore, traccia, stato "premuto". Non invertire i ruoli.
-4. **I numeri sono protagonisti.** Calorie, kg e rip usano il font display con cifre tabulari.
-5. **Velocità in palestra.** Bersagli ≥ 44 px, una mano sola, azioni frequenti (spunta serie, +/− grammi) a portata di pollice.
+1. **Una domanda per schermata, la risposta è la cosa più grande.** Oggi: "quanto mi resta?". Pasti: "cosa ho mangiato?". Scheda alimento: "quanto ne aggiungo?". Allenamento: "qual è la prossima serie?". Statistiche: "come sto andando?".
+2. **I numeri sono protagonisti.** Calorie, grammi, kg e rip sono il testo più grande e più nero della schermata, sempre con cifre tabulari. Lo stesso dato non si ripete in tre forme sulla stessa schermata.
+3. **Colore con un significato.** L'accento segna l'azione e lo stato attivo; i colori dei macro dicono di quale macro si parla. Niente colore decorativo.
+4. **Piatto.** La profondità è un solo gradino di tono (card bianca su fondo grigio). Niente ombre nel contenuto, niente gradienti, niente vetro nel contenuto.
+5. **Pollice prima di tutto.** Bersagli ≥ 44 px, azione principale in basso, una mano sola in palestra.
 
-## Token
+## Colore
 
-Colori in OKLCH. Neutri leggermente caldi (tinta ~60–70°), mai bianco o nero puro.
+### Neutri
+| Token | Chiaro | Scuro | Uso |
+|---|---|---|---|
+| `bg` | `#F2F0EE` | `#0F0F10` | fondo della schermata |
+| `card` | `#FFFFFF` | `#1B1B1D` | card, pulsanti rotondi, chip sul fondo |
+| `ink` | `#18181B` | `#F3F2F0` | testo e numeri |
+| `ink2` | `#6A6A70` | `#A3A2A7` | etichette, testo secondario (≥ 4,5:1) |
+| `line` | `#EBE8E5` | `#2A2A2D` | filetti tra le righe |
+| `control` | `#E6E3E0` | `#2C2C2F` | binario dei controlli segmentati |
+| `primary` / `onPrimary` | `#1C1C1F` / bianco | `#F3F2F0` / `#141416` | pulsante principale, barra delle tab, avviso |
+| `track` | `#EEECEA` | `#2A2A2D` | binario neutro degli anelli |
 
-| Token | Neve | Neve scura |
+### Accento, una scala
+L'accento pieno va **solo sui piccoli segni**: il giorno scelto, l'anello e la barra delle kcal, le spunte, la fiamma. Le sue **tinte** fanno le aree: `tint` (card da notare, una per schermata: la settimana, l'allenamento di oggi, il recupero) e `tintStrong` (chip e pulsante rotondo selezionati). Il testo sopra le tinte è `accentInk`. Le tinte si calcolano dall'accento (`accentScale` in `src/constants/theme.ts`), quindi qualunque accento funziona in entrambi i temi.
+
+Il pulsante principale **non** è d'accento: è `primary`, quasi nero (bianco nel tema scuro), come la barra delle tab.
+
+Accenti tra cui sceglie l'utente: **Corallo** `#EF5F3C` (predefinito), **Lampone** `#E0446A`, **Fucsia** `#C93D9B`, **Ardesia** `#4F5D73`. Niente accenti blu, verdi o ambra: sono i colori dei macro e si confonderebbero.
+
+### Macro, colori fissi
+| Macro | Chiaro | Scuro |
 |---|---|---|
-| `bg` | `oklch(93.5% .006 70)` | `oklch(25% .008 60)` |
-| `card` | `oklch(94.5% .006 70)` | `oklch(26.5% .008 60)` |
-| `ink` | `oklch(24% .012 60)` | `oklch(94% .008 70)` |
-| `ink2` (testo secondario) | `oklch(42% .014 60)` | `oklch(76% .012 65)` |
-| `line` | `oklch(86% .008 65)` | `oklch(35% .01 60)` |
-| `accent` | `oklch(70% .17 48)` | uguale |
-| `accentInk` (testo su accento) | `oklch(24% .06 48)` | uguale |
-| `ok` | `oklch(68% .13 150)` | `oklch(75% .13 150)` |
+| Proteine `prot` | `#3B7FD9` blu | `#5D9CF2` |
+| Carboidrati `carb` | `#E9A019` ambra | `#F2B440` |
+| Grassi `fat` | `#33A46C` verde | `#4DBF86` |
 
-Preset accento (`L C H`): Arancio `70 .17 48`, Corallo `70 .16 22`, Ambra `80 .15 80`, Salvia `74 .12 150`, Oceano `70 .12 235`, Viola `68 .15 300`. `accentInk` resta scuro per tutti.
+Sempre in quest'ordine (proteine, carboidrati, grassi) e sempre con lo stesso colore: pallino della legenda, barra, segmento dell'anello, barra di composizione del pasto, icona dell'alimento. Le kcal di ogni macro si calcolano 4/4/9 kcal per grammo (`src/features/foods/macros.ts`).
 
-Macro nei grafici: proteine = `accent`, carboidrati `oklch(72% .11 85)`, grassi `oklch(66% .09 20)`.
+## Tipografia
+Un solo carattere: **Figtree**, in quattro pesi (400, 500, 600, 700). La gerarchia la fanno dimensione e peso.
 
-### Ombre neumorfiche
-| Ruolo | Neve | Neve scura |
-|---|---|---|
-| Rialzato | `9 9 20 oklch(80% .01 65 /.75)` + `-9 -9 20 oklch(99% .004 80 /.95)` | `9 9 20 oklch(16% .008 55 /.9)` + `-8 -8 18 oklch(34% .01 65 /.55)` |
-| Incassato | come sopra, `inset`, offset 2 e sfocatura 4,4 (token `--idepth: 2`, scelto con la tweakbar) | idem |
+| Ruolo | Misura | Peso | Componente |
+|---|---|---|---|
+| Titolo di schermata | 28 px, tracking −0,6 | 700 | `Text variant="title"` |
+| Titolo lungo (nome alimento) | 24 px | 700 | `titleSm` |
+| Titolo di card / pasto | 19 px | 700 | `h2` |
+| Cifra protagonista | 28–40 px | 700 | `num` |
+| Corpo | 16 px | 400 | `body` |
+| Etichetta sopra un valore | 13 px, grigia, mai maiuscolo | 500 | `label` |
 
-Su React Native le ombre doppie non esistono in un solo `boxShadow`: usare due layer sovrapposti (luce e ombra) o `boxShadow` con più valori, dove supportato da RN 0.86. Da verificare su Android.
+Cifre sempre tabulari. Un solo h1 per schermata.
 
-### Tipografia
-- Display: **Bricolage Grotesque** 600–800, tracking `-0.035em`, interlinea ~0.95.
-- Corpo: **Figtree** 400–700.
-- Scala: titolo pagina 2.6rem (41 px) · numero grande 3.4–4.2rem · h2 1.25rem · corpo 1rem · eyebrow 0.74rem maiuscolo con tracking `.1em`.
-- Numeri: sempre `tabular-nums`.
-
-### Forma e spazio
-- Raggi: card 28 · elementi interni/campi 20 · chip, pulsanti, nav 999.
-- Padding schermata 20; card 18; gap tra card 14; gap tra sezioni 22.
-- Spaziatura irregolare di proposito: gruppi stretti, separazioni ampie.
+## Forma e spazio
+- Raggi: card 22 · tessere e campi 14 · pulsanti, chip, giorni, barra delle tab: pillola (999).
+- Margini laterali 20; padding card 20; spazio tra card 14.
+- Pulsanti rotondi neutri da 44–56 px (bianchi sul fondo, grigi dentro una card). Mai icone in riquadri colorati, con **un'unica eccezione**: la tessera dell'alimento (sotto), dove il colore è un dato.
 
 ## Componenti
-- **Card:** rialzata. Non annidare card dentro card; dentro usare liste con filetto `line` o elementi incassati.
-- **Pulsante primario:** pillola `accent`, ombra colorata. Uno per schermata. Secondari: `ghost` con bordo `line`.
-- **Chip filtro / giorno:** rialzati; selezionati = `accent`.
-- **Campo / valore (kg, rip, grammi):** incassato, cifre display.
-- **Spunta serie:** cerchio incassato → `accent` con lieve scala quando completata.
-- **Switch:** traccia incassata, pomello `ink2` → `accent`.
-- **Anello calorie + barre macro:** traccia `line`, riempimento `accent`, animati all'ingresso.
-- **Nav a pillola:** vaschetta incassata a 5 voci (Oggi, Allena, Pasti, Stats, Altro); l'indicatore arancione scorre sotto la voce attiva. Si nasconde in onboarding.
-- **Liste:** righe ≥ 56 px, titolo + sottotitolo `ink2`, valore a destra.
-- **Stati vuoti:** insegnano l'azione ("Registra il primo alimento"), non si limitano a dire "nessun dato".
+- **Card** (`Card`): bianca, piatta. `tint` per la card da notare. Mai card dentro card: dentro si usano righe con filetto `line` o blocchi del colore del fondo (`Well`).
+- **Pulsante principale** (`Button`): pillola `primary` alta 56, uno per schermata, di solito fisso in basso. Secondario `ghost` con bordo.
+- **Pulsante rotondo** (`IconButton`): neutro; selezionato = `tintStrong` con icona `accentInk` (stella dei preferiti, "+" diventato spunta).
+- **Chip** (`Chip`): sul fondo bianchi, dentro una card grigi; selezionato = `tintStrong`.
+- **Settimana** (`DaySelector`): card tinta con mese e frecce; sette giorni come pillole bianche, quello scelto pieno d'accento, punto sotto oggi.
+- **Anello** (`Donut`): segmenti per macro con 3 px di stacco, binario `track`, il totale al centro. Oggi mostra la composizione (quota di kcal di ogni macro); quando ci saranno gli obiettivi mostrerà la parte dell'obiettivo raggiunta.
+- **Barre** (`Progress`): pieno nel colore, binario nella sua tinta; `StackBar` per la composizione di un pasto.
+- **Tessera alimento** (`FoodTile`): il glifo dice la categoria (cereali, frutta, carne, pesce, latticini, verdura, olio, frutta secca, dolci, bevande; ciotola per piatti e senza categoria), il colore dice il macro che porta più kcal. Per le categorie CIQUAL larghe ("meat, egg and fish", "fruits, vegetables, legumes and nuts") decide il nome inglese.
+- **Icone** (`Icon`): contorno, tratto 1,75, griglia 24, disegnate in SVG (`react-native-svg`); stesse forme del prototipo.
+- **Liste:** righe ≥ 56 px: tessera, nome e grammi, kcal a destra.
+- **Stati vuoti:** dicono cosa fare ("Registra il primo alimento"), non solo "nessun dato".
 
-## Movimento
-- Easing `cubic-bezier(.22,1,.36,1)` (ease-out esponenziale); niente rimbalzi.
-- Ingresso schermata: elementi in cascata (60 ms di scarto, 600 ms), solo `opacity` e `translate`.
-- Anello, barre, linea del grafico e barre di volume si animano al primo ingresso (1–1,6 s).
-- Feedback tocco: scala 0.93–0.97, 200 ms.
-- Rispettare "riduci movimento": durate azzerate. In app: `useReducedMotion` di Reanimated.
-
-## Schermate
-Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**. Ogni schermata di dettaglio evidenzia la voce della sua sezione. Il prototipo le raccoglie in gruppi nella colonna sinistra: 28 schermate.
-
-| Sezione | Schermata | Contenuto e note |
-|---|---|---|
-| Primo avvio | Onboarding, 4 passi | 1 obiettivo · 2 dati (sesso, età, altezza, peso) · 3 giorni di allenamento · 4 tema, accento e punto di partenza. Barra segmentata, una scelta per schermata, nav nascosta |
-| | Oggi vuoto | Anello a zero e tre azioni che insegnano da dove partire (primo pasto, programma, peso) |
-| Oggi | Oggi | Saluto, anello kcal + macro, allenamento del giorno, peso. Obiettivi diversi giorno allenamento/riposo |
-| | Registra il peso | Stepper grande ±0,1 kg, nota facoltativa, recenti |
-| Allenamento | Allenamento (home) | Allenamento di oggi, programmi, ultimi allenamenti, allenamento libero |
-| | Sessione | Timer recupero, serie con spunta, prossimi esercizi. Si apre da "Inizia allenamento" |
-| | Riepilogo | Durata, volume, serie, record, muscoli lavorati |
-| | Programma | Esercizi con schema e regola di progressione, superset (SS A), riordino |
-| | Esercizio | Grafico 1RM, scelta della progressione (lineare, Greyskull LP, doppia) con i suoi parametri, storico |
-| | Catalogo esercizi / Crea esercizio | Ricerca, filtri per muscolo. Nuovo esercizio: tipo (carico, corpo libero, a tempo), muscolo, attrezzo |
-| | Mappa muscolare | Fronte/retro, intensità per muscolo, soglia "ottimo" 10-20 serie/sett. |
-| Pasti | Pasti | Selettore giorno, diario per pasto, ricerca, barcode, ricette, configurazione pasti |
-| | Ricerca alimento | Vedi "Ricerca alimenti" |
-| | Scheda alimento | Grammi o porzioni, macro live, valori per 100 g, fonte e versioni |
-| | Versioni | Stesso alimento da più fonti (CIQUAL, USDA): si sceglie quale usare |
-| | Crea alimento | Valori per 100 g con controllo di coerenza kcal/macro, campi facoltativi a scomparsa, porzioni |
-| | Barcode / Ricette | Mirino e inserimento manuale (Open Food Facts + cache). Ricetta con ingredienti e macro per porzione |
-| | Pasti configurabili | Ordine, visibilità, aggiunta |
-| Statistiche | Statistiche | Peso / calorie / volume, volume settimanale, costanza |
-| Impostazioni | Impostazioni | Lingua (Sistema, Italiano, English), accento, tema, timer, unità, accessi alle pagine sotto |
-| | Obiettivi giornalieri | Allenamento / riposo, macro con calorie che si ricalcolano, suggerimento dal peso |
-| | Promemoria | Pasti, allenamento, peso, fine recupero |
-| | I tuoi dati | Esporta in JSON, importa da Forma / Strong / Hevy / FitNotes, alimenti personalizzati, licenze delle fonti |
-
-
-## Ricerca alimenti
-Prototipo: `design/index.html`, schermata "Ricerca" (i dati sono un campione **reale** del catalogo, `design/sample-foods.js`). Il codice di `searchFoods` in `design/app.js` è la specifica da reimplementare in TypeScript sul DB locale.
-
-**Come si cerca**
-- Le parole si scrivono in **qualsiasi ordine**, ognuna come **inizio di parola**: "pol pet" trova "Pollo, petto, …". Accenti e maiuscole ignorati.
-- Parole vuote ignorate (`di, del, della, da, con, e, il, la, le, in, al, a`): "petto di pollo" trova "Pollo, petto, senza pelle, crudo". Senza questa regola non lo troverebbe, perché i nomi USDA hanno un altro ordine.
-- Si cerca in nome italiano, inglese e francese. Una corrispondenza solo in inglese o francese pesa meno.
-
-**Ordine dei risultati** (in questo ordine di importanza)
-1. Corrispondenza nel nome italiano, non solo in EN/FR.
-2. Il nome comincia con una delle parole cercate (il "sostantivo" del cibo).
-3. Parole intere uguali a quelle cercate.
-4. Fonte CIQUAL leggermente avanti (più vicina alla dieta europea).
-5. Nomi più corti (gli alimenti generici prima di quelli molto specifici o di marca).
-
-**Duplicati:** lo stesso nome italiano da fonti diverse è **una riga sola**, con "N versioni" nella riga secondaria; le versioni si scelgono nella scheda. Nel catalogo "Broccoli, crudo" compare 4 volte.
-
-**Riga risultato:** nome con le parole trovate in grassetto e sottolineate dall'accento · riga secondaria `100 g · kcal · P · C · G` con cifre tabulari · a destra pulsante rotondo "+" (rialzato, 44 px) che aggiunge 100 g al pasto e diventa accento con spunta, con avviso "Aggiunto al pranzo" per 1,8 s. Toccare la riga apre la scheda.
-
-**Stati** (tutti presenti nel prototipo, pannello laterale "Ricerca alimenti: stati")
-| Stato | Cosa mostra |
-|---|---|
-| Vuota | "Recenti" del pasto in corso + una riga di aiuto |
-| Risultati | Conteggio in eyebrow + elenco (max 20) |
-| Nessun risultato | Titolo con la ricerca, come correggerla, azioni "Crea «…»" (primaria) e "Scansiona il barcode" |
-| Caricamento | Cinque righe scheletro con la forma delle righe reali; movimento azzerato con "riduci movimento" |
-| Offline | Avviso incassato "Cerco solo tra gli alimenti sul telefono" sopra i risultati locali |
-| Preferiti / Miei vuoti | Spiegano come popolarli, non si limitano a "nessun dato" |
-
-Il campo di ricerca è **incassato** (è un campo), con anello accento al focus e "✕" per cancellare. Il filtro "Recenti" restringe anche i risultati.
-
-**Da risolvere nei dati** (emersi disegnando la schermata con i dati veri)
-- Le etichette delle porzioni USDA sono in inglese ("1 cup, whole"): vanno tradotte e normalizzate prima di mostrarle.
-- Alcune traduzioni sono ancora sbagliate (es. "Oat bran" → "Reggiseno d'avena", "Plantain" → "Pianifica la banana"): correggerle nel glossario partendo dai cibi più comuni.
-- La classifica ha bisogno di un segnale "comune" più forte dei soli caratteri del nome; valutare un elenco di alimenti generici da favorire.
-## Anteprima per piattaforma (iOS 26 / Android)
-Nel prototipo, la colonna sinistra ha il gruppo **Piattaforma**: *iOS 26*, *Android*, *Affianca* (le due anteprime una accanto all'altra; navigano insieme, e tema e ritocchi si propagano). Serve a decidere cosa è chrome di sistema, che cambia per piattaforma, e cosa è contenuto, che è sempre Neve.
+## Navigazione e piattaforme
 
 | Elemento | iOS 26 (Liquid Glass) | Android e iOS precedenti |
 |---|---|---|
-| Cornice e barra di stato | Isola dinamica, orario a sinistra, indicatore home largo | Punch-hole, orario a sinistra, gesto di sistema sottile |
-| Barra delle tab | Di sistema, in vetro, galleggiante. Voce attiva con capsula in vetro tinta d'accento. Si riduce a una capsula scorrendo verso il basso e si riapre toccandola o scorrendo verso l'alto | Barra a pillola Neve con indicatore d'accento che scorre |
-| Tasto indietro | Cerchio in vetro con chevron | Cerchio Neve con freccia ← |
-| Avviso (toast) | Capsula in vetro | Barra scura con raggio 14 |
-| Card, campi, numeri, pulsanti d'azione | Neve | Neve |
+| Barra delle tab | Nativa, in vetro (`NativeTabs`, `src/components/glass-tabs.tsx`), SF Symbols, voce attiva d'accento; si riduce scorrendo | Pillola `primary` flottante (`PillTabBar`): la voce attiva è una pillola chiara con icona ed etichetta, le altre solo icona |
+| Tasto indietro | Cerchio in vetro | Cerchio bianco con chevron |
+| Avviso (toast) | Capsula in vetro | Pillola `primary` |
+| Card, campi, numeri, pulsanti d'azione | Calma | Calma |
 
-Regole:
-- Il vetro è solo **chrome di sistema** (barra, tasto indietro nell'header, avvisi, in futuro sheet e pulsanti flottanti sopra il contenuto). Mai dentro le card.
-- La forma della barra su iOS 26 è decisa dal sistema: la tweakbar lo segnala e disattiva il controllo "Barra" quando è attiva l'anteprima iOS.
-- Il browser **imita** il vetro (sfocatura, saturazione, bordo e riflesso): non coincide con quello di Apple. Con `prefers-reduced-transparency` il vetro diventa pieno.
-- Ogni schermata o componente nuovo va guardato in entrambe le piattaforme prima di dirlo finito.
+Il vetro è solo **chrome di sistema** (barra, tasto indietro, avvisi, in futuro sheet e pulsanti flottanti sopra il contenuto), mai dentro le card. La scelta sta in `src/constants/glass.ts` (`USE_LIQUID_GLASS`). Il prototipo imita il vetro nel browser, ma per vederlo davvero serve un build iOS 26. Ogni schermata nuova va guardata in entrambe le piattaforme e in entrambi i temi.
 
+## Movimento
+- La barra delle tab anima la larghezza della voce attiva (molla, `LinearTransition`). Pressione: opacità 0,7–0,8.
+- Niente rimbalzi, niente animazioni d'ingresso a cascata. Rispettare "riduci movimento" (`useReducedMotion`).
+
+## Schermate
+Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**. Nel prototipo ci sono Oggi, Pasti, Scheda alimento, Allenamento in corso, Statistiche e Pasti vuoto; le altre seguono le stesse regole.
+
+| Sezione | Schermata | Contenuto e note |
+|---|---|---|
+| Primo avvio | Onboarding | Obiettivo, dati, giorni di allenamento, tema e accento. Una scelta per schermata, nav nascosta |
+| Oggi | Oggi | "Ti restano N kcal" grande e centrato, card delle calorie con i macro, quattro azioni rapide (alimento, codice a barre, peso, allenati), pasti di oggi scorrevoli con tessere e barra dei macro, allenamento di oggi in card tinta, peso e allenamenti della settimana |
+| | Registra il peso | Stepper grande ±0,1 kg, nota facoltativa, recenti |
+| Allenamento | Sessione | Prossima serie grande (75 kg × 6), serie con spunta, "Serie fatta", recupero in card tinta con anello e ±15 s, esercizi dopo |
+| | Programma, esercizio, catalogo, mappa muscolare | Schema e regola di progressione, grafico 1RM, ricerca per muscolo |
+| Pasti | Pasti | Settimana, anello delle kcal per macro, pasti con barra di composizione e tessere, "Aggiungi alimento" |
+| | Ricerca alimento | Vedi "Ricerca alimenti" |
+| | Scheda alimento | Tessera grande e nome, grammi con − / + e porzioni, anello della porzione per macro, valori per 100 g, "Aggiungi a …" fisso in basso |
+| | Versioni, crea alimento, barcode, ricette, pasti configurabili | Da disegnare con queste regole |
+| Statistiche | Statistiche | Settimana / mese / anno; semianello dei giorni nell'obiettivo; calorie degli ultimi 7 giorni a pillole tratteggiate con la linea dell'obiettivo; peso; volume |
+| Impostazioni | Impostazioni | Lingua, tema, accento, obiettivi, promemoria, dati (export/import) |
+
+## Ricerca alimenti
+Implementata in `src/features/foods/search.ts` (`searchFoods`, sul DB locale) e nella schermata `src/app/cerca.tsx`.
+
+**Come si cerca**
+- Le parole si scrivono in **qualsiasi ordine**, ognuna come **inizio di parola**: "pol pet" trova "Pollo, petto, …". Accenti e maiuscole ignorati.
+- Parole vuote ignorate (`di, del, della, da, con, e, il, la, le, in, al, a`): "petto di pollo" trova "Pollo, petto, senza pelle, crudo".
+- Si cerca in nome italiano, inglese e francese. Una corrispondenza solo in inglese o francese pesa meno.
+
+**Ordine dei risultati** (in ordine di importanza)
+1. Corrispondenza nel nome italiano, non solo in EN/FR.
+2. Il nome comincia con una delle parole cercate.
+3. Parole intere uguali a quelle cercate.
+4. Fonte CIQUAL leggermente avanti.
+5. Nomi più corti.
+
+**Duplicati:** lo stesso nome italiano da fonti diverse è **una riga sola**, con "N versioni"; le versioni si scelgono nella scheda.
+
+**Riga risultato:** tessera, nome con le parole trovate in grassetto sottolineato, riga secondaria `100 g · kcal · P · C · G` con cifre tabulari, a destra pulsante rotondo "+" (44 px) che aggiunge 100 g al pasto e diventa una spunta su tinta, con avviso per 1,8 s. Toccare la riga apre la scheda.
+
+**Stati:** vuota (recenti del pasto + aiuto), risultati (conteggio + elenco, max 20), nessun risultato (come correggere la ricerca, "Crea «…»", "Scansiona il barcode"), caricamento (righe scheletro), offline (solo alimenti sul telefono), preferiti e miei vuoti (spiegano come popolarli).
+
+**Da risolvere nei dati**
+- Le etichette delle porzioni USDA sono in inglese: vanno tradotte e normalizzate prima di mostrarle (oggi in italiano si mostrano solo i grammi).
+- Alcune traduzioni sono ancora sbagliate: correggerle nel glossario partendo dai cibi più comuni.
+- La classifica ha bisogno di un segnale "comune" più forte dei soli caratteri del nome.
 
 ## Accessibilità
-- Contrasto testo ≥ 4.5:1 (`ink2` è stato scurito per questo). Verificare `accentInk` su `accent` e le cifre su superfici incassate.
-- Ogni controllo ha etichetta accessibile; stato (`selected`, `checked`) esposto, mai solo tramite colore o ombra.
-- Bersagli ≥ 44 px. Testo scalabile con le impostazioni di sistema: nessuna altezza fissa sulle righe di testo.
+- Contrasto testo ≥ 4,5:1 (`ink2` su `card` e su `bg`; `accentInk` sulle tinte). Il colore non è mai l'unico segnale: i macro hanno sempre il nome accanto al pallino.
+- Ogni controllo ha un'etichetta accessibile; lo stato (`selected`) è esposto.
+- Bersagli ≥ 44 px. Testo scalabile: nessuna altezza fissa sulle righe di testo.
 - Tema: segue il sistema, sovrascrivibile in Impostazioni.
 
-## iOS 26: Liquid Glass (ibrido)
-Su iOS 26 e successivi il **chrome di sistema** usa il Liquid Glass nativo; il **contenuto resta Neve** (card, campi, numeri, accento).
-- **Barra delle tab:** nativa (`NativeTabs` di Expo Router, `src/components/glass-tabs.tsx`), con SF Symbols, etichette tradotte e accento per la voce attiva. Si nasconde in parte allo scorrimento (`minimizeBehavior`).
-- **Altre piattaforme** (Android, web, iOS precedenti): barra a pillola Neve, invariata. La scelta sta in `src/constants/glass.ts` (`USE_LIQUID_GLASS`).
-- **Da fare quando esistono le schermate:** header e sheet di sistema (stesso materiale), pulsanti flottanti con `GlassView` solo se sopra al contenuto. Il vetro non va mai dentro le card.
-- Il prototipo web lo imita (vedi "Anteprima per piattaforma"), ma non è fedele: per vederlo davvero serve un build iOS 26 (EAS Simulator o iPhone).
-
-## Tweakbar (solo prototipo)
-Il pulsante **Ritocchi** in alto a destra apre un pannello che cambia dal vivo i token di stile e salva le scelte nel browser. Serve a decidere prima di scrivere il tema dell'app.
-
-| Gruppo | Cosa cambia | Token |
-|---|---|---|
-| Colore | Tema chiaro/scuro, accento (6 preset o tonalità, intensità e luminosità liberi) | `--accent` |
-| Card e superfici | Stile neumorfico, piatto o solo contorno · raggio card · raggio campi · rilievo · incavo dei campi | `--r-lg`, `--r-md`, `--depth`, `--idepth`, `data-surface` |
-| Pulsanti | Pieno, soffice o contorno · forma (pillola, arrotondato, squadrato) · altezza · alone colorato | `data-btn`, `--r-btn`, `--btn-h`, `--btn-glow` |
-| Navigazione | Barra a pillola, arrotondata o squadrata | `--r-nav` |
-| Tipografia | Coppia di font (Bricolage + Figtree, Outfit + DM Sans, Geist, Sora + Figtree) · dimensione dei titoli | `--font-display`, `--font-body`, `--title-size` |
-| Densità e movimento | Compatta, normale, ariosa · movimento spento | `data-density`, `data-motion` |
-
-"Copia token" esporta i valori in JSON, da portare in `src/constants/theme.ts`. "Ripristina" torna ai valori di Neve. Le ombre neumorfiche sono calcolate dai token (`--depth`, `--idepth`) per ogni tema, quindi il rilievo resta coerente in chiaro e scuro.
-
 ## Implementazione (Expo / NativeWind v5)
-- Token statici (font, raggi) e nomi dei colori in `src/global.css` (`@theme`); valori dei colori per tema e accento in `src/constants/theme.ts`, iniettati come variabili CSS da `ThemeProvider` (`VariableContextProvider`). Classi: `bg-card`, `text-ink-2`, `text-accent`, `rounded-card`, `font-display`…
+- Nomi dei colori, font e raggi in `src/global.css` (`@theme`); valori per tema e accento in `src/constants/theme.ts` (`Palette`, `Accents`, `accentScale`), iniettati come variabili CSS da `ThemeProvider`. Classi: `bg-card`, `bg-tint`, `text-ink-2`, `text-accent-ink`, `bg-primary`, `rounded-card`, `font-sans-semibold`…
 - Nuovo colore = `@theme` + `:root` in `global.css`, `theme.ts`, `ThemeProvider` e `inlineVariables.exclude` in `metro.config.js`.
-- Accento e modalità (sistema/chiaro/scuro) stanno nello store Zustand `useSettings`.
-- Ombre neumorfiche: helper `raised(t)` / `inset(t)` in `components/ui/surface.tsx` (dipendono dal tema).
-- Componenti base in `src/components/ui/`: `Card`, `Inset`, `Text`, `Screen`; da aggiungere `Button`, `Chip`, `Field`, `Switch`, `Ring`, `Bar`.
-- Font con `expo-font` (`@expo-google-fonts`). Il prototipo web usa dati di esempio: non sono reali.
+- Colori che servono a SVG o calcolati (macro, tinte delle tessere, anelli) si leggono da `useTheme()`.
+- Componenti base in `src/components/ui/`: `Card`, `Well`, `Text`, `Screen`, `Button`, `Chip`, `IconButton`, `Icon`, `Donut`, `Progress`, `StackBar`, `Toast`.
+- Verifica del prototipo con la skill **design-taste-frontend** (stile `accent-ladder`, vedi `.taste-skill/README.md`): `lint.mjs --app` e `inspect.mjs --app` a 390 px su ogni schermata.
 
 ## Da definire
 - Icona dell'app e splash.
-- Immagini degli esercizi (attribuzione © Gym visual da verificare prima dello store) e mappa muscolare definitiva (il prototipo è schematico).
-- Grafici: valutare Victory Native / Skia contro SVG semplice.
+- Obiettivi (kcal e macro, giorno di allenamento / riposo): con loro l'anello e le barre passano da "composizione" a "parte dell'obiettivo".
+- Immagini degli esercizi (attribuzione © Gym visual da verificare prima dello store) e mappa muscolare.
+- Grafici dell'app (Statistiche): SVG semplice come nel prototipo, o Victory Native / Skia.

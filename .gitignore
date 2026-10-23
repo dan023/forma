@@ -50,3 +50,8 @@ data/raw/
 
 # impostazioni personali di Claude Code
 .claude/settings.local.json
+
+# skill design-taste-frontend: screenshot e report rigenerabili (resta direction.json e README)
+.taste-skill/*
+!.taste-skill/direction.json
+!.taste-skill/README.md

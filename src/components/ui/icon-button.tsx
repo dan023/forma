@@ -1,26 +1,28 @@
 import { GlassView } from 'expo-glass-effect';
-import type { ReactNode } from 'react';
 import { Pressable } from 'react-native';
 
 import { USE_LIQUID_GLASS } from '@/constants/glass';
 import { useTheme } from '@/hooks/use-theme';
 
-import { raised } from './surface';
-import { Text } from './text';
+import { Icon, type IconName } from './icon';
 
 type Props = {
   /** Etichetta accessibile: il pulsante mostra solo un simbolo. */
   label: string;
+  icon: IconName;
   onPress: () => void;
-  children: ReactNode;
   /** Chrome di sistema (es. indietro nell'header): su iOS 26 diventa Liquid Glass. Mai per il contenuto. */
   glass?: boolean;
   selected?: boolean;
+  /** Dentro una card: prende il colore del fondo invece di quello delle card. */
+  onCard?: boolean;
+  size?: 44 | 48 | 56;
 };
 
-export function IconButton({ label, onPress, children, glass, selected }: Props) {
+/** Pulsante rotondo con un'icona: neutro (mai icone in riquadri colorati), selezionato = tinta dell'accento. */
+export function IconButton({ label, icon, onPress, glass, selected, onCard, size = 48 }: Props) {
   const t = useTheme();
-  const glyph = <Text className={`text-xl leading-6 ${selected ? 'text-accent-ink' : 'text-ink'}`}>{children}</Text>;
+  const glyph = <Icon name={icon} color={selected ? t.accentInk : t.ink} size={size >= 56 ? 24 : 22} />;
 
   if (glass && USE_LIQUID_GLASS) {
     return (
@@ -38,8 +40,8 @@ export function IconButton({ label, onPress, children, glass, selected }: Props)
       accessibilityLabel={label}
       accessibilityState={selected === undefined ? undefined : { selected }}
       onPress={onPress}
-      className={`h-11 w-11 items-center justify-center rounded-full active:scale-[0.93] ${selected ? 'bg-accent' : 'bg-card'}`}
-      style={selected ? { boxShadow: [{ offsetX: 0, offsetY: 6, blurRadius: 14, color: `${t.accent}73` }] } : raised(t, 5)}>
+      className={`items-center justify-center rounded-full active:opacity-70 ${selected ? 'bg-tint-strong' : onCard ? 'bg-bg' : 'bg-card'}`}
+      style={{ width: size, height: size }}>
       {glyph}
     </Pressable>
   );
