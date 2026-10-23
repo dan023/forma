@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from './icon-button';
 import { Text } from './text';
 
 /**
- * Pagina con eyebrow + titolo grande. Con `back` mostra il tasto indietro (chrome: vetro su iOS 26) accanto
- * all'eyebrow, come nel prototipo. `tabBar` lascia spazio in basso per la barra delle tab.
+ * Pagina: etichetta piccola (`eyebrow`) sopra un titolo di 28 px, con un'azione rotonda a destra (`right`).
+ * Con `back` la prima riga è il tasto indietro (chrome: vetro su iOS 26) con l'azione a destra.
+ * `tabBar` lascia spazio in basso per la barra delle tab.
  */
 export function Screen({
   eyebrow,
@@ -21,7 +22,7 @@ export function Screen({
   children,
   footer,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title?: ReactNode;
   back?: boolean;
   right?: ReactNode;
@@ -29,43 +30,47 @@ export function Screen({
   /** Titolo più piccolo, per testi lunghi. */
   compactTitle?: boolean;
   children?: ReactNode;
-  /** Elementi sopra lo scorrimento (es. un avviso). */
+  /** Elementi sopra lo scorrimento (es. un avviso o un pulsante fisso). */
   footer?: ReactNode;
 }) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const heading = (
+    <View className="flex-1">
+      {eyebrow ? <Text variant="label">{eyebrow}</Text> : null}
+      {title ? (
+        <Text variant={compactTitle ? 'titleSm' : 'title'} className={eyebrow ? 'mt-0.5' : ''} accessibilityRole="header">
+          {title}
+        </Text>
+      ) : null}
+    </View>
+  );
   return (
     <View className="flex-1 bg-bg">
       <ScrollView
         className="bg-bg"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
-        contentContainerClassName="gap-[14px] px-5"
-        contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + (tabBar ? 120 : 32) }}>
-        <View className="mb-2">
-          {back ? (
-            <View className="mb-3.5 flex-row items-center gap-3">
-              <IconButton glass label={t('common.back')} onPress={() => router.back()}>
-                {Platform.OS === 'ios' ? '‹' : '←'}
-              </IconButton>
-              <Text variant="eyebrow" muted className="flex-1" accessibilityRole="header">
-                {eyebrow}
-              </Text>
+        contentContainerClassName="gap-3.5 px-5"
+        contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + (tabBar ? 120 : 32) }}>
+        {back ? (
+          <View className="mb-1 gap-3.5">
+            <View className="flex-row items-center justify-between">
+              <IconButton glass icon="back" label={t('common.back')} onPress={() => router.back()} />
               {right}
             </View>
-          ) : (
-            <Text variant="eyebrow" muted>
-              {eyebrow}
-            </Text>
-          )}
-          {title ? (
-            <Text variant={compactTitle ? 'titleSm' : 'title'} className={back ? '' : 'mt-1.5'} accessibilityRole="header">
-              {title}
-            </Text>
-          ) : null}
-        </View>
+            {heading}
+          </View>
+        ) : (
+          <View className="mb-1 min-h-12 flex-row items-center gap-3">
+            {heading}
+            {right}
+          </View>
+        )}
         {children}
       </ScrollView>
+      {/* fascia sotto la barra di stato: il contenuto che scorre non passa sotto l'ora e le icone */}
+      <View className="absolute left-0 right-0 top-0 bg-bg" style={{ height: insets.top }} />
       {footer}
     </View>
   );

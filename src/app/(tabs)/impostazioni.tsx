@@ -1,8 +1,8 @@
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Screen } from '@/components/ui/screen';
-import { Card, Inset } from '@/components/ui/surface';
+import { Card } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
 import { LANGUAGE_NAMES, LANGUAGES, type LanguagePreference } from '@/i18n';
 import { useSettings } from '@/stores/settings';
@@ -18,7 +18,7 @@ export default function Impostazioni() {
     <Screen eyebrow={t('settings.eyebrow')} title={t('settings.title')}>
       <Card>
         <Text variant="h2">{t('settings.language.title')}</Text>
-        <Inset className="mt-3 flex-row p-1" accessibilityRole="radiogroup">
+        <View className="mt-3 flex-row rounded-full bg-control p-1" accessibilityRole="radiogroup">
           {OPTIONS.map((option) => {
             const selected = option === language;
             return (
@@ -27,14 +27,14 @@ export default function Impostazioni() {
                 accessibilityRole="radio"
                 accessibilityState={{ selected }}
                 onPress={() => setLanguage(option)}
-                className={`min-h-11 flex-1 items-center justify-center rounded-inner ${selected ? 'bg-accent' : ''}`}>
-                <Text className={selected ? 'text-accent-ink' : ''}>
+                className={`min-h-11 flex-1 items-center justify-center rounded-full ${selected ? 'bg-card' : ''}`}>
+                <Text className={`font-sans-semibold text-sm ${selected ? 'text-ink' : 'text-ink-2'}`}>
                   {option === 'system' ? t('settings.language.system') : LANGUAGE_NAMES[option]}
                 </Text>
               </Pressable>
             );
           })}
-        </Inset>
+        </View>
       </Card>
       <Card>
         <Text variant="h2">{t('common.soon')}</Text>

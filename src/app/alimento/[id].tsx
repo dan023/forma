@@ -3,26 +3,34 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
+import { Donut } from '@/components/ui/donut';
 import { IconButton } from '@/components/ui/icon-button';
 import { Screen } from '@/components/ui/screen';
-import { Card, Inset } from '@/components/ui/surface';
+import { Card } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
 import { db } from '@/db/client';
 import { addEntry, deleteEntry, getEntry, mealSlotsQuery, nutrientsFor, updateEntryGrams } from '@/features/diary/diary';
 import { mealName } from '@/features/diary/meal-name';
 import { favoriteIds, getFood, getPortions, toggleFavorite } from '@/features/foods/queries';
+import { FoodTile } from '@/features/foods/food-tile';
+import { MACROS, macroShares } from '@/features/foods/macros';
 import { foodName } from '@/features/foods/search';
+import { useTheme } from '@/hooks/use-theme';
 import { fromDayKey, toDayKey } from '@/lib/date';
 import { formatNumber } from '@/lib/format';
 
 const SOURCES = { ciqual: 'CIQUAL 2025', usda: 'USDA FoodData Central', off: 'Open Food Facts' } as const;
+const MACRO_LABEL = { protein: 'meals.protein', carbs: 'meals.carbs', fat: 'meals.fat' } as const;
 const clamp = (g: number) => Math.min(5000, Math.max(1, Math.round(g)));
 
 export default function Alimento() {
   const { t, i18n } = useTranslation();
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ id: string; slot?: string; date?: string; entry?: string }>();
   const food = useMemo(() => getFood(db, params.id), [params.id]);
   const entry = useMemo(() => (params.entry ? getEntry(db, params.entry) : undefined), [params.entry]);
@@ -66,23 +74,40 @@ export default function Alimento() {
     router.back();
   };
 
+  const shares = macroShares(now);
+  const footer = (
+    <View className="border-t border-line bg-bg px-5 pt-3" style={{ paddingBottom: insets.bottom + 12 }}>
+      <Button label={entry ? t('food.save') : t('food.add', { meal })} onPress={save} />
+    </View>
+  );
+
   return (
     <Screen
       back
       tabBar={false}
-      eyebrow={`${meal} · ${day}`}
+      footer={footer}
       right={
-        <IconButton label={fav ? t('food.favoriteRemove') : t('food.favoriteAdd')} selected={fav} onPress={() => setFav(toggleFavorite(db, food.id))}>
-          {fav ? '★' : '☆'}
-        </IconButton>
-      }
-      compactTitle
-      title={foodName(food, i18n.language)}>
-      <Card className="gap-[22px]">
-        <View className="flex-row items-center justify-center gap-[18px]">
-          <IconButton label={t('food.less')} onPress={() => setG(grams - 10)}>
-            −
-          </IconButton>
+        <IconButton
+          icon="star"
+          label={fav ? t('food.favoriteRemove') : t('food.favoriteAdd')}
+          selected={fav}
+          onPress={() => setFav(toggleFavorite(db, food.id))}
+        />
+      }>
+      <View className="mb-1 flex-row items-center gap-3.5">
+        <FoodTile food={food} size="lg" />
+        <View className="flex-1">
+          <Text variant="label">{`${meal} · ${day}`}</Text>
+          <Text variant="titleSm" accessibilityRole="header">
+            {foodName(food, i18n.language)}
+          </Text>
+        </View>
+      </View>
+
+      <Card className="gap-4">
+        <Text variant="label">{t('food.gramsInput')}</Text>
+        <View className="flex-row items-center justify-between">
+          <IconButton onCard size={56} icon="minus" label={t('food.less')} onPress={() => setG(grams - 10)} />
           <View className="flex-row items-baseline">
             <TextInput
               value={gramsText}
@@ -96,55 +121,58 @@ export default function Alimento() {
               keyboardType="number-pad"
               accessibilityLabel={t('food.gramsInput')}
               selectTextOnFocus
-              className="min-w-[90px] text-center font-display text-[52px] text-ink"
+              className="min-w-[90px] text-center font-sans-bold text-[40px] tabular-nums text-ink"
             />
-            <Text muted className="font-sans-bold text-lg">
+            <Text muted className="font-sans-semibold text-[17px]">
               g
             </Text>
           </View>
-          <IconButton label={t('food.more')} onPress={() => setG(grams + 10)}>
-            +
-          </IconButton>
+          <IconButton onCard size={56} icon="plus" label={t('food.more')} onPress={() => setG(grams + 10)} />
         </View>
         {choices.length > 1 && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-[18px]" contentContainerClassName="gap-2.5 px-[18px] py-1">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-5" contentContainerClassName="gap-2 px-5">
             {choices.map(([g, label]) => (
-              <Chip key={g} label={label} selected={grams === g} onPress={() => setG(g)} />
+              <Chip onCard key={g} label={label} selected={grams === g} onPress={() => setG(g)} />
             ))}
           </ScrollView>
         )}
-        <View className="flex-row gap-2">
-          {[
-            [n(now.kcal, 0), t('common.kcal')],
-            [n(now.protein, 0), t('meals.proteinShort')],
-            [n(now.carbs, 0), t('meals.carbsShort')],
-            [n(now.fat), t('meals.fatShort')],
-          ].map(([v, l]) => (
-            <Inset key={l} className="flex-1 items-center rounded-2xl px-1 py-3">
-              <Text variant="num" className="text-lg">
-                {v}
+      </Card>
+
+      <Card className="flex-row items-center gap-5">
+        <Donut size={120} stroke={12} segments={MACROS.map((m) => ({ value: shares[m.key], color: theme[m.color] }))}>
+          <Text variant="num" className="text-[28px] leading-8">
+            {n(now.kcal, 0)}
+          </Text>
+          <Text variant="label">{t('common.kcal')}</Text>
+        </Donut>
+        <View className="flex-1 gap-2.5">
+          <Text variant="label">{t('food.inGrams', { value: n(grams, 0) })}</Text>
+          {MACROS.map((m) => (
+            <View key={m.key}>
+              <View className="flex-row items-center gap-1.5">
+                <View className="h-2 w-2 rounded-full" style={{ backgroundColor: theme[m.color] }} />
+                <Text variant="label">{t(MACRO_LABEL[m.key])}</Text>
+              </View>
+              <Text variant="num" className="text-base">
+                {n(now[m.key])} g <Text variant="label">· {n(shares[m.key] * 100, 0)}%</Text>
               </Text>
-              <Text muted className="text-xs">
-                {l}
-              </Text>
-            </Inset>
+            </View>
           ))}
         </View>
       </Card>
 
-      <Card>
-        <Text variant="eyebrow" muted className="mb-1">
+      <Card className="py-3">
+        <Text variant="label" className="mb-1 mt-1">
           {t('food.per100', { source })}
         </Text>
-        {per100.map(([k, v], i) => (
-          <View key={k} className={`min-h-12 flex-row items-center justify-between ${i ? 'border-t border-line' : ''}`}>
+        {per100.map(([k, v]) => (
+          <View key={k} className="min-h-12 flex-row items-center justify-between border-t border-line">
             <Text>{k}</Text>
-            <Text className="font-sans-bold">{v}</Text>
+            <Text className="font-sans-semibold tabular-nums">{v}</Text>
           </View>
         ))}
       </Card>
 
-      <Button label={entry ? t('food.save') : t('food.add', { meal })} onPress={save} />
       {entry && (
         <Button
           variant="ghost"

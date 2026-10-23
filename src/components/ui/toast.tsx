@@ -7,7 +7,7 @@ import { USE_LIQUID_GLASS } from '@/constants/glass';
 
 import { Text } from './text';
 
-/** Avviso breve in basso. Su iOS 26 è una capsula Liquid Glass, altrove una barra scura. */
+/** Avviso breve in basso. Su iOS 26 è una capsula Liquid Glass, altrove una pillola quasi nera (il colore primario). */
 export function Toast({ message }: { message: string | null }) {
   const insets = useSafeAreaInsets();
   // Con la tastiera aperta l'avviso salirebbe sotto di essa: lo si alza dell'altezza della tastiera.
@@ -24,7 +24,7 @@ export function Toast({ message }: { message: string | null }) {
         {USE_LIQUID_GLASS ? (
           <GlassView style={{ borderRadius: 999, paddingVertical: 14, paddingHorizontal: 18 }}>{text}</GlassView>
         ) : (
-          <View className="rounded-[14px] bg-ink px-[18px] py-3.5">{text}</View>
+          <View className="rounded-full bg-primary px-5 py-3.5">{text}</View>
         )}
       </Animated.View>
     </Animated.View>

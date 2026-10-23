@@ -1,91 +1,63 @@
 import type { BottomTabBarProps } from "expo-router/js-tabs";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
-import { inset } from "@/components/ui/surface";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { mix } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 
-const LABELS = {
-  index: "tabs.today",
-  allenamento: "tabs.training",
-  pasti: "tabs.meals",
-  statistiche: "tabs.stats",
-  impostazioni: "tabs.more",
-} as const;
+const TABS: Record<string, { label: string; icon: IconName }> = {
+  index: { label: "tabs.today", icon: "home" },
+  allenamento: { label: "tabs.training", icon: "dumbbell" },
+  pasti: { label: "tabs.meals", icon: "bowl" },
+  statistiche: { label: "tabs.stats", icon: "chart" },
+  impostazioni: { label: "tabs.more", icon: "sliders" },
+};
 
-/** Nav a pillola: vaschetta incassata + indicatore accento che scorre. */
+const layout = LinearTransition.springify().damping(40).stiffness(400);
+
+/**
+ * Barra delle tab su Android (e iOS prima del 26): pillola scura flottante; la voce attiva è una pillola
+ * chiara con icona ed etichetta, le altre solo icona. Su iOS 26 c'è la barra nativa (GlassTabs).
+ */
 export function PillTabBar({ state, emitter, navigateToTab, insets }: BottomTabBarProps) {
   const t = useTheme();
   const { t: tr } = useTranslation();
-  const [width, setWidth] = useState(0);
-  const pad = 6; // = p-1.5
-  const slot = (width - pad * 2) / state.routes.length;
-
-  const blob = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: withSpring(state.index * slot, {
-          damping: 80,
-          stiffness: 1000,
-        }),
-      },
-    ],
-  }));
+  const idle = mix(t.onPrimary, t.primary, 0.62);
 
   return (
     <View
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-      className="absolute left-4 right-4 flex-row rounded-full bg-card p-1.5"
-      style={[{ bottom: insets.bottom + 10 }, inset(t)]}
+      className="absolute left-4 right-4 h-16 flex-row items-center justify-between rounded-full bg-primary p-2"
+      style={{ bottom: insets.bottom + 12 }}
     >
-      {width > 0 && (
-        <Animated.View
-          className="absolute bottom-1.5 left-1.5 top-1.5 rounded-full bg-accent"
-          style={[
-            {
-              width: slot,
-              boxShadow: [
-                {
-                  offsetX: 0,
-                  offsetY: 6,
-                  blurRadius: 18,
-                  color: `${t.accent}80`,
-                },
-              ],
-            },
-            blob,
-          ]}
-        />
-      )}
       {state.routes.map((route, i) => {
         const focused = state.index === i;
+        const tab = TABS[route.name];
+        const label = tab ? tr(tab.label as "tabs.today") : route.name;
         return (
-          <Pressable
-            key={route.key}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: focused }}
-            onPress={() => {
-              const e = emitter.emit({
-                type: "tabPress",
-                target: route.key,
-                canPreventDefault: true,
-              });
-              if (!focused && !e.defaultPrevented) navigateToTab(route.key);
-            }}
-            className="min-h-[52px] flex-1 items-center justify-center"
-          >
-            <Text
-              className={`font-sans-bold text-[13px] ${focused ? "text-accent-ink" : "text-ink-2"}`}
+          <Animated.View key={route.key} layout={layout}>
+            <Pressable
+              accessibilityRole="tab"
+              accessibilityLabel={label}
+              accessibilityState={{ selected: focused }}
+              onPress={() => {
+                const e = emitter.emit({
+                  type: "tabPress",
+                  target: route.key,
+                  canPreventDefault: true,
+                });
+                if (!focused && !e.defaultPrevented) navigateToTab(route.key);
+              }}
+              className={`h-12 min-w-12 flex-row items-center justify-center gap-2 rounded-full ${focused ? "bg-on-primary pl-3.5 pr-[18px]" : ""}`}
             >
-              {route.name in LABELS ? tr(LABELS[route.name as keyof typeof LABELS]) : route.name}
-            </Text>
-          </Pressable>
+              {tab && <Icon name={tab.icon} color={focused ? t.primary : idle} />}
+              {focused && (
+                <Text className="font-sans-semibold text-sm text-primary">{label}</Text>
+              )}
+            </Pressable>
+          </Animated.View>
         );
       })}
     </View>

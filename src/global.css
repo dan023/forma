@@ -5,38 +5,54 @@
 @import "nativewind/theme";
 
 /*
- * Token di Forma (vedi design.md). I valori reali dei colori li fornisce ThemeProvider
- * (VariableContextProvider) da src/constants/theme.ts: qui c'è il default chiaro, che serve
- * a Tailwind per generare le utility (bg-card, text-ink, …). Aggiungere ogni nuovo colore
- * anche in metro.config.js (inlineVariables.exclude).
+ * Token di Forma, direzione "Calma" (vedi design.md). I valori reali dei colori li fornisce ThemeProvider
+ * (VariableContextProvider) da src/constants/theme.ts: qui c'è il default chiaro, che serve a Tailwind per
+ * generare le utility (bg-card, text-ink, bg-tint, …). Aggiungere ogni nuovo colore anche in metro.config.js
+ * (inlineVariables.exclude).
  */
 @theme {
-  --color-bg: #ebeae8;
-  --color-card: #eeedeb;
-  --color-ink: #262320;
-  --color-ink-2: #5c5751;
-  --color-line: #d6d3cf;
-  --color-accent: #f0863a;
-  --color-accent-ink: #3b1e0a;
-  --color-ok: #4fa57b;
+  --color-bg: #f2f0ee;
+  --color-card: #ffffff;
+  --color-ink: #18181b;
+  --color-ink-2: #6a6a70;
+  --color-line: #ebe8e5;
+  --color-control: #e6e3e0;
+  --color-primary: #1c1c1f;
+  --color-on-primary: #ffffff;
+  --color-track: #eeecea;
+  --color-accent: #ef5f3c;
+  --color-accent-ink: #943b25;
+  --color-tint: #fdeeea;
+  --color-tint-strong: #fcdcd4;
+  --color-prot: #3b7fd9;
+  --color-carb: #e9a019;
+  --color-fat: #33a46c;
 
-  --font-display: BricolageGrotesque_700Bold;
-  --font-display-medium: BricolageGrotesque_600SemiBold;
+  /* un solo carattere, Figtree, in quattro pesi */
   --font-sans: Figtree_400Regular;
   --font-sans-medium: Figtree_500Medium;
+  --font-sans-semibold: Figtree_600SemiBold;
   --font-sans-bold: Figtree_700Bold;
 
-  --radius-card: 28px;
-  --radius-inner: 20px;
+  --radius-card: 22px;
+  --radius-inner: 14px;
 }
 
 :root {
-  --color-bg: #ebeae8;
-  --color-card: #eeedeb;
-  --color-ink: #262320;
-  --color-ink-2: #5c5751;
-  --color-line: #d6d3cf;
-  --color-accent: #f0863a;
-  --color-accent-ink: #3b1e0a;
-  --color-ok: #4fa57b;
+  --color-bg: #f2f0ee;
+  --color-card: #ffffff;
+  --color-ink: #18181b;
+  --color-ink-2: #6a6a70;
+  --color-line: #ebe8e5;
+  --color-control: #e6e3e0;
+  --color-primary: #1c1c1f;
+  --color-on-primary: #ffffff;
+  --color-track: #eeecea;
+  --color-accent: #ef5f3c;
+  --color-accent-ink: #943b25;
+  --color-tint: #fdeeea;
+  --color-tint-strong: #fcdcd4;
+  --color-prot: #3b7fd9;
+  --color-carb: #e9a019;
+  --color-fat: #33a46c;
 }

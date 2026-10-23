@@ -1,53 +1,27 @@
 import type { ReactNode } from 'react';
-import { View, type ViewProps, type ViewStyle } from 'react-native';
-
-import { useTheme, type Theme } from '@/hooks/use-theme';
+import { View, type ViewProps } from 'react-native';
 
 /**
- * Ombre neumorfiche: rialzato = azionabile/contenitore, incassato = campo/valore.
- * Restano helper JS perché le ombre doppie dipendono dal tema (chiaro/scuro).
+ * Superfici piatte (direzione "Calma"): niente ombre, la profondità è un solo gradino di tono.
+ * `Card`: bianca sul fondo. `tint`: tinta pallida dell'accento, per la card da notare (una per schermata).
  */
-export function raised(t: Theme, size = 9): ViewStyle {
-  return {
-    boxShadow: [
-      { offsetX: size, offsetY: size, blurRadius: size * 2.2, color: t.shadowDark },
-      { offsetX: -size, offsetY: -size, blurRadius: size * 2.2, color: t.shadowLight },
-    ],
-  };
-}
-
-export function inset(t: Theme, size = 2): ViewStyle {
-  return {
-    boxShadow: [
-      { offsetX: size, offsetY: size, blurRadius: size * 2.2, color: t.shadowDark, inset: true },
-      { offsetX: -size, offsetY: -size, blurRadius: size * 2.2, color: t.shadowLight, inset: true },
-    ],
-  };
-}
-
 export function Card({
   className = '',
-  style,
+  tint,
   children,
   ...rest
-}: ViewProps & { className?: string; children?: ReactNode }) {
-  const t = useTheme();
+}: ViewProps & { className?: string; tint?: boolean; children?: ReactNode }) {
   return (
-    <View {...rest} className={`bg-card rounded-card p-[18px] ${className}`} style={[raised(t), style]}>
+    <View {...rest} className={`rounded-card p-5 ${tint ? 'bg-tint' : 'bg-card'} ${className}`}>
       {children}
     </View>
   );
 }
 
-export function Inset({
-  className = '',
-  style,
-  children,
-  ...rest
-}: ViewProps & { className?: string; children?: ReactNode }) {
-  const t = useTheme();
+/** Blocco del colore del fondo dentro una card (valori, campi, segmenti). */
+export function Well({ className = '', children, ...rest }: ViewProps & { className?: string; children?: ReactNode }) {
   return (
-    <View {...rest} className={`rounded-inner ${className}`} style={[inset(t), style]}>
+    <View {...rest} className={`rounded-inner bg-bg ${className}`}>
       {children}
     </View>
   );

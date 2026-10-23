@@ -2,7 +2,7 @@ import { inArray, sql } from 'drizzle-orm';
 import { Appearance } from 'react-native';
 import { create } from 'zustand';
 
-import type { AccentName } from '@/constants/theme';
+import { Accents, DEFAULT_ACCENT, type AccentName } from '@/constants/theme';
 import { db } from '@/db/client';
 import i18n, { LANGUAGES, resolveLanguage, type LanguagePreference } from '@/i18n';
 import { settings } from '@/db/schema';
@@ -32,7 +32,7 @@ const persist = (key: string, value: unknown) =>
 
 export const useSettings = create<SettingsState>((set) => ({
   themeMode: 'system',
-  accent: 'arancio',
+  accent: DEFAULT_ACCENT,
   language: 'system',
   setThemeMode: (themeMode) => {
     applyScheme(themeMode);
@@ -61,7 +61,8 @@ export const useSettings = create<SettingsState>((set) => ({
     if (language) i18n.changeLanguage(resolveLanguage(language));
     set({
       ...(saved.themeMode && { themeMode: saved.themeMode as ThemeMode }),
-      ...(saved.accent && { accent: saved.accent as AccentName }),
+      // un accento salvato che non esiste più (es. dopo il cambio di palette) torna al predefinito
+      ...(saved.accent in Accents && { accent: saved.accent as AccentName }),
       ...(language && { language }),
     });
   },

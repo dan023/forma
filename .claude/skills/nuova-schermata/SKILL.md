@@ -12,7 +12,7 @@ Argomenti: `$ARGUMENTS` (nome della schermata e cosa deve mostrare). Se manca un
 ## Prima di scrivere
 1. Branch: se sei su `main` o `dev`, crea `feature/<nome>` da `dev` (`git switch dev && git switch -c feature/<nome>`). Non fare commit.
 2. Leggi `design.md` e la skill `forma-convenzioni`: l'aspetto (token, rilievo, vetro, tema chiaro/scuro) viene da lì, **non** dalla memoria e non da questo file.
-3. Guarda una schermata vicina già fatta (`src/app/(tabs)/pasti.tsx`, `src/app/alimento/[id].tsx`) e riusa i suoi componenti: `Screen`, `Card`, `Inset`, `Text`, `Button`, `Chip`, `IconButton` in `src/components/ui/`. Prima di creare un componente nuovo controlla che non esista.
+3. Guarda una schermata vicina già fatta (`src/app/(tabs)/pasti.tsx`, `src/app/alimento/[id].tsx`) e riusa i suoi componenti: `Screen`, `Card`, `Well`, `Text`, `Button`, `Chip`, `IconButton`, `Icon`, `Donut`, `Progress` in `src/components/ui/`. Prima di creare un componente nuovo controlla che non esista.
 4. Per le API di Expo Router / Expo SDK **58** controlla la documentazione (Expo MCP o context7), non la memoria.
 
 ## Cosa creare
