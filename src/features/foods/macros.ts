@@ -1,4 +1,3 @@
-import type { IconName } from '@/components/ui/icon';
 import type { Nutrients } from '@/features/diary/diary';
 
 /** I tre macro, nell'ordine in cui si mostrano ovunque, con le kcal per grammo. */
@@ -9,6 +8,12 @@ export const MACROS = [
 ] as const;
 export type MacroColor = (typeof MACROS)[number]['color'];
 type Macros = Pick<Nutrients, 'protein' | 'carbs' | 'fat'>;
+
+/**
+ * Icone di categoria. Nomi dichiarati qui, senza importare `Icon` (un .tsx): questo file è usato anche dai test e
+ * da `scripts/`, che non compilano il JSX. `FoodTile` li passa a `Icon`, e il tipo verifica che esistano tutti.
+ */
+export type CategoryIcon = 'bowl' | 'fish' | 'meat' | 'nut' | 'fruit' | 'leaf' | 'drop' | 'milk' | 'grain' | 'candy' | 'cup';
 
 /** Kcal portate da ciascun macro (4/4/9 kcal per grammo). */
 export const macroKcal = (n: Macros) => MACROS.map((m) => ({ ...m, kcal: n[m.key] * m.kcalPerGram }));
@@ -26,7 +31,7 @@ export function macroShares(n: Macros): Record<keyof Macros, number> {
 }
 
 // Categorie del catalogo (CIQUAL in minuscolo, USDA con le maiuscole), dalla più specifica alla più generica.
-const CATEGORY_ICONS: [RegExp, IconName][] = [
+const CATEGORY_ICONS: [RegExp, CategoryIcon][] = [
   [/fish|shellfish/i, 'fish'],
   [/beef|lamb|veal|game|pork|poultry|sausage|meat/i, 'meat'],
   [/nut|seed/i, 'nut'],
@@ -43,7 +48,7 @@ const CATEGORY_ICONS: [RegExp, IconName][] = [
 const FISH = /fish|salmon|tuna|cod|trout|sardine|anchov|mackerel|hake|sea bass|sole|shrimp|prawn|mussel|clam|oyster|squid|octopus|crab|lobster|scallop/i;
 const NUTS = /\bnuts?\b|almond|walnut|hazelnut|pistachio|cashew|peanut|pecan|chestnut|seed|pine nut/i;
 const FRUIT = /fruit|apple|banana|orange|pear|peach|apricot|plum|cherr|grape|berr|melon|kiwi|lemon|lime|mandarin|clementine|\bfig|mango|pineapple|papaya|pomegranate|date|raisin|prune/i;
-const BROAD: Record<string, (name: string) => IconName> = {
+const BROAD: Record<string, (name: string) => CategoryIcon> = {
   'meat, egg and fish': (name) => (FISH.test(name) ? 'fish' : /\begg/i.test(name) ? 'milk' : 'meat'),
   'fruits, vegetables, legumes and nuts': (name) => (NUTS.test(name) ? 'nut' : FRUIT.test(name) ? 'fruit' : 'leaf'),
 };
@@ -52,7 +57,7 @@ const BROAD: Record<string, (name: string) => IconName> = {
  * Icona della categoria di un alimento (con `nameEn` per le categorie CIQUAL larghe); per i piatti, le
  * minestre e ciò che non ha categoria, una ciotola.
  */
-export function categoryIcon(category: string | null | undefined, nameEn = ''): IconName {
+export function categoryIcon(category: string | null | undefined, nameEn = ''): CategoryIcon {
   if (!category) return 'bowl';
   if (category in BROAD) return BROAD[category](nameEn);
   return CATEGORY_ICONS.find(([re]) => re.test(category))?.[1] ?? 'bowl';
