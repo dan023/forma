@@ -40,7 +40,7 @@ html[data-theme="dark"] {
   --on-primary: #141416;
   --tint: color-mix(in oklab, var(--accent) 16%, var(--surface));
   --tint-strong: color-mix(in oklab, var(--accent) 30%, var(--surface));
-  --accent-ink: color-mix(in oklab, var(--accent) 70%, #fff);
+  --accent-ink: color-mix(in oklab, var(--accent) 55%, #fff);
   --track: color-mix(in oklab, var(--accent) 20%, var(--surface));
   --chart-muted: #3d3d41;
   --prot: #5d9cf2;

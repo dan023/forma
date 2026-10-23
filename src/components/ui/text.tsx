@@ -25,7 +25,7 @@ export function Text({
   // Con NativeWind la classe della variante vince su quella passata: un font o un colore in `className`
   // sostituisce quello della variante, invece di sommarsi.
   const ownFont = /(^|\s)font-sans/.test(className);
-  const ownColor = /(^|\s)text-(ink|ink-2|on-primary|primary|accent|accent-ink|white)(\s|$)/.test(className);
+  const ownColor = /(^|\s)text-(ink|ink-2|on-primary|primary|accent|accent-ink|danger-ink|warning-ink|warning-on|success-ink|white)(\s|$)/.test(className);
   const color = ownColor ? '' : inverse ? 'text-on-primary' : accent ? 'text-accent-ink' : muted || variant === 'label' ? 'text-ink-2' : 'text-ink';
   const base = ownFont ? variants[variant].replace(/font-sans\S*/, '') : variants[variant];
   return <RNText {...rest} className={`${color} ${base} ${className}`} />;

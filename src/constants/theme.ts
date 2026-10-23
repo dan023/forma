@@ -59,6 +59,24 @@ export function mix(a: string, b: string, amount: number): string {
   return `#${out.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
 
+/**
+ * Colori di stato, solo per pulsanti e avvisi (mai nei dati: il verde e l'ambra dei macro sono un'altra cosa).
+ * Uguali nei due temi: il testo sopra è bianco (pericolo, successo) o quasi nero (avviso), con contrasto ≥ 4,5:1.
+ */
+export const Status = { danger: '#C93535', warning: '#EBA21C', success: '#0F7A69' } as const;
+export const ON_WARNING = '#2B1B00';
+
+/** Scala di un colore di stato: pieno, tinta per le aree, inchiostro per il testo sopra la tinta. */
+export function statusScale(scheme: Scheme) {
+  const card = Palette[scheme].card;
+  const one = (c: string) => ({
+    solid: c,
+    tint: mix(c, card, scheme === 'dark' ? 0.16 : 0.11),
+    ink: scheme === 'dark' ? mix(c, '#FFFFFF', 0.7) : mix(c, '#000000', 0.5),
+  });
+  return { danger: one(Status.danger), warning: one(Status.warning), success: one(Status.success), onWarning: ON_WARNING };
+}
+
 /** La scala dell'accento sul tema corrente: tinte per le aree, inchiostro per il testo sopra le tinte. */
 export function accentScale(accent: string, scheme: Scheme) {
   const p = Palette[scheme];
@@ -66,6 +84,6 @@ export function accentScale(accent: string, scheme: Scheme) {
     accent,
     tint: mix(accent, p.card, scheme === 'dark' ? 0.16 : 0.11),
     tintStrong: mix(accent, p.card, scheme === 'dark' ? 0.3 : 0.22),
-    accentInk: scheme === 'dark' ? mix(accent, '#FFFFFF', 0.7) : mix(accent, '#000000', 0.62),
+    accentInk: scheme === 'dark' ? mix(accent, '#FFFFFF', 0.55) : mix(accent, '#000000', 0.62),
   };
 }
