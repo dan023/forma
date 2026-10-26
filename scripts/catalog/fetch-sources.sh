@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Scarica i dati grezzi del catalogo alimenti in data/raw/ (ignorata da git).
+# Scarica i dati grezzi dei cataloghi (alimenti ed esercizi) in data/raw/ (ignorata da git).
 # Uso: bash scripts/catalog/fetch-sources.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -17,4 +17,7 @@ curl -fsSL "$USDA_BASE/FoodData_Central_foundation_food_csv_2026-04-30.zip" -o d
 curl -fsSL "$USDA_BASE/FoodData_Central_sr_legacy_food_csv_2018-04.zip" -o data/raw/usda/sr.zip
 unzip -oq data/raw/usda/foundation.zip -d data/raw/usda/foundation
 unzip -oq data/raw/usda/sr.zip -d data/raw/usda/sr
+# Catalogo esercizi: hasaneyldrm/exercises-dataset (dati MIT; i media © Gym visual non si scaricano)
+mkdir -p data/raw/exercises
+curl -fsSL "https://github.com/hasaneyldrm/exercises-dataset/raw/main/data/exercises.json" -o data/raw/exercises/exercises.json
 echo "Fatto: data/raw/"

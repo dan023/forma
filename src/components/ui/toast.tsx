@@ -9,12 +9,17 @@ import { Text } from './text';
 
 /** Avviso breve in basso. Su iOS 26 è una capsula Liquid Glass, altrove una pillola quasi nera (il colore primario). */
 export function Toast({ message }: { message: string | null }) {
+  // `useAnimatedKeyboard` attivo cambia la gestione degli inset su Android e la barra di sistema diventa una fascia
+  // bianca: l'hook vive solo mentre l'avviso è visibile.
+  return message ? <ToastBody message={message} /> : null;
+}
+
+function ToastBody({ message }: { message: string }) {
   const insets = useSafeAreaInsets();
   // Con la tastiera aperta l'avviso salirebbe sotto di essa: lo si alza dell'altezza della tastiera.
   // L'app è a tutto schermo con barra di stato traslucida: va dichiarato, altrimenti Reanimated scala il layout.
   const keyboard = useAnimatedKeyboard({ isStatusBarTranslucentAndroid: true });
   const lift = useAnimatedStyle(() => ({ transform: [{ translateY: -keyboard.height.value }] }));
-  if (!message) return null;
   const text = (
     <Text inverse={!USE_LIQUID_GLASS} className="text-center font-sans-bold text-[15px]">{message}</Text>
   );

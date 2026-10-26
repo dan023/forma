@@ -16,6 +16,8 @@ case "$rel" in
     hint="Le migrazioni Drizzle si generano: modifica src/db/schema/ e lancia 'bunx drizzle-kit generate'." ;;
   assets/data/foods.json|assets/data/foods.meta.json)
     hint="Il catalogo si genera: lancia 'bun run catalog:build'. Le correzioni ai nomi vanno in scripts/catalog/glossary-it.json." ;;
+  assets/data/exercises.json|assets/data/exercises.meta.json)
+    hint="Il catalogo esercizi si genera: lancia 'bun run catalog:exercises'. I sinonimi italiani per la ricerca vanno in scripts/catalog/exercise-aliases-it.json, le chiavi di muscoli e attrezzi in scripts/catalog/build-exercise-catalog.ts." ;;
   scripts/catalog/translations-it.json)
     hint="La traduzione automatica si rigenera con scripts/catalog/translate-it.py. Le correzioni a mano vanno in scripts/catalog/glossary-it.json (ha la precedenza)." ;;
   .expo/types/*|expo-env.d.ts)

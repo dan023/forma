@@ -22,11 +22,13 @@ da openGym.
 
 Restano sotto la propria licenza e vanno verificati prima della distribuzione negli store.
 
-- **Catalogo esercizi:** [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset)
-  (dati MIT). I media (immagini/animazioni) sono © Gym visual: attribuzione richiesta, licenza da verificare.
+- **Catalogo esercizi** (`assets/data/exercises.json`, generato da `scripts/catalog/build-exercise-catalog.ts`):
+  [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset), licenza MIT, Copyright (c) 2026 Hasan Emir Yıldırım (testo completo in `assets/data/exercises.LICENSE`).
+  Dati rielaborati: muscoli, attrezzi e zone normalizzati; istruzioni in italiano e inglese. I media del dataset
+  (immagini e animazioni, © Gym visual) **non sono inclusi** nell'app.
 - **Catalogo alimenti** (`assets/data/foods.json`, generato da `scripts/catalog/`):
   - [Table de composition nutritionnelle des aliments Ciqual 2025](https://doi.org/10.57745/RDMHWY), Anses, Licence Ouverte / Etalab 2.0 (attribuzione richiesta; dati rielaborati: selezione e conversione dei valori).
   - Nomi italiani: tradotti in fase di build con il modello offline Argos Translate en→it (Argos Translate è MIT; il modello è addestrato su dati OPUS) e corretti con un glossario a mano (`scripts/catalog/glossary-it.json`). Sono traduzioni approssimative.
   - [USDA FoodData Central](https://fdc.nal.usda.gov/) (Foundation Foods 2026-04 e SR Legacy 2018), CC0 1.0 (pubblico dominio; si cita la fonte per cortesia).
 - **Barcode online:** Open Food Facts (ODbL, da verificare).
-- **Font:** Bricolage Grotesque e Figtree, SIL Open Font License 1.1 (via `@expo-google-fonts`).
+- **Font:** Figtree, SIL Open Font License 1.1 (via `@expo-google-fonts`).

@@ -52,6 +52,14 @@ export const Accents = {
 export type AccentName = keyof typeof Accents;
 export const DEFAULT_ACCENT: AccentName = 'corallo';
 
+/**
+ * Colori tra cui si sceglie quello di una scheda: gli accenti più viola e cacao, sempre lontani da blu, ambra e
+ * verde dei macro. Sono un dato (la scheda), non un decoro: nelle schermate della scheda fanno da accento.
+ */
+export const RoutineColors = { ...Accents, viola: '#7C5CE0', cacao: '#9A6448' } as const;
+export type RoutineColorName = keyof typeof RoutineColors;
+export const DEFAULT_ROUTINE_COLOR: RoutineColorName = 'corallo';
+
 /** Mescola due colori `#RRGGBB` (come `color-mix` in sRGB): `amount` = quota di `a`. */
 export function mix(a: string, b: string, amount: number): string {
   const ch = (hex: string, i: number) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);

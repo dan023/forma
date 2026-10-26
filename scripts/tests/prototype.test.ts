@@ -46,9 +46,9 @@ describe('dati di esempio', () => {
 
 describe('galleria', () => {
   const p = boot();
-  test('sei schermate, ognuna con un solo h1', () => {
+  test('nove schermate, ognuna con un solo h1', () => {
     const phones = p.$$('.phone');
-    assert.equal(phones.length, 6);
+    assert.equal(phones.length, 9);
     assert.deepEqual(phones.filter((ph) => ph.querySelectorAll('h1').length !== 1).map((ph) => ph.dataset.s), []);
   });
   test('la barra delle tab segna la sezione giusta e manca nella scheda alimento', () => {
@@ -56,6 +56,8 @@ describe('galleria', () => {
     assert.equal(cur('oggi'), 'Oggi');
     assert.equal(cur('pasti'), 'Pasti');
     assert.equal(cur('statistiche'), 'Statistiche');
+    assert.equal(cur('allenamento'), 'Allenamento');
+    assert.equal(p.$('.phone[data-s="sessione"] .tabs'), null);
     assert.equal(p.$('.phone[data-s="alimento"] .tabs'), null);
   });
   test('nei testi niente trattini lunghi, salvo negli intervalli tra numeri', () => {

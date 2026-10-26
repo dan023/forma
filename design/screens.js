@@ -33,8 +33,46 @@
     flame: '<path d="M12 3c.5 3.5 5 5.5 5 10.5a5 5 0 0 1-10 0c0-2.4 1.2-3.9 2.4-5 .2 1.6.9 2.6 2 3C11 9 11 6 12 3Z"/>',
     right: '<path d="m9.5 5 7 7-7 7"/>',
     more: '<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>',
+    // schede: icone tra cui sceglie l'utente
+    barbell: '<path d="M2.5 12h19M6 7.5v9M8.5 9v6M18 7.5v9M15.5 9v6"/>',
+    kettlebell: '<path d="M8.6 9.2 8 6.6A2 2 0 0 1 10 4h4a2 2 0 0 1 2 2.6l-.6 2.6"/><circle cx="12" cy="14.5" r="5.5"/>',
+    run: '<circle cx="15" cy="4.5" r="1.8"/><path d="m13 8-3.5 2.5L7 13.5M13 8l-1 5.5 3 3-1 4.5M12 13.5 8.5 21M13 8l3 3h3"/>',
+    bike: '<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="m6 16 4-7h5l3 7M10 9l3 7H6M14 6h3"/>',
+    bolt: '<path d="M13 3 5 13.5h6L10 21l8-11h-6Z"/>',
+    heart: '<path d="M12 19.5s-7.5-4.5-7.5-10A4 4 0 0 1 12 7a4 4 0 0 1 7.5 2.5c0 5.5-7.5 10-7.5 10Z"/>',
+    mountain: '<path d="M3 19 9.5 8l4 6.5L16 11l5 8Z"/>',
+    target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+    trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0ZM8 6H5.5a2.5 2.5 0 0 0 2.6 3.8M16 6h2.5a2.5 2.5 0 0 1-2.6 3.8M12 13v4M8.5 20.5h7M10 17h4v3.5h-4Z"/>',
+    link: '<path d="M10 14a3.5 3.5 0 0 0 5 0l3.5-3.5a3.5 3.5 0 0 0-5-5L12 7"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-3.5 3.5a3.5 3.5 0 0 0 5 5L12 17"/>',
+    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    up: '<path d="m5 14.5 7-7 7 7"/>',
   };
-  const ic = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[k]}</svg>`;
+  // ---------- figura delle zone del corpo ----------
+  // Una figura a capsule sempre uguale, in tono tenue; la zona allenata è piena. Cardio usa il cuore con il battito.
+  const FIG = {
+    head: '<circle cx="12" cy="3.1" r="1.9" fill="currentColor" stroke="none"/>',
+    neck: '<path d="M12 5.5v1" stroke-width="2.2"/>',
+    shoulders: '<path d="M8 7.9h.01M16 7.9h.01" stroke-width="2.9"/>',
+    chest: '<path d="M10.4 8.9h.9M12.7 8.9h.9" stroke-width="2.7"/>',
+    back: '<path d="M9.4 7.8h5.2l-1.4 5h-2.4Z" fill="currentColor" stroke-width="1.2"/>',
+    abs: '<path d="M12 11.2v2.8" stroke-width="3.3"/>',
+    upperArms: '<path d="M7.3 9.6 6.8 12M16.7 9.6l.5 2.4" stroke-width="2.2"/>',
+    lowerArms: '<path d="M6.6 13.6 6.2 16M17.4 13.6l.4 2.4" stroke-width="1.9"/>',
+    hips: '<path d="M10.6 15.8h2.8" stroke-width="2.6"/>',
+    thighs: '<path d="M10.4 17.2 10.1 19.6M13.6 17.2l.3 2.4" stroke-width="2.5"/>',
+    calves: '<path d="M10.1 21 10 22.6M13.9 21l.1 1.6" stroke-width="2"/>',
+  };
+  const BASE = ['head', 'neck', 'shoulders', 'chest', 'abs', 'upperArms', 'lowerArms', 'hips', 'thighs', 'calves'];
+  const figure = (on) => `<g opacity=".4">${BASE.filter((k) => !on.includes(k)).map((k) => FIG[k]).join('')}</g>${on.map((k) => FIG[k]).join('')}`;
+  Object.assign(P, {
+    zChest: figure(['chest']), zBack: figure(['back']), zShoulders: figure(['shoulders']), zArms: figure(['upperArms']),
+    zForearms: figure(['lowerArms']), zAbs: figure(['abs']), zLegs: figure(['hips', 'thighs']), zCalves: figure(['calves']), zNeck: figure(['neck']),
+    zCardio: '<path d="M12 19.5s-7.5-4.5-7.5-10A4 4 0 0 1 12 7a4 4 0 0 1 7.5 2.5c0 5.5-7.5 10-7.5 10Z"/><path d="M7.5 12.5h2.2l1.1-2 1.9 4 1.1-2h2.7"/>',
+  });
+  // le zone si inquadrano da vicino: il busto per quelle alte, le gambe per quelle basse
+  const VB = { zChest: '4 1 16 16', zBack: '4 1 16 16', zShoulders: '4 1 16 16', zArms: '4 1 16 16', zForearms: '3.5 4.5 17 17', zAbs: '4 3 16 16', zNeck: '4 -1 16 16',
+    zLegs: '4 8 16 16', zCalves: '4 8 16 16' };
+  const ic = (k) => `<svg viewBox="${VB[k] ?? '0 0 24 24'}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[k]}</svg>`;
 
   // ---------- chrome ----------
   const statusBar = () => `<div class="sb"><span>${F.day.time}</span><span class="r">
@@ -89,7 +127,6 @@
   const next = F.stats.week.find((d) => d.s === 'plan');
   const pasta = F.foods.pasta, portion = 90;
   const add = { k: Math.round(pasta.k * portion / 100), p: pasta.p * portion / 100, c: pasta.c * portion / 100, f: pasta.f * portion / 100 };
-  const cur = F.session.sets.findIndex((s) => s.current);
   // ultimi 7 giorni: 6 giorni chiusi (kcalWeek) + oggi, in corso
   const last7 = F.weight.days.map((d, i) => ({ d, k: i < 6 ? F.stats.kcalWeek[i] : F.eaten.k, today: i === 6 }));
   const vol = F.stats.volume, dVol = +(vol[6] - vol[5]).toFixed(1);
@@ -204,33 +241,161 @@
   <div class="dock"><div class="line"><span>Oggi diventa <b class="num">${fmt(F.eaten.k + add.k)}</b> / ${fmt(F.goal.k)} kcal</span><a href="#" aria-label="Cambia pasto">Cena ${ic('down').replace('<svg', '<svg width="18" height="18"')}</a></div>
     <button class="btn primary block">Aggiungi a Cena · ${fmt(add.k)} kcal</button></div>`;
 
+  // ---------- allenamento: identità delle schede ----------
+  // Ogni scheda ha icona e colore scelti dall'utente (tavolozza lontana da blu, ambra e verde dei macro).
+  // Nelle schermate di una scheda (editor, sessione) il suo colore fa da accento: tinte, spunte e recupero.
+  // Gli esercizi hanno una tessera con il glifo della zona del corpo, nella tinta dell'accento.
+  const RCOL = { corallo: ['Corallo', '#ef5f3c'], lampone: ['Lampone', '#e0446a'], fucsia: ['Fucsia', '#c93d9b'],
+    viola: ['Viola', '#7c5ce0'], ardesia: ['Ardesia', '#4f5d73'], cacao: ['Cacao', '#9a6448'] };
+  const RICONS = ['dumbbell', 'barbell', 'kettlebell', 'run', 'bike', 'flame', 'bolt', 'heart', 'mountain', 'target', 'trophy', 'leaf'];
+  const ZONES = { chest: ['Petto', 'zChest'], back: ['Schiena', 'zBack'], shoulders: ['Spalle', 'zShoulders'], upperArms: ['Braccia', 'zArms'],
+    lowerArms: ['Avambracci', 'zForearms'], waist: ['Addome', 'zAbs'], upperLegs: ['Cosce e glutei', 'zLegs'], lowerLegs: ['Polpacci', 'zCalves'],
+    cardio: ['Cardio', 'zCardio'], neck: ['Collo', 'zNeck'] };
+  const EX = {
+    bench: ['Barbell bench press', 'chest', 'Bilanciere', 'Pettorali'],
+    ohp: ['Dumbbell shoulder press', 'shoulders', 'Manubri', 'Deltoidi'],
+    dips: ['Triceps dip', 'upperArms', 'Corpo libero', 'Tricipiti'],
+    fly: ['Cable crossover', 'chest', 'Cavi', 'Pettorali'],
+    pull: ['Pull-up', 'back', 'Corpo libero', 'Dorsali'],
+    row: ['Barbell bent over row', 'back', 'Bilanciere', 'Parte alta della schiena'],
+    curl: ['Dumbbell biceps curl', 'upperArms', 'Manubri', 'Bicipiti'],
+    squat: ['Barbell full squat', 'upperLegs', 'Bilanciere', 'Quadricipiti'],
+    calf: ['Standing calf raise', 'lowerLegs', 'Macchina', 'Polpacci'],
+    crunch: ['Crunch floor', 'waist', 'Corpo libero', 'Addominali'],
+    wrist: ['Barbell wrist curl', 'lowerArms', 'Bilanciere', 'Avambracci'],
+  };
+  const R = {
+    push: { name: 'Push A', icon: 'barbell', col: 'viola', days: [0, 3], ex: ['bench', 'ohp', 'dips', 'fly'] },
+    pull: { name: 'Pull A', icon: 'kettlebell', col: 'lampone', days: [1, 4], ex: ['pull', 'row', 'curl'] },
+    legs: { name: 'Gambe', icon: 'mountain', col: 'cacao', days: [5], ex: ['squat', 'calf', 'crunch'] },
+    run: { name: 'Corsa leggera', icon: 'run', col: 'ardesia', days: [], ex: [] },
+  };
+  const DAYS = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+  const DAYS_S = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+  const TODAY = 3; // giovedì: lunedì e martedì fatti, mercoledì riposo
+  const DONE = [0, 1];
+  const byDay = (d) => Object.values(R).find((r) => r.days.includes(d));
+  const rc = (r) => RCOL[r.col][1];
+  // tessera della scheda: il glifo e il colore li sceglie l'utente
+  const rtile = (r, size = '') => `<span class="tile ${size}" style="--m:${rc(r)}">${ic(r.icon)}</span>`;
+  // tessera dell'esercizio: glifo della zona, tinta dell'accento (quello della scheda, nelle sue schermate)
+  const xtile = (k, size = '') => `<span class="tile acc ${size}">${ic(ZONES[EX[k][1]][1])}</span>`;
+  // schermata "di" una scheda: il suo colore diventa l'accento
+  const scope = (r, cls = '', st = '') => `class="r ${cls}" style="--accent:${rc(r)};${st}"`;
+  const chev = ic('right').replace('<svg', '<svg class="chev"');
+
   S.allenamento = () => {
-    const s = F.session, c = s.sets[cur];
+    const r = R.push;
     return `<main class="page">
-    <div class="top"><span class="when">${s.name} · <span class="num">${s.elapsed}</span></span><button class="btn quiet" style="min-height:44px">Termina</button></div>
-    <h1 class="h1">${s.ex}</h1>
-    <p class="lead" style="margin-top:-6px">${s.equip} · ${s.rule.toLowerCase()}</p>
-    <section class="card">
-      <span class="label">Prossima serie · ${cur + 1} di ${s.sets.length}</span>
-      <p class="fig" style="margin:8px 0 4px">${c.kg}<small>kg</small> × ${c.reps}<small>rip</small></p>
-      <p class="label">1RM stimato ${s.e1rm} kg · volume finora ${fmt(s.volume)} kg</p>
-      <ul class="list sets" style="margin:12px 0 16px">${s.sets.map((x, i) => {
-        const st = x.done ? 'done' : x.current ? 'cur' : 'todo';
-        return `<li class="${st}"><span class="n">${x.done ? ic('check') : i + 1}</span><div class="main t">Serie ${i + 1}</div><div class="v">${x.kg} kg × ${x.reps}</div></li>`;
-      }).join('')}</ul>
-      <button class="btn primary block">Serie fatta</button>
+    <div><span class="when label">Palestra</span><h1 class="h1">Allenamento</h1></div>
+    <section ${scope(r, 'card tint today')}>
+      <div class="today-h">${rtile(r, 'lg')}<div><span class="label" style="color:var(--accent-ink)">Oggi · Giovedì</span>
+        <h2 class="h2">${r.name}</h2><p class="lead">${r.ex.length} esercizi · circa 55 min</p></div></div>
+      <div class="zone-strip">${r.ex.map((k) => xtile(k, 'sm')).join('')}<span class="label">Petto, spalle, tricipiti</span></div>
+      <button class="btn primary block">Inizia allenamento</button>
+      <button class="btn ghost block">Allenamento libero</button>
     </section>
-    <section class="card tint">
-      <div class="rest">${arc({ value: s.rest.left / s.rest.total, size: 76, stroke: 7 })}
-        <div><span class="label" style="color:var(--accent-ink)">Recupero</span>
-          <p class="clock">${Math.floor(s.rest.left / 60)}:${String(s.rest.left % 60).padStart(2, '0')}</p>
-          <span class="label">di ${s.rest.total / 60}:00</span></div></div>
-      <div class="btns"><button class="btn quiet">−15 s</button><button class="btn quiet">+15 s</button><button class="btn quiet">Salta</button></div>
-    </section>
-    <h2 class="sect">Dopo</h2>
-    <section class="card" style="padding-top:8px;padding-bottom:8px"><ul class="list">${s.plan.slice(1).map(([n, sch]) =>
-      `<li><div class="main t">${n}</div><div class="s num">${sch}</div></li>`).join('')}</ul></section>
+
+    <h2 class="sect">Settimana</h2>
+    <section class="card wk-card"><div class="wk">${DAYS.map((d, i) => {
+      const p = byDay(i), st = DONE.includes(i) ? 'done' : p ? 'plan' : 'rest';
+      return `<a href="#" class="${st} ${i === TODAY ? 'today' : ''}" ${p ? `style="--m:${rc(p)}"` : ''} aria-label="${DAYS_S[i]}, ${p ? p.name : 'riposo'}${st === 'done' ? ', fatto' : ''}">
+        <b>${d}</b><i>${st === 'done' ? ic('check') : p ? ic(p.icon) : ''}</i><small>${p ? p.name : 'Riposo'}</small></a>`;
+    }).join('')}</div></section>
+
+    <h2 class="sect">Schede <a href="#">+ Nuova scheda</a></h2>
+    <section class="card list-card"><ul class="list">${Object.values(R).map((x) =>
+      `<li>${rtile(x)}<div class="main"><div class="t">${x.name}</div><div class="s">${x.days.length ? x.days.map((d) => DAYS_S[d]).join(', ') : 'Nessun giorno'} · ${x.ex.length ? `${x.ex.length} esercizi` : 'vuota'}</div></div>${chev}</li>`).join('')}</ul></section>
+
+    <h2 class="sect">Esercizi</h2>
+    <section class="card list-card"><ul class="list"><li><span class="tile acc">${ic('search')}</span><div class="main"><div class="t">Catalogo esercizi</div>
+      <div class="s">1.324 esercizi, per zona e attrezzo</div></div>${chev}</li></ul></section>
+
+    <h2 class="sect">Storico</h2>
+    <section class="card list-card"><ul class="list">
+      <li>${rtile(R.pull, 'sm')}<div class="main"><div class="t">Martedì 27 ottobre</div><div class="s">Pull A · 48 min · 12 serie</div></div><div class="v">3,9 t</div></li>
+      <li>${rtile(R.push, 'sm')}<div class="main"><div class="t">Lunedì 26 ottobre</div><div class="s">Push A · 56 min · 16 serie</div></div><div class="v">5,2 t</div></li>
+      <li><span class="tile sm neutral">${ic('dumbbell')}</span><div class="main"><div class="t">Sabato 24 ottobre</div><div class="s">Allenamento libero · 31 min · 8 serie</div></div><div class="v">2,1 t</div></li>
+    </ul></section>
   </main><!--chrome-->${tabBar('allenamento')}`;
+  };
+
+  S.scheda = () => {
+    const r = R.push;
+    const row = (k, i, sets, reps) => `<li class="ex">${xtile(k)}<div class="main"><div class="t">${EX[k][0]}</div><div class="s">${EX[k][3]}</div></div>
+        ${i ? `<button class="ibtn sm" aria-label="Sposta su">${ic('up')}</button>` : ''}<button class="ibtn sm" aria-label="Togli">${ic('close')}</button>
+        <div class="ex-ctl"><span class="well"><button aria-label="Una serie in meno">${ic('minus')}</button><b class="num">${sets} serie</b><button aria-label="Una serie in più">${ic('plus')}</button></span>
+        <span class="label">×</span><span class="well reps num"><b>${reps[0]}</b><span class="label">-</span><b>${reps[1] ?? '<em>max</em>'}</b><span class="label">rip</span></span></div></li>`;
+    const link = (on) => `<li class="link ${on ? 'on' : ''}"><span>${ic('link')}${on ? 'Superserie' : 'Collega'}</span></li>`;
+    return `<main ${scope(r, 'page no-tabs')}>
+    <div class="top"><button class="ibtn" aria-label="Indietro">${ic('back')}</button></div>
+    <div class="food-h">${rtile(r, 'lg')}<div><span class="label">Scheda</span><h1 class="h1">${r.name}</h1></div></div>
+    <section class="card stack-g">
+      <span class="label">Nome</span><div class="field">${r.name}</div>
+      <span class="label">Icona</span>
+      <div class="picker" role="radiogroup" aria-label="Icona">${RICONS.map((k) => `<button role="radio" aria-checked="${k === r.icon}" aria-pressed="${k === r.icon}" aria-label="${k}">${ic(k)}</button>`).join('')}</div>
+      <span class="label">Colore</span>
+      <div class="swatches" role="radiogroup" aria-label="Colore">${Object.entries(RCOL).map(([k, [n, c]]) =>
+        `<button role="radio" aria-checked="${k === r.col}" aria-pressed="${k === r.col}" aria-label="${n}" style="--c:${c}">${k === r.col ? ic('check') : ''}</button>`).join('')}</div>
+    </section>
+    <section class="card">
+      <h2 class="h3">Giorni</h2><p class="label" style="margin:2px 0 12px">Ogni giorno ha una sola scheda: sceglierlo qui lo toglie da un’altra.</p>
+      <div class="days7">${DAYS.map((d, i) => {
+        const other = byDay(i);
+        return `<button aria-pressed="${r.days.includes(i)}" ${other && other !== r ? `class="taken" style="--m:${rc(other)}"` : ''}>${d}</button>`;
+      }).join('')}</div>
+      <p class="label" style="margin-top:10px">Altre schede: Mar e Ven Pull A, Sab Gambe</p>
+    </section>
+    <h2 class="sect">4 esercizi</h2>
+    <section class="card list-card"><ul class="list">
+      ${row('bench', 0, 4, [6, 8])}${link(false)}${row('ohp', 1, 3, [8, 12])}${link(false)}${row('dips', 2, 3, [10, null])}${link(true)}${row('fly', 3, 3, [12, 15])}
+    </ul></section>
+    <button class="btn soft block">${ic('plus').replace('<svg', '<svg width="20" height="20"')} Aggiungi esercizi</button>
+  </main><!--chrome-->
+  <div ${scope(r, 'dock')}><button class="btn primary block">Inizia allenamento</button></div>`;
+  };
+
+  S.sessione = () => {
+    const r = R.push;
+    const head = (k, target) => `<div class="ex-h">${xtile(k)}<div class="main"><div class="t h3">${EX[k][0]}</div><div class="s">${EX[k][2]} · ${EX[k][3]} · ${target}</div></div><button class="ibtn sm" aria-label="Togli">${ic('close')}</button></div>
+      <div class="st hd"><span>N°</span><span>Prima</span><span>kg</span><span>rip</span><span></span></div>`;
+    const set = (n, prev, kg, reps, done) => `<div class="st ${done ? 'done' : ''}"><span class="n num">${n}</span><span class="label num">${prev}</span>
+      <span class="in num ${kg[1] ? '' : 'ph'}">${kg[0]}</span><span class="in num ${reps[1] ? '' : 'ph'}">${reps[0]}</span>
+      <button class="ibtn sm ${done ? 'on' : ''}" aria-label="Serie ${n} ${done ? 'fatta' : 'da fare'}">${ic('check')}</button></div>`;
+    return `<main ${scope(r, 'page no-tabs', 'padding-bottom:300px')}>
+    <div class="top"><button class="ibtn" aria-label="Indietro">${ic('back')}</button></div>
+    <div class="food-h">${rtile(r, 'lg')}<div><span class="label num">18:42 · 5 di 13 serie</span><h1 class="h1">${r.name}</h1></div></div>
+    <section class="card">
+      ${head('bench', '6-8 rip')}
+      ${set(1, '80 × 8', ['82,5', 1], ['8', 1], true)}${set(2, '80 × 7', ['82,5', 1], ['7', 1], true)}${set(3, '80 × 6', ['82,5', 1], ['6', 1], true)}${set(4, '75 × 8', ['75', 0], ['8', 0], false)}
+    </section>
+    <section class="card">
+      <div class="ss"><span class="pill">${ic('link')}Superserie</span><span class="label">Una serie ciascuno, poi recupero</span></div>
+      ${head('dips', '10 rip')}
+      ${set(1, '× 12', ['', 0], ['12', 1], true)}${set(2, '× 11', ['', 0], ['11', 0], false)}
+      <div class="sep"></div>
+      ${head('fly', '12-15 rip')}
+      ${set(1, '20 × 15', ['20', 1], ['14', 1], true)}${set(2, '20 × 15', ['20', 0], ['15', 0], false)}
+    </section>
+  </main><!--chrome-->
+  <div ${scope(r, 'dock')}><section class="card tint rest-mini">
+      <div class="rest">${arc({ value: 0.6, size: 64, stroke: 6 })}<div><span class="label" style="color:var(--accent-ink)">Recupero</span><p class="clock">1:12</p></div>
+      <div class="btns"><button class="btn quiet">+15 s</button><button class="btn quiet">Salta</button></div></div></section>
+    <button class="btn primary block">Termina</button></div>`;
+  };
+
+  S.catalogo = () => {
+    const list = ['bench', 'fly', 'pull', 'row', 'curl', 'squat', 'calf', 'crunch', 'wrist'];
+    return `<main class="page no-tabs" style="padding-bottom:40px">
+    <div class="top"><button class="ibtn" aria-label="Indietro">${ic('back')}</button></div>
+    <div><span class="label">Aggiungi alla scheda · Push A</span><h1 class="h1">Esercizi</h1></div>
+    <div class="field search">${ic('search')}<span>Cerca un esercizio</span></div>
+    <div class="zones" role="group" aria-label="Zona"><button class="chip" aria-pressed="true">Tutte</button>${Object.entries(ZONES).map(([k, [n, g]]) =>
+      `<button class="chip ico">${ic(g)}${n}</button>`).join('')}</div>
+    <p class="label">1.324 esercizi</p>
+    <section class="card list-card"><ul class="list">${list.map((k) =>
+      `<li>${xtile(k)}<div class="main"><div class="t">${EX[k][0]}</div><div class="s">${EX[k][2]} · ${EX[k][3]}</div></div><button class="ibtn sm" aria-label="Aggiungi">${ic('plus')}</button></li>`).join('')}</ul></section>
+  </main>`;
   };
 
   S.statistiche = () => `<main class="page">
@@ -276,7 +441,7 @@
   };
 
   window.FORMA_SCREENS = {
-    order: [['oggi', 'Oggi'], ['pasti', 'Pasti'], ['alimento', 'Scheda alimento'], ['allenamento', 'Allenamento in corso'], ['statistiche', 'Statistiche'], ['vuoto', 'Pasti, primo giorno']],
+    order: [['oggi', 'Oggi'], ['pasti', 'Pasti'], ['alimento', 'Scheda alimento'], ['allenamento', 'Allenamento'], ['scheda', 'Scheda'], ['sessione', 'Allenamento in corso'], ['catalogo', 'Catalogo esercizi'], ['statistiche', 'Statistiche'], ['vuoto', 'Pasti, primo giorno']],
     render: (id) => {
       const [body, chrome = ''] = S[id]().split('<!--chrome-->');
       return `${statusBar()}<div class="screen">${body}</div>${chrome}<div class="home-ind"></div>`;

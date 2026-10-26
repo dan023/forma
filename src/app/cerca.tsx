@@ -161,7 +161,7 @@ export default function Cerca() {
           </Pressable>
         ) : null}
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-5" contentContainerClassName="items-center gap-2 px-5 py-1">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-5 grow-0" contentContainerClassName="items-center gap-2 px-5 py-1">
         {FILTERS.map((f) => (
           <Chip key={f} label={t(`search.filters.${f}`)} selected={filter === f} onPress={() => setFilter(f)} />
         ))}

@@ -2,7 +2,7 @@ import { VariableContextProvider } from 'nativewind';
 import { useMemo, type ReactNode } from 'react';
 import { View } from 'react-native';
 
-import { useTheme } from '@/hooks/use-theme';
+import { AccentOverride, useTheme } from '@/hooks/use-theme';
 
 /** Espone i token del tema corrente (chiaro/scuro + accento) come variabili CSS a tutto l'albero. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -43,4 +43,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       <View className="flex-1 bg-bg">{children}</View>
     </VariableContextProvider>
   );
+}
+
+/**
+ * Cambia l'accento per una parte dell'albero (la schermata di una scheda prende il suo colore): tinte, spunte e
+ * anelli si ricalcolano da lì, sia nelle classi (`bg-tint`, `text-accent-ink`) sia in `useTheme()`. Senza colore
+ * resta l'accento dell'utente.
+ */
+export function AccentScope({ color, children }: { color: string | null | undefined; children: ReactNode }) {
+  // Sempre gli stessi due provider, anche senza colore (resta l'accento dell'utente): il colore arriva da una query
+  // asincrona e cambiare la forma dell'albero smonterebbe e rimonterebbe tutta la schermata.
+  return (
+    <AccentOverride value={color ?? null}>
+      <AccentVars>{children}</AccentVars>
+    </AccentOverride>
+  );
+}
+
+function AccentVars({ children }: { children: ReactNode }) {
+  const t = useTheme();
+  const vars = useMemo(
+    () => ({ '--color-accent': t.accent, '--color-accent-ink': t.accentInk, '--color-tint': t.tint, '--color-tint-strong': t.tintStrong }),
+    [t.accent, t.accentInk, t.tint, t.tintStrong],
+  );
+  return <VariableContextProvider value={vars}>{children}</VariableContextProvider>;
 }

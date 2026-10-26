@@ -55,10 +55,12 @@ type Props = {
   /** Icona prima del testo. */
   icon?: IconName;
   disabled?: boolean;
+  /** Etichetta per i lettori di schermo, se il testo visibile non basta (es. "−15 s"). */
+  accessibilityLabel?: string;
   className?: string;
 };
 
-export function Button({ label, onPress, variant = 'primary', size = 'lg', soft, icon, disabled, className = '' }: Props) {
+export function Button({ label, onPress, variant = 'primary', size = 'lg', soft, icon, disabled, accessibilityLabel, className = '' }: Props) {
   const t = useTheme();
   const look = (soft && SOFT[variant]) || LOOKS[variant];
   const s = SIZES[size];
@@ -66,7 +68,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'lg', soft,
   return (
     <Pressable
       accessibilityRole={link ? 'link' : 'button'}
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
       onPress={onPress}
