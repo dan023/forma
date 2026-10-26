@@ -46,9 +46,9 @@ describe('dati di esempio', () => {
 
 describe('galleria', () => {
   const p = boot();
-  test('nove schermate, ognuna con un solo h1', () => {
+  test('undici schermate, ognuna con un solo h1', () => {
     const phones = p.$$('.phone');
-    assert.equal(phones.length, 9);
+    assert.equal(phones.length, 11);
     assert.deepEqual(phones.filter((ph) => ph.querySelectorAll('h1').length !== 1).map((ph) => ph.dataset.s), []);
   });
   test('la barra delle tab segna la sezione giusta e manca nella scheda alimento', () => {

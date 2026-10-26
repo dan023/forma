@@ -15,6 +15,7 @@ import {
   linkRoutineExercise,
   moveRoutineExercise,
   removeRoutineExercise,
+  restoreRoutineExercise,
   routineItem,
   routinesWithExerciseQuery,
   undoAddToRoutine,
@@ -270,6 +271,26 @@ describe('schede e settimana', () => {
     removeRoutineExercise(db, c); // resta da solo: niente superserie
     expect(state()).toEqual([[BENCH, null], [CURL, null], [PULLUP, null]]);
     expect(routineExercisesQuery(db, r).all().map((x) => x.item.position)).toEqual([0, 1, 2]);
+    deleteRoutine(db, r);
+  });
+  test('"Annulla" rimette un esercizio tolto: posto, serie, obiettivo e superserie', () => {
+    const r = createRoutine(db, 'Annulla');
+    const [a, b] = [BENCH, PULLUP, SQUAT].map((e) => addExerciseToRoutine(db, r, e));
+    setRoutineExerciseSets(db, b, 5);
+    setRoutineExerciseTarget(db, b, { repsMin: 6, repsMax: 8 });
+    linkRoutineExercise(db, a, true); // panca + trazioni
+    const state = () => routineExercisesQuery(db, r).all().map((x) => [x.exercise.id, x.item.supersetGroup, x.item.sets, x.item.repsMin]);
+    const before = state();
+    const removed = removeRoutineExercise(db, b)!;
+    expect(state()).toEqual([[BENCH, null, 3, 8], [SQUAT, null, 3, 8]]); // superserie rimasta da sola: sparita
+    restoreRoutineExercise(db, removed);
+    expect(state()).toEqual(before);
+    // tolto, poi aggiunto un altro esercizio: torna al suo posto, il nuovo resta in fondo
+    const again = removeRoutineExercise(db, b)!;
+    addExerciseToRoutine(db, r, CURL);
+    restoreRoutineExercise(db, again);
+    expect(state().map((x) => x[0])).toEqual([BENCH, PULLUP, SQUAT, CURL]);
+    expect(state()[0][1]).toBe(state()[1][1]);
     deleteRoutine(db, r);
   });
   test('l\'allenamento da una scheda copia superserie e obiettivi', () => {

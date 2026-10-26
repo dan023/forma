@@ -12,6 +12,7 @@ import { IconButton } from '@/components/ui/icon-button';
 import { Screen } from '@/components/ui/screen';
 import { Card, Well } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
+import { Toast } from '@/components/ui/toast';
 import { db } from '@/db/client';
 import type { Muscle } from '@/db/catalog-exercise';
 import { ROUTINE_COLORS, ROUTINE_ICONS } from '@/db/schema';
@@ -21,6 +22,7 @@ import {
   moveRoutineExercise,
   removeRoutineExercise,
   renameRoutine,
+  restoreRoutineExercise,
   routineDaysQuery,
   routineExercisesQuery,
   routineQuery,
@@ -40,6 +42,7 @@ import { useTrainingFormat } from '@/features/training/use-training-format';
 import { activeWorkoutQuery } from '@/features/training/workout';
 import { useTableVersion } from '@/hooks/use-table-version';
 import { useTheme } from '@/hooks/use-theme';
+import { useToast } from '@/hooks/use-toast';
 
 const WEEK = [0, 1, 2, 3, 4, 5, 6];
 
@@ -58,6 +61,7 @@ export default function Scheda() {
   const { data: days } = useLiveQuery(routineDaysQuery(db, id), [id]);
   const { data: plan } = useLiveQuery(weekPlanQuery(db), [useTableVersion('routines')]);
   const [name, setName] = useState<string | null>(null);
+  const toast = useToast();
 
   // `updatedAt` vuoto = la query non ha ancora risposto: niente "Scheda non trovata" per un istante.
   if (!routine) return <Screen back tabBar={false} title={updatedAt ? t('training.routine.missing') : undefined} />;
@@ -97,10 +101,26 @@ export default function Scheda() {
       },
     ]);
 
+  // Togliere un esercizio si annulla dall'avviso: torna al suo posto con serie, ripetizioni e superserie.
+  const removeExercise = (itemId: string) => {
+    const removed = removeRoutineExercise(db, itemId);
+    if (!removed) return;
+    toast.show(t('training.routine.removed'), {
+      label: t('meals.undo'),
+      onPress: () => {
+        restoreRoutineExercise(db, removed);
+        toast.hide();
+      },
+    });
+  };
+
   const footer = (
-    <View className="border-t border-line bg-bg px-5 pt-3" style={{ paddingBottom: insets.bottom + 12 }}>
-      <Button label={t('training.routine.start')} onPress={start} disabled={items.length === 0} />
-    </View>
+    <>
+      <View className="border-t border-line bg-bg px-5 pt-3" style={{ paddingBottom: insets.bottom + 12 }}>
+        <Button label={t('training.routine.start')} onPress={start} disabled={items.length === 0} />
+      </View>
+      <Toast message={toast.message} action={toast.action} bottomOffset={80} />
+    </>
   );
 
   return (
@@ -219,7 +239,7 @@ export default function Scheda() {
                       </Pressable>
                       {i > 0 && <IconButton size={44} onCard icon="up" label={t('training.routine.moveUp', { name: exercise.name })} onPress={() => moveRoutineExercise(db, item.id, -1)} />}
                       {next && <IconButton size={44} onCard icon="down" label={t('training.routine.moveDown', { name: exercise.name })} onPress={() => moveRoutineExercise(db, item.id, 1)} />}
-                      <IconButton size={44} onCard icon="close" label={t('training.session.removeExercise', { name: exercise.name })} onPress={() => removeRoutineExercise(db, item.id)} />
+                      <IconButton size={44} onCard icon="close" label={t('training.session.removeExercise', { name: exercise.name })} onPress={() => removeExercise(item.id)} />
                     </View>
                     <View className="flex-row flex-wrap items-center gap-2">
                       <Well className="flex-row items-center">

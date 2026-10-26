@@ -1,5 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 
+import { categoryIcon } from '@/features/foods/macros';
 import { searchText } from '@/lib/text';
 
 import type { CatalogFood, CatalogMeta } from './catalog-food';
@@ -8,8 +9,8 @@ import type { Db } from './types';
 
 const VERSION_KEY = 'foodCatalogVersion';
 /** Da aumentare quando cambia il modo di importare (es. nuove colonne calcolate): forza un nuovo import. */
-const SEED_REVISION = 2;
-// SQLite limita le variabili per statement: righe per insert = limite / colonne (foods: 19, food_portions: 4).
+const SEED_REVISION = 3; // 3: gruppo dell'alimento (`food_group`)
+// SQLite limita le variabili per statement: righe per insert = limite / colonne (foods: 20, food_portions: 4).
 const FOODS_PER_INSERT = 40;
 const PORTIONS_PER_INSERT = 200;
 const FOODS_PER_TRANSACTION = 1500;
@@ -51,6 +52,7 @@ export async function seedFoods(
               nameFr: f.nameFr,
               nameEn: f.nameEn,
               category: f.category,
+              foodGroup: categoryIcon(f.category, f.nameEn ?? ''),
               kcal: f.kcal,
               protein: f.protein,
               carbs: f.carbs,
@@ -70,6 +72,7 @@ export async function seedFoods(
               nameFr: sql`excluded.name_fr`,
               nameEn: sql`excluded.name_en`,
               category: sql`excluded.category`,
+              foodGroup: sql`excluded.food_group`,
               kcal: sql`excluded.kcal`,
               protein: sql`excluded.protein`,
               carbs: sql`excluded.carbs`,

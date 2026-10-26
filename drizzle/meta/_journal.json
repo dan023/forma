@@ -50,6 +50,13 @@
       "when": 1793012727869,
       "tag": "0006_smooth_johnny_blaze",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1793022450008,
+      "tag": "0007_tricky_firebird",
+      "breakpoints": true
     }
   ]
 }

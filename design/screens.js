@@ -43,6 +43,16 @@
     mountain: '<path d="M3 19 9.5 8l4 6.5L16 11l5 8Z"/>',
     target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
     trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0ZM8 6H5.5a2.5 2.5 0 0 0 2.6 3.8M16 6h2.5a2.5 2.5 0 0 1-2.6 3.8M12 13v4M8.5 20.5h7M10 17h4v3.5h-4Z"/>',
+    // pasti: icone tra cui sceglie l'utente (le prime quattro ai pasti predefiniti)
+    mug: '<path d="M5 8h11v7.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 15.5Z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8.5 2.5c-.7 1 .7 2 0 3M12.5 2.5c-.7 1 .7 2 0 3"/>',
+    plate: '<circle cx="12" cy="12.5" r="5.5"/><path d="M3.5 4v4.5a1.5 1.5 0 0 0 3 0V4M5 9v11M20.5 4c-1.6.8-2.5 3-2.5 6v2.5h2.5V20"/>',
+    apple: '<path d="M12 8.5c-1.5-1.2-3.6-1.5-5.1-.4C4.7 9.6 4.4 13 5.9 16.4c1.2 2.7 3 4.3 4.5 3.8.7-.3 1.1-.5 1.6-.5s.9.2 1.6.5c1.5.5 3.3-1.1 4.5-3.8 1.5-3.4 1.2-6.8-1-8.3-1.5-1.1-3.6-.8-5.1.4Z"/><path d="M12 8.5c0-2 .8-3.6 2.6-4.5"/>',
+    moon: '<path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
+    coffee: '<path d="M6 9.5h10V13a4.5 4.5 0 0 1-4.5 4.5h-1A4.5 4.5 0 0 1 6 13Z"/><path d="M16 10.5h1.5a2 2 0 0 1 0 4H16M4 20.5h14M9 3.5c-.6.9.6 1.8 0 2.7M13 3.5c-.6.9.6 1.8 0 2.7"/>',
+    shaker: '<path d="M8 8h8l-1 12.5H9Z"/><path d="M7.5 8h9M9 8V4.5h6V8M9.4 13h5.2"/>',
+    eyeoff: '<path d="M3.5 12s3-6 8.5-6c1.6 0 3 .5 4.2 1.2M20.5 12s-3 6-8.5 6c-1.6 0-3-.5-4.2-1.2M4 4l16 16"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+    trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
     link: '<path d="M10 14a3.5 3.5 0 0 0 5 0l3.5-3.5a3.5 3.5 0 0 0-5-5L12 7"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-3.5 3.5a3.5 3.5 0 0 0 5 5L12 17"/>',
     close: '<path d="M6 6l12 12M18 6 6 18"/>',
     up: '<path d="m5 14.5 7-7 7 7"/>',
@@ -85,7 +95,7 @@
   // ---------- colore che significa qualcosa ----------
   // Ogni macro ha il suo colore fisso (uguale in barre, anelli, icone); le kcal sono l'accento.
   const MAC = [['p', 'Proteine', '--prot', 4], ['c', 'Carboidrati', '--carb', 4], ['f', 'Grassi', '--fat', 9]];
-  const GLYPH = { avena: 'grain', latte: 'milk', banana: 'fruit', pasta: 'bowl', pollo: 'meat', olio: 'drop', zucchine: 'leaf', yogurt: 'cup', mandorle: 'nut' };
+  const GLYPH = { avena: 'grain', latte: 'milk', banana: 'fruit', pasta: 'bowl', pollo: 'meat', olio: 'drop', zucchine: 'leaf', yogurt: 'milk', mandorle: 'nut' };
   // l'icona di un alimento prende il colore del macro che porta più kcal
   const dominant = (x) => MAC.reduce((a, m) => (x[m[0]] * m[3] > x[a[0]] * a[3] ? m : a))[2];
   const tile = (key, size = '') => `<span class="tile ${size}" style="--m:var(${dominant(F.foods[key])})">${ic(GLYPH[key])}</span>`;
@@ -174,21 +184,59 @@
     </div>
   </main><!--chrome-->${tabBar('oggi')}`;
 
+  // ---------- pasti: icone dei pasti, righe con quantità e mini barra ----------
+  // I pasti hanno un'icona (scelta tra 12) e nessun colore proprio: la tessera è nella tinta dell'accento, come
+  // quella degli esercizi. Il colore in Pasti resta dei macro.
+  const MEAL_ICON = { colazione: 'mug', pranzo: 'plate', spuntino: 'apple', cena: 'moon' };
+  const MEAL_ICONS = ['mug', 'plate', 'apple', 'moon', 'sun', 'coffee', 'bolt', 'dumbbell', 'shaker', 'leaf', 'star', 'heart'];
+  const mtile = (icon, size = '') => `<span class="tile acc ${size}">${ic(icon)}</span>`;
+  // porzioni tipiche (dal catalogo) e ultima quantità usata (dal diario)
+  const PORTIONS = {
+    avena: [['1 cucchiaio', 10], ['1 tazza', 80]], latte: [['1 bicchiere', 200], ['1 tazza', 250]], banana: [['1 piccola', 90], ['1 media', 120]],
+    pasta: [['1 porzione', 80]], pollo: [['1 fetta', 100]], olio: [['1 cucchiaino', 5], ['1 cucchiaio', 10]], yogurt: [['1 vasetto', 170]],
+    mandorle: [['1 manciata', 20]], zucchine: [['1 media', 200]],
+  };
+  const kOf = (x) => Math.round(4 * x.p + 4 * x.c + 9 * x.f);
+  const part = (x, g) => ({ g, k: Math.round(kOf(x) * g / 100), p: x.p * g / 100, c: x.c * g / 100, f: x.f * g / 100 });
+  const ftile = (x, glyph, size = '') => `<span class="tile ${size}" style="--m:var(${dominant(x)})">${ic(glyph)}</span>`;
+  // mini barra della composizione (quota di kcal di ogni macro)
+  const mbar = (x) => { const q = kcalOf(x), t = q.reduce((a, b) => a + b.v, 0) || 1;
+    return `<span class="mbar" aria-hidden="true">${q.map((m) => `<i style="flex:${(m.v / t).toFixed(3)};background:${m.col}"></i>`).join('')}</span>`; };
+  const portionOf = (key, g) => (PORTIONS[key] ?? []).find(([, pg]) => pg === g)?.[0];
+  const qtyText = (key, g) => { const p = portionOf(key, g); return p ? `${p} · ${fmt(g)} g` : `${fmt(g)} g`; };
+  const CATS = [['grain', 'Cereali'], ['fruit', 'Frutta'], ['leaf', 'Verdura e legumi'], ['meat', 'Carne'], ['fish', 'Pesce'], ['milk', 'Latticini e uova'],
+    ['nut', 'Frutta secca'], ['drop', 'Grassi e oli'], ['candy', 'Dolci'], ['cup', 'Bevande'], ['bowl', 'Piatti']];
+  const CAT_NAME = Object.fromEntries(CATS);
+  const USUAL = { cena: [['pollo', 150], ['zucchine', 200], ['pasta', 80]], colazione: [['avena', 60], ['latte', 200], ['banana', 120]],
+    pranzo: [['pasta', 90], ['pollo', 150], ['olio', 10]], spuntino: [['yogurt', 170], ['mandorle', 20], ['banana', 120]] };
+
   const pastiPage = (empty) => {
     const e = empty ? { k: 0, p: 0, c: 0, f: 0 } : F.eaten;
+    const shares = kcalOf(e), tot = shares.reduce((a, b) => a + b.v, 0) || 1;
     const meals = F.meals.map((m) => {
       const items = empty ? [] : m.items;
+      const usual = USUAL[m.id];
+      const rows = items.map((it, i) => {
+        const li = `<li>${tile(it.key)}<div class="main"><div class="t">${it.name}</div><div class="s">${qtyText(it.key, it.g)}</div>${mbar(it)}</div>
+          <div class="v">${fmt(it.k)}<small>kcal</small></div></li>`;
+        // una riga scorsa verso sinistra: sotto c'è "Togli"
+        return m.id === 'pranzo' && i === 2 ? `<li class="swipe"><span class="act">${ic('trash')}Togli</span><ul class="list foods">${li}</ul></li>` : li;
+      }).join('');
       return `<section class="card">
-        <div class="meal-h"><h3>${m.n}${items.length ? `<span class="s num">${m.time}</span>` : ''}</h3>
+        <div class="meal-h">${mtile(MEAL_ICON[m.id])}<h3>${m.n}</h3>
           ${items.length ? `<span class="k">${fmt(m.tot.k)}<small>kcal</small></span>` : ''}</div>
         ${items.length ? `${stack(m.tot)}<p class="mline">${MAC.map(([k, n, v]) => `<span style="--a:var(${v})"><i class="dot"></i>${n[0]} ${fmt(m.tot[k])} g</span>`).join('')}</p>` : ''}
-        ${items.length ? `<ul class="list foods">${items.map((it) => `<li>${tile(it.key)}<div class="main"><div class="t">${it.name}</div><div class="s">${fmt(it.g)} g</div></div><div class="v">${fmt(it.k)}<small>kcal</small></div></li>`).join('')}</ul>`
-          : `<p class="empty-meal">Ancora niente.</p>`}
-        <a class="add" href="#alimento"><span class="plus">${ic('plus')}</span>Aggiungi alimento</a>
+        ${items.length ? `<ul class="list foods">${rows}</ul>`
+          : `<p class="label" style="margin-top:12px">Di solito</p><div class="usual">${usual.map(([k, g]) => {
+            const x = F.foods[k], q = part(x, g);
+            return `<button aria-label="Aggiungi ${x.n}, ${fmt(g)} g">${tile(k, 'sm')}<b>${x.n.split(',')[0]}</b><small>${fmt(g)} g<br>${fmt(q.k)} kcal</small><span class="plus">${ic('plus')}</span></button>`;
+          }).join('')}</div>`}
+        <a class="add" href="#cerca"><span class="plus">${ic('plus')}</span>${items.length ? 'Aggiungi alimento' : 'Cerca un alimento'}</a>
       </section>`;
     }).join('');
     return `<main class="page">
-      <div class="top"><h1 class="h1">Pasti</h1><button class="ibtn" aria-label="Cerca un alimento">${ic('search')}</button></div>
+      <div class="top"><div><span class="label">Alimentazione</span><h1 class="h1">Pasti</h1></div>
+        <span class="tops"><button class="ibtn" aria-label="Modifica pasti">${ic('sliders')}</button><button class="ibtn" aria-label="Cerca un alimento">${ic('search')}</button></span></div>
       <section class="card tint week">
         <div class="ends" style="align-items:center"><b class="month">Ottobre 2026</b>
           <span class="arrows"><button class="ibtn sm" aria-label="Settimana precedente">${ic('back')}</button><button class="ibtn sm" aria-label="Settimana successiva">${ic('right')}</button></span></div>
@@ -199,47 +247,103 @@
       </section>
       <section class="card">
         <div class="sum">
-          <div class="donut">${donut(kcalOf(e).map((q) => ({ v: q.v / F.goal.k, col: q.col })))}
-            <div class="in"><b class="num">${fmt(e.k)}</b><span>di ${fmt(F.goal.k)} kcal</span></div></div>
-          <ul class="mac">${MAC.map(([k, n, v]) => `<li style="--a:var(${v})"><span class="label"><i class="dot"></i>${n}</span>
-            <span class="v">${fmt(e[k])}<small> / ${fmt(F.goal[k])} g</small></span>${prog(e[k], F.goal[k], 'thin')}</li>`).join('')}</ul>
+          <div class="donut">${donut(shares.map((q) => ({ v: q.v / tot, col: q.col })))}
+            <div class="in"><b class="num">${fmt(e.k)}</b><span>kcal</span></div></div>
+          <ul class="mac">${MAC.map(([k, n, v], i) => `<li style="--a:var(${v})"><span class="label"><i class="dot"></i>${n}</span>
+            <span class="v">${fmt(e[k])} g<small> · ${Math.round((shares[i].v / tot) * 100)}% kcal</small></span>${prog(shares[i].v, tot, 'thin')}</li>`).join('')}</ul>
         </div>
-        <p class="rest-line"><span>${ic('flame')}Restano <b class="num">${fmt(F.goal.k - e.k)}</b> kcal</span><span>${empty ? 'Nessun pasto' : `${F.meals.filter((m) => m.items.length).length} pasti su ${F.meals.length}`}</span></p>
+        <div class="mealrow">${F.meals.map((m) => {
+          const k = empty ? 0 : m.tot.k;
+          return `<div class="${k ? '' : 'off'}" aria-label="${m.n}: ${k ? `${fmt(k)} kcal` : 'vuoto'}">${mtile(MEAL_ICON[m.id], 'sm')}<b class="num">${fmt(k)}</b></div>`;
+        }).join('')}</div>
       </section>
-      ${empty ? '<p class="lead" style="padding:4px 4px 0">Il diario di oggi è vuoto. Cerca un alimento o scansiona un codice a barre per iniziare.</p>' : ''}
       ${meals}
     </main><!--chrome-->${tabBar('pasti')}`;
   };
   S.pasti = () => pastiPage(false);
   S.vuoto = () => pastiPage(true);
 
-  S.alimento = () => `<main class="page no-tabs">
+  // Ricerca aperta da Cena, con "yog" scritto e il filtro Latticini.
+  S.cerca = () => {
+    const extra = { yint: { n: 'Yogurt intero', p: 3.5, c: 4.7, f: 3.3 }, yfr: { n: 'Yogurt alla frutta', p: 3.0, c: 14.0, f: 2.5 }, ysoia: { n: 'Yogurt di soia', p: 4.0, c: 2.0, f: 2.2 } };
+    const res = [
+      { key: 'yogurt', x: F.foods.yogurt, g: 170, why: '1 vasetto · 170 g', added: true },
+      { key: 'yint', x: extra.yint, g: 125, why: '1 vasetto · 125 g' },
+      { key: 'yfr', x: extra.yfr, g: 125, why: '1 vasetto · 125 g' },
+      { key: 'ysoia', x: extra.ysoia, g: 100, why: '100 g' },
+    ];
+    const hl = (n) => n.replace(/^(Yog)/, '<u>$1</u>');
+    return `<main class="page no-tabs" style="padding-bottom:110px">
+      <div class="top"><button class="ibtn" aria-label="Indietro">${ic('back')}</button>
+        <button class="mpill" aria-label="Pasto: Cena, cambia">${mtile('moon', 'sm')}Cena${ic('down')}</button></div>
+      <h1 class="sr">Cerca un alimento</h1>
+      <div class="field search">${ic('search')}<span style="color:var(--ink)">yog</span></div>
+      <div class="zones" role="group" aria-label="Elenco">${['Tutti', 'Recenti', 'Preferiti', 'Miei'].map((n, i) => `<button class="chip" aria-pressed="${i === 0}">${n}</button>`).join('')}</div>
+      <div class="zones" role="group" aria-label="Categoria">${CATS.map(([g, n]) => `<button class="chip ico" aria-pressed="${g === 'milk'}">${ic(g)}${n}</button>`).join('')}</div>
+      <p class="label">4 risultati · Latticini e uova</p>
+      <section class="card list-card"><ul class="list foods">${res.map((r) => {
+        const q = part(r.x, r.g);
+        return `<li>${ftile(r.x, 'milk')}<div class="main"><div class="t">${hl(r.x.n)}</div><div class="s">${r.why} · ${fmt(q.k)} kcal</div>${mbar(r.x)}</div>
+          <button class="ibtn sm ${r.added ? 'on' : ''}" aria-label="${r.added ? 'Aggiunto' : 'Aggiungi'} ${r.x.n}">${ic(r.added ? 'check' : 'plus')}</button></li>`;
+      }).join('')}</ul></section>
+      <p class="label" style="padding:0 4px">Il "+" aggiunge l'ultima quantità che hai usato o la porzione tipica; tocca il nome per sceglierla.</p>
+    </main><!--chrome--><div class="toast">Aggiunto a Cena · 1 vasetto, 170 g</div>`;
+  };
+
+  S.alimento = () => {
+    const key = 'yogurt', x = F.foods[key], g = 170, q = part(x, g);
+    const nut = [['Energia', `${fmt(q.k)} kcal`], ['Proteine', `${fmt(q.p, 1)} g`, '--prot'], ['Carboidrati', `${fmt(q.c, 1)} g`, '--carb'], ['di cui zuccheri', '6,6 g', '', 'sub'],
+      ['Grassi', `${fmt(q.f, 1)} g`, '--fat'], ['di cui saturi', '0,2 g', '', 'sub'], ['Fibre', '0 g'], ['Sale', '0,1 g']];
+    return `<main class="page no-tabs">
     <div class="top"><button class="ibtn" aria-label="Indietro">${ic('back')}</button><button class="ibtn" aria-label="Aggiungi ai preferiti">${ic('star')}</button></div>
-    <div class="food-h">${tile('pasta', 'lg')}<div><h1 class="h1">${pasta.n}</h1>
-      <p class="lead">Cereali · CIQUAL 2025 · ${fmt(pasta.k)} kcal per 100 g</p></div></div>
+    <div class="food-h">${tile(key, 'lg')}<div><h1 class="h1">${x.n}</h1>
+      <p class="meta"><span class="cat">${ic('milk')}${CAT_NAME.milk}</span></p><p class="lead">CIQUAL 2025 · ${fmt(x.k)} kcal per 100 g</p></div></div>
     <section class="card">
       <span class="label">Quantità</span>
       <div class="qty"><button class="ibtn" aria-label="Meno 10 g">${ic('minus')}</button>
-        <span class="fig">${portion}<small>g</small></span>
+        <span class="fig">${g}<small>g</small></span>
         <button class="ibtn" aria-label="Più 10 g">${ic('plus')}</button></div>
-      <div class="chips" role="group" aria-label="Porzioni">
-        <button class="chip">Piccola<small>60 g</small></button><button class="chip" aria-pressed="true">Media<small>90 g</small></button>
-        <button class="chip">Grande<small>120 g</small></button><button class="chip">100 g</button></div>
+      <div class="ptiles" role="radiogroup" aria-label="Porzioni">
+        <button aria-pressed="true"><b>1 vasetto</b><small>170 g · ultima volta</small></button>
+        <button><b>2 vasetti</b><small>340 g</small></button>
+        <button><b>1 cucchiaio</b><small>15 g</small></button>
+        <button><b>100 g</b><small>${fmt(x.k)} kcal</small></button>
+      </div>
     </section>
     <section class="card">
       <div class="sum">
-        <div class="donut">${donut(kcalOf(add).map((q) => ({ v: q.v / add.k, col: q.col })), { size: 120, stroke: 12 })}
-          <div class="in"><b class="num">${fmt(add.k)}</b><span>kcal</span></div></div>
+        <div class="donut">${donut(kcalOf(q).map((m) => ({ v: m.v / q.k, col: m.col })), { size: 120, stroke: 12 })}
+          <div class="in"><b class="num">${fmt(q.k)}</b><span>kcal</span></div></div>
         <ul class="mac">${MAC.map(([k, n, v, m]) => `<li style="--a:var(${v})"><span class="label"><i class="dot"></i>${n}</span>
-          <span class="v">${fmt(add[k], 1)} g<small> · ${Math.round((add[k] * m / add.k) * 100)}%</small></span></li>`).join('')}</ul>
+          <span class="v">${fmt(q[k], 1)} g<small> · ${Math.round((q[k] * m / q.k) * 100)}%</small></span></li>`).join('')}</ul>
       </div>
     </section>
-    <h2 class="sect">Sulla giornata</h2>
-    <div class="row3">${MAC.map(([k, n, v]) => `<section class="card mcard" style="--a:var(${v})">${arc({ value: Math.min(1, add[k] / F.goal[k]), size: 56, stroke: 6, col: `var(${v})` })}
-      <b class="num">${fmt(add[k], 0)} g</b><span class="label">${n}</span><span class="pct num">${Math.round((add[k] / F.goal[k]) * 100)}% del giorno</span></section>`).join('')}</div>
+    <section class="card list-card"><span class="label" style="display:block;padding-top:10px">Valori per ${g} g</span>
+      <ul class="list ntable">${nut.map(([n, v, col, cls]) => `<li class="${cls ?? ''}" ${col ? `style="--a:var(${col})"` : ''}><span>${col ? '<i class="dot"></i>' : ''}${n}</span><b class="num">${v}</b></li>`).join('')}</ul></section>
   </main><!--chrome-->
-  <div class="dock"><div class="line"><span>Oggi diventa <b class="num">${fmt(F.eaten.k + add.k)}</b> / ${fmt(F.goal.k)} kcal</span><a href="#" aria-label="Cambia pasto">Cena ${ic('down').replace('<svg', '<svg width="18" height="18"')}</a></div>
-    <button class="btn primary block">Aggiungi a Cena · ${fmt(add.k)} kcal</button></div>`;
+  <div class="dock"><div class="line"><span>Oggi diventa <b class="num">${fmt(F.eaten.k + q.k)}</b> kcal</span>
+    <button class="mpill" aria-label="Pasto: Cena, cambia">${mtile('moon', 'sm')}Cena${ic('down')}</button></div>
+    <button class="btn primary block">Aggiungi a Cena · ${fmt(q.k)} kcal</button></div>`;
+  };
+
+  S.modifica = () => `<main class="page no-tabs">
+    <div class="top"><button class="ibtn" aria-label="Indietro">${ic('back')}</button></div>
+    <div><span class="label">Modifica</span><h1 class="h1">Pasti</h1></div>
+    <p class="lead">Nome, icona e ordine dei pasti del diario. Un pasto nascosto non compare più, ma quello che c'era nei giorni passati resta.</p>
+    <section class="card list-card"><ul class="list">${F.meals.map((m, i) => {
+      const open = m.id === 'spuntino';
+      const head = `<li class="mrow">${mtile(MEAL_ICON[m.id])}<div class="main"><div class="t">${m.n}</div></div>
+        ${i ? `<button class="ibtn sm" aria-label="Sposta su ${m.n}">${ic('up')}</button>` : ''}${i < F.meals.length - 1 ? `<button class="ibtn sm" aria-label="Sposta giù ${m.n}">${ic('down')}</button>` : ''}
+        <button class="ibtn sm" aria-label="${open ? 'Chiudi' : 'Modifica'} ${m.n}" aria-expanded="${open}">${ic(open ? 'close' : 'sliders')}</button></li>`;
+      return open ? `${head}<li class="medit"><span class="label">Nome</span><div class="field">Spuntino</div><span class="label">Icona</span>
+        <div class="picker">${MEAL_ICONS.map((k) => `<button aria-pressed="${k === 'apple'}" aria-label="${k}">${ic(k)}</button>`).join('')}</div>
+        <button class="btn quiet block" style="min-height:48px">${ic('eyeoff').replace('<svg', '<svg width="20" height="20"')} Nascondi Spuntino</button></li>` : head;
+    }).join('')}</ul></section>
+    <h2 class="sect">Nascosti</h2>
+    <section class="card list-card"><ul class="list"><li>${mtile('bolt')}<div class="main"><div class="t">Pre-allenamento</div><div class="s">Nascosto dal 12 ottobre</div></div>
+      <button class="btn quiet" style="min-height:44px">Mostra</button></li></ul></section>
+    <button class="btn soft block">${ic('plus').replace('<svg', '<svg width="20" height="20"')} Aggiungi pasto</button>
+  </main>`;
 
   // ---------- allenamento: identità delle schede ----------
   // Ogni scheda ha icona e colore scelti dall'utente (tavolozza lontana da blu, ambra e verde dei macro).
@@ -441,7 +545,7 @@
   };
 
   window.FORMA_SCREENS = {
-    order: [['oggi', 'Oggi'], ['pasti', 'Pasti'], ['alimento', 'Scheda alimento'], ['allenamento', 'Allenamento'], ['scheda', 'Scheda'], ['sessione', 'Allenamento in corso'], ['catalogo', 'Catalogo esercizi'], ['statistiche', 'Statistiche'], ['vuoto', 'Pasti, primo giorno']],
+    order: [['oggi', 'Oggi'], ['pasti', 'Pasti'], ['cerca', 'Ricerca alimento'], ['alimento', 'Scheda alimento'], ['modifica', 'Modifica pasti'], ['allenamento', 'Allenamento'], ['scheda', 'Scheda'], ['sessione', 'Allenamento in corso'], ['catalogo', 'Catalogo esercizi'], ['statistiche', 'Statistiche'], ['vuoto', 'Pasti, primo giorno']],
     render: (id) => {
       const [body, chrome = ''] = S[id]().split('<!--chrome-->');
       return `${statusBar()}<div class="screen">${body}</div>${chrome}<div class="home-ind"></div>`;

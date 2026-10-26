@@ -164,10 +164,31 @@ function locate(db: Db, id: string) {
   return { list, index: list.findIndex((r) => r.id === id) };
 }
 
-export function removeRoutineExercise(db: Db, id: string) {
+/** Quello che serve per rimettere un esercizio tolto: la riga e l'ordine (con le superserie) di prima. */
+export type RemovedRoutineExercise = { item: RoutineItem; before: Grouped[] };
+
+/** Toglie un esercizio da una scheda; restituisce come rimetterlo (`restoreRoutineExercise`). */
+export function removeRoutineExercise(db: Db, id: string): RemovedRoutineExercise | undefined {
   const found = locate(db, id);
+  if (!found) return undefined;
+  const item = found.list[found.index];
   db.delete(routineExercises).where(eq(routineExercises.id, id)).run();
-  if (found) writeOrder(db, normalizeSupersets(found.list.filter((r) => r.id !== id)));
+  writeOrder(db, normalizeSupersets(found.list.filter((r) => r.id !== id)));
+  return { item, before: found.list.map((r) => ({ id: r.id, supersetGroup: r.supersetGroup })) };
+}
+
+/**
+ * "Annulla" dopo aver tolto un esercizio: lo rimette con serie e obiettivo, al suo posto e nella sua superserie.
+ * Gli esercizi aggiunti nel frattempo restano, in fondo; quelli tolti nel frattempo non tornano.
+ */
+export function restoreRoutineExercise(db: Db, removed: RemovedRoutineExercise) {
+  const { item, before } = removed;
+  db.insert(routineExercises).values(item).onConflictDoNothing().run();
+  const now = routineExercisesQuery(db, item.routineId).all().map((r) => r.item);
+  const ids = new Set(now.map((r) => r.id));
+  const kept = before.filter((r) => ids.has(r.id));
+  const added = now.filter((r) => !before.some((b) => b.id === r.id)).map((r) => ({ id: r.id, supersetGroup: null }));
+  writeOrder(db, normalizeSupersets([...kept, ...added]));
 }
 
 /** Schede che contengono un esercizio (una riga per volta in cui compare): per `useLiveQuery`. */
