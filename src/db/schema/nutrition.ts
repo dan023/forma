@@ -6,6 +6,10 @@ export const FOOD_SOURCES = ['ciqual', 'usda', 'off', 'custom'] as const;
 export const DAY_TYPES = ['training', 'rest'] as const;
 /** Pasti predefiniti: il nome si traduce finché l'utente non lo rinomina. */
 export const MEAL_PRESETS = ['breakfast', 'lunch', 'snack', 'dinner'] as const;
+/** Icone tra cui scegliere quella di un pasto; le prime quattro vanno ai predefiniti (vedi `mealIcon`). */
+export const MEAL_ICONS = ['mug', 'plate', 'apple', 'moon', 'sun', 'coffee', 'bolt', 'dumbbell', 'shaker', 'leaf', 'star', 'heart'] as const;
+/** Gruppi di alimenti: il glifo della tessera e il filtro per categoria della ricerca (`categoryIcon`). */
+export const FOOD_GROUPS = ['grain', 'fruit', 'leaf', 'meat', 'fish', 'milk', 'nut', 'drop', 'candy', 'cup', 'bowl'] as const;
 
 /** Alimenti: catalogo incluso (ciqual/usda), cache Open Food Facts e alimenti personalizzati. Valori per 100 g. */
 export const foods = sqliteTable(
@@ -20,6 +24,8 @@ export const foods = sqliteTable(
     nameEn: text('name_en'),
     brand: text('brand'),
     category: text('category'),
+    /** Gruppo calcolato all'import da categoria e nome (`categoryIcon`): filtro della ricerca. */
+    foodGroup: text('food_group', { enum: FOOD_GROUPS }),
     barcode: text('barcode'),
     kcal: real('kcal').notNull(),
     protein: real('protein').notNull().default(0),
@@ -40,6 +46,7 @@ export const foods = sqliteTable(
     index('foods_barcode_idx').on(t.barcode),
     index('foods_name_it_idx').on(t.nameIt),
     index('foods_name_en_idx').on(t.nameEn),
+    index('foods_group_idx').on(t.foodGroup),
   ],
 );
 
@@ -63,6 +70,8 @@ export const mealSlots = sqliteTable('meal_slots', {
   /** Vuoto per i pasti predefiniti non rinominati: si mostra la traduzione di `preset`. */
   name: text('name').notNull(),
   preset: text('preset', { enum: MEAL_PRESETS }),
+  /** Icona scelta; null = quella del predefinito (`mealIcon`). */
+  icon: text('icon', { enum: MEAL_ICONS }),
   position: integer('position').notNull(),
   archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
 });

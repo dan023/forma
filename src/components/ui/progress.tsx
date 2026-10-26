@@ -18,16 +18,19 @@ export function Progress({ value, max, color, thin, label }: { value: number; ma
   );
 }
 
-/** Barra composta: segmenti proporzionali (es. kcal di proteine, carboidrati, grassi di un pasto). */
-export function StackBar({ parts }: { parts: { value: number; color: string }[] }) {
+/**
+ * Barra composta: segmenti proporzionali (es. kcal di proteine, carboidrati, grassi di un pasto). `mini`: sottile e
+ * corta, sotto il nome di un alimento in un elenco.
+ */
+export function StackBar({ parts, mini }: { parts: { value: number; color: string }[]; mini?: boolean }) {
   const total = parts.reduce((a, p) => a + p.value, 0);
   if (!total) return null;
   return (
-    <View className="h-2 flex-row gap-[3px]" aria-hidden>
+    <View className={mini ? 'mt-1.5 h-1 w-[72px] flex-row gap-[2px]' : 'h-2 flex-row gap-[3px]'} aria-hidden>
       {parts
         .filter((p) => p.value > 0)
         .map((p, i) => (
-          <View key={i} className="min-w-1.5 rounded-full" style={{ flex: p.value / total, backgroundColor: p.color }} />
+          <View key={i} className={`rounded-full ${mini ? 'min-w-[3px]' : 'min-w-1.5'}`} style={{ flex: p.value / total, backgroundColor: p.color }} />
         ))}
     </View>
   );

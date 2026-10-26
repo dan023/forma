@@ -3,6 +3,7 @@ import { asc, eq } from 'drizzle-orm';
 import { diaryEntries, foods, mealSlots } from '@/db/schema';
 import type { Db } from '@/db/types';
 import type { Food } from '@/features/foods/search';
+import { uuid } from '@/lib/uuid';
 
 export type Nutrients = { kcal: number; protein: number; carbs: number; fat: number };
 export const ZERO: Nutrients = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
@@ -31,9 +32,16 @@ export type DayEntry = { entry: typeof diaryEntries.$inferSelect; food: Food };
 export const mealSlotsQuery = (db: Db) =>
   db.select().from(mealSlots).where(eq(mealSlots.archived, false)).orderBy(asc(mealSlots.position));
 
-/** Raggruppa le voci per pasto e calcola i totali di ogni pasto e del giorno. */
+/** Tutti i pasti, anche i nascosti (per il diario dei giorni passati e le voci già scritte): per `useLiveQuery`. */
+export const allMealSlotsQuery = (db: Db) => db.select().from(mealSlots).orderBy(asc(mealSlots.archived), asc(mealSlots.position));
+
+/**
+ * Raggruppa le voci per pasto e calcola i totali di ogni pasto e del giorno. I pasti nascosti compaiono solo se
+ * quel giorno hanno voci: nasconderne uno non cambia i giorni passati.
+ */
 export function groupByMeal(slots: MealSlot[], entries: DayEntry[]) {
-  const meals = slots.map((slot) => {
+  const used = new Set(entries.map((e) => e.entry.mealSlotId));
+  const meals = slots.filter((slot) => !slot.archived || used.has(slot.id)).map((slot) => {
     const items = entries
       .filter((e) => e.entry.mealSlotId === slot.id)
       .map((e) => ({ ...e, nutrients: nutrientsFor(e.food, e.entry.grams ?? 0) }));
@@ -42,13 +50,24 @@ export function groupByMeal(slots: MealSlot[], entries: DayEntry[]) {
   return { meals, totals: sum(meals.map((m) => m.totals)) };
 }
 
-export function addEntry(db: Db, v: { date: string; mealSlotId: string; foodId: string; grams: number }) {
-  db.insert(diaryEntries).values(v).run();
+/** Aggiunge una voce al diario e ne restituisce l'id. */
+export function addEntry(db: Db, v: { date: string; mealSlotId: string; foodId: string; grams: number }): string {
+  const id = uuid();
+  db.insert(diaryEntries).values({ id, ...v }).run();
+  return id;
 }
 export function updateEntryGrams(db: Db, id: string, grams: number) {
   db.update(diaryEntries).set({ grams }).where(eq(diaryEntries.id, id)).run();
 }
+/** Cambia quantità e pasto di una voce (dalla scheda dell'alimento). */
+export function updateEntry(db: Db, id: string, v: { grams: number; mealSlotId: string }) {
+  db.update(diaryEntries).set(v).where(eq(diaryEntries.id, id)).run();
+}
 export function deleteEntry(db: Db, id: string) {
   db.delete(diaryEntries).where(eq(diaryEntries.id, id)).run();
+}
+/** Rimette una voce tolta (stesso id e orario): per "Annulla" dopo averla tolta scorrendo. */
+export function restoreEntry(db: Db, row: typeof diaryEntries.$inferSelect) {
+  db.insert(diaryEntries).values(row).onConflictDoNothing().run();
 }
 export const getEntry = (db: Db, id: string) => db.select().from(diaryEntries).where(eq(diaryEntries.id, id)).get();

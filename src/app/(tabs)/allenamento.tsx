@@ -1,34 +1,35 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 
 import { AccentScope } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { LinkRow, TintIcon } from "@/components/ui/link-row";
 import { Screen } from "@/components/ui/screen";
 import { Card } from "@/components/ui/surface";
 import { Text } from "@/components/ui/text";
 import { db } from "@/db/client";
+import { estimateMinutes } from "@/features/training/estimate";
+import { ExerciseTile } from "@/features/training/exercise-tile";
 import { exerciseCount } from "@/features/training/exercises";
+import { RoutineTile, routineHex } from "@/features/training/routine-tile";
 import {
   createRoutine,
   routineEstimates,
   routineExercisesQuery,
   routineQuery,
-  type RoutineStyle,
   routinesQuery,
   startRoutineWorkout,
   trainedDaysQuery,
   weekPlanQuery,
   weekStart,
   weekdayOf,
+  type RoutineStyle,
 } from "@/features/training/routines";
 import { clock, minutesBetween } from "@/features/training/stats";
-import { estimateMinutes } from "@/features/training/estimate";
-import { ExerciseTile } from "@/features/training/exercise-tile";
-import { RoutineTile, routineHex } from "@/features/training/routine-tile";
 import { useTrainingFormat } from "@/features/training/use-training-format";
 import {
   activeWorkoutQuery,
@@ -91,7 +92,9 @@ export default function Allenamento() {
   // Zone del corpo della scheda di oggi, nell'ordine degli esercizi.
   const todayZones = [
     ...new Set(
-      todayItems.map((r) => r.exercise.bodyPart).filter((z): z is string => !!z),
+      todayItems
+        .map((r) => r.exercise.bodyPart)
+        .filter((z): z is string => !!z),
     ),
   ];
   const zoneList = (zones: string[]) =>
@@ -140,7 +143,10 @@ export default function Allenamento() {
                 </Text>
                 <Text muted>
                   {todayMinutes
-                    ? t("training.todaySummary", { count: todayItems.length, min: todayMinutes })
+                    ? t("training.todaySummary", {
+                        count: todayItems.length,
+                        min: todayMinutes,
+                      })
                     : t("training.routine.empty")}
                 </Text>
               </View>
@@ -266,7 +272,7 @@ export default function Allenamento() {
               .filter((p) => p.routineId === routine.id)
               .map((p) => f.weekday(p.weekday));
             return (
-              <Row
+              <LinkRow
                 key={routine.id}
                 first={i === 0}
                 leading={<RoutineTile style={routine} />}
@@ -275,7 +281,9 @@ export default function Allenamento() {
                   days.length ? days.join(", ") : t("training.routine.noDays"),
                   t("training.exercises", { count: exercises }),
                   estimates.get(routine.id)
-                    ? t("training.routine.estimate", { min: estimates.get(routine.id) })
+                    ? t("training.routine.estimate", {
+                        min: estimates.get(routine.id),
+                      })
                     : null,
                 ]
                   .filter(Boolean)
@@ -296,13 +304,9 @@ export default function Allenamento() {
         {t("training.catalog")}
       </Text>
       <Card className="py-2">
-        <Row
+        <LinkRow
           first
-          leading={
-            <View className="h-11 w-11 items-center justify-center rounded-[14px] bg-tint">
-              <Icon name="search" color={theme.accentInk} size={22} />
-            </View>
-          }
+          leading={<TintIcon name="search" />}
           title={t("training.catalogRow")}
           sub={t("training.catalogRowHint", {
             count: total,
@@ -321,43 +325,45 @@ export default function Allenamento() {
         </Text>
       ) : (
         <Card className="py-2">
-          {history.map(({ workout, icon, color, exercises, sets, volume }, i) => (
-            <Row
-              key={workout.id}
-              first={i === 0}
-              leading={
-                icon && color ? (
-                  <RoutineTile style={{ icon, color }} size="sm" />
-                ) : (
-                  <View className="h-8 w-8 items-center justify-center rounded-[10px] bg-bg">
-                    <Icon name="dumbbell" color={theme.ink2} size={18} />
-                  </View>
-                )
-              }
-              title={
-                workout.name
-                  ? `${workout.name} · ${f.day(workout.startedAt ?? 0)}`
-                  : f.day(workout.startedAt ?? 0)
-              }
-              sub={[
-                f.duration(
-                  minutesBetween(
-                    workout.startedAt ?? 0,
-                    workout.finishedAt ?? 0,
+          {history.map(
+            ({ workout, icon, color, exercises, sets, volume }, i) => (
+              <LinkRow
+                key={workout.id}
+                first={i === 0}
+                leading={
+                  icon && color ? (
+                    <RoutineTile style={{ icon, color }} size="sm" />
+                  ) : (
+                    <View className="h-8 w-8 items-center justify-center rounded-[10px] bg-bg">
+                      <Icon name="dumbbell" color={theme.ink2} size={18} />
+                    </View>
+                  )
+                }
+                title={
+                  workout.name
+                    ? `${workout.name} · ${f.day(workout.startedAt ?? 0)}`
+                    : f.day(workout.startedAt ?? 0)
+                }
+                sub={[
+                  f.duration(
+                    minutesBetween(
+                      workout.startedAt ?? 0,
+                      workout.finishedAt ?? 0,
+                    ),
                   ),
-                ),
-                t("training.exercises", { count: exercises }),
-                t("training.sets", { count: sets }),
-              ].join(" · ")}
-              value={volume > 0 ? f.volume(volume) : undefined}
-              onPress={() =>
-                router.push({
-                  pathname: "/allenamento/riepilogo/[id]",
-                  params: { id: workout.id },
-                })
-              }
-            />
-          ))}
+                  t("training.exercises", { count: exercises }),
+                  t("training.sets", { count: sets }),
+                ].join(" · ")}
+                value={volume > 0 ? f.volume(volume) : undefined}
+                onPress={() =>
+                  router.push({
+                    pathname: "/allenamento/riepilogo/[id]",
+                    params: { id: workout.id },
+                  })
+                }
+              />
+            ),
+          )}
         </Card>
       )}
     </Screen>
@@ -365,12 +371,20 @@ export default function Allenamento() {
 }
 
 /** Allenamento in corso: card tinta con tempo, esercizi e serie fatte. */
-function ActiveCard({ workout }: { workout: { id: string; name: string | null; routineId: string | null; startedAt: number | null } }) {
+function ActiveCard({
+  workout,
+}: {
+  workout: {
+    id: string;
+    name: string | null;
+    routineId: string | null;
+    startedAt: number | null;
+  };
+}) {
   const { t } = useTranslation();
-  const { data: items } = useLiveQuery(
-    workoutExercisesQuery(db, workout.id),
-    [workout.id],
-  );
+  const { data: items } = useLiveQuery(workoutExercisesQuery(db, workout.id), [
+    workout.id,
+  ]);
   const { data: setRows } = useLiveQuery(workoutSetsQuery(db, workout.id), [
     workout.id,
   ]);
@@ -415,7 +429,15 @@ function ActiveCard({ workout }: { workout: { id: string; name: string | null; r
  * Segno del giorno nella settimana: l'icona della scheda sulla sua tinta; pieno del suo colore con la spunta se
  * ci si è allenati; un anello oggi. Riposo = cerchio vuoto.
  */
-function DayMark({ style, done, today }: { style?: RoutineStyle; done: boolean; today: boolean }) {
+function DayMark({
+  style,
+  done,
+  today,
+}: {
+  style?: RoutineStyle;
+  done: boolean;
+  today: boolean;
+}) {
   const theme = useTheme();
   const color = style ? routineHex(style.color) : theme.accent;
   return (
@@ -424,7 +446,10 @@ function DayMark({ style, done, today }: { style?: RoutineStyle; done: boolean; 
       style={{ borderWidth: 2, borderColor: today ? color : "transparent" }}
     >
       {done ? (
-        <View className="h-9 w-9 items-center justify-center rounded-full" style={{ backgroundColor: color }}>
+        <View
+          className="h-9 w-9 items-center justify-center rounded-full"
+          style={{ backgroundColor: color }}
+        >
           <Icon name="check" color="#FFFFFF" size={18} strokeWidth={2.4} />
         </View>
       ) : style ? (
@@ -435,45 +460,5 @@ function DayMark({ style, done, today }: { style?: RoutineStyle; done: boolean; 
         <View className="h-9 w-9 rounded-full bg-bg" />
       )}
     </View>
-  );
-}
-
-/** Riga di un elenco in card: titolo, riga secondaria, valore a destra e freccia. */
-function Row({
-  leading,
-  title,
-  sub,
-  value,
-  first,
-  onPress,
-}: {
-  leading?: ReactNode;
-  title: string;
-  sub: string;
-  value?: string;
-  first?: boolean;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      className={`min-h-16 flex-row items-center gap-3 py-3 active:opacity-70 ${first ? "" : "border-t border-line"}`}
-    >
-      {leading}
-      <View className="flex-1">
-        <Text className="font-sans-semibold text-[15px]">{title}</Text>
-        <Text variant="label" className="mt-0.5" numberOfLines={1}>
-          {sub}
-        </Text>
-      </View>
-      {value ? (
-        <Text variant="num" className="text-[15px]">
-          {value}
-        </Text>
-      ) : null}
-      <Icon name="forward" color={theme.ink2} size={18} />
-    </Pressable>
   );
 }

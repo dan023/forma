@@ -1,3 +1,4 @@
+import type { FOOD_GROUPS } from '@/db/schema';
 import type { Nutrients } from '@/features/diary/diary';
 
 /** I tre macro, nell'ordine in cui si mostrano ovunque, con le kcal per grammo. */
@@ -13,7 +14,8 @@ type Macros = Pick<Nutrients, 'protein' | 'carbs' | 'fat'>;
  * Icone di categoria. Nomi dichiarati qui, senza importare `Icon` (un .tsx): questo file è usato anche dai test e
  * da `scripts/`, che non compilano il JSX. `FoodTile` li passa a `Icon`, e il tipo verifica che esistano tutti.
  */
-export type CategoryIcon = 'bowl' | 'fish' | 'meat' | 'nut' | 'fruit' | 'leaf' | 'drop' | 'milk' | 'grain' | 'candy' | 'cup';
+/** Gruppo dell'alimento e glifo della sua tessera (`FOOD_GROUPS` nello schema). */
+export type CategoryIcon = (typeof FOOD_GROUPS)[number];
 
 /** Kcal portate da ciascun macro (4/4/9 kcal per grammo). */
 export const macroKcal = (n: Macros) => MACROS.map((m) => ({ ...m, kcal: n[m.key] * m.kcalPerGram }));

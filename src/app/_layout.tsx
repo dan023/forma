@@ -44,6 +44,7 @@ const PUSHED_SCREENS = [
   "allenamento/scheda/[id]",
   "allenamento/riepilogo/[id]",
   "esercizio/[id]",
+  "pasti/modifica",
 ];
 
 export default function RootLayout() {

@@ -8,9 +8,11 @@ import type { CatalogFood, CatalogMeta } from '../../src/db/catalog-food';
 import { ensureDefaultMealSlots } from '../../src/db/meal-slots';
 import * as schema from '../../src/db/schema';
 import { seedFoods } from '../../src/db/seed-foods';
-import { addEntry, dayEntriesQuery, deleteEntry, groupByMeal, mealSlotsQuery, nutrientsFor, updateEntryGrams } from '../../src/features/diary/diary';
-import { favoriteIds, recentFoodIds, toggleFavorite } from '../../src/features/foods/queries';
-import { foodName, searchFoods } from '../../src/features/foods/search';
+import { addEntry, allMealSlotsQuery, dayEntriesQuery, deleteEntry, getEntry, groupByMeal, mealSlotsQuery, nutrientsFor, restoreEntry, updateEntryGrams } from '../../src/features/diary/diary';
+import { addMeal, hiddenMealSlotsQuery, mealIcon, moveMeal, renameMeal, setMealHidden, setMealIcon } from '../../src/features/diary/meal-slots';
+import { portionLabel, quickAmount } from '../../src/features/foods/portions';
+import { favoriteIds, getFood, quickAmounts, recentFoodIds, toggleFavorite, usualFoods } from '../../src/features/foods/queries';
+import { browseGroup, foodName, searchFoods } from '../../src/features/foods/search';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const db = drizzle(new Database(':memory:'), { schema });
@@ -83,5 +85,92 @@ describe('diario', () => {
     expect(names('riso', { filter: 'favorites', ids: favoriteIds(db) })).toEqual(['Riso, bianco, crudo']);
     expect(toggleFavorite(db, 'ciqual:9100')).toBe(false);
     expect(names('riso', { filter: 'favorites', ids: favoriteIds(db) })).toEqual([]);
+  });
+});
+
+describe('porzioni e quantità rapide', () => {
+  test('unità USDA in italiano; misure imperiali ed etichette lunghe solo in grammi', () => {
+    expect(portionLabel('1 cup', 'it')).toBe('1 tazza');
+    expect(portionLabel('2 tablespoon', 'it')).toBe('2 cucchiai');
+    expect(portionLabel('0.5 cup', 'it')).toBe('0,5 tazza');
+    expect(portionLabel('5 tomatoes', 'it')).toBeNull(); // unità non nota
+    expect(portionLabel('3 oz', 'it')).toBeNull();
+    expect(portionLabel('1 cup, chopped', 'it')).toBeNull();
+    expect(portionLabel('1 cup, chopped', 'en')).toBe('1 cup, chopped');
+    expect(portionLabel('1 fl oz', 'en')).toBeNull();
+  });
+  test('il "+" aggiunge l\'ultima quantità, poi la prima porzione con un nome, poi 100 g', () => {
+    const portions = [{ label: '1 oz', grams: 28.35 }, { label: '1 jar', grams: 170 }];
+    expect(quickAmount(null, portions, 'it')).toEqual({ grams: 170, label: '1 vasetto' });
+    expect(quickAmount(125, portions, 'it')).toEqual({ grams: 125, label: null });
+    expect(quickAmount(170, portions, 'it')).toEqual({ grams: 170, label: '1 vasetto' });
+    expect(quickAmount(undefined, [{ label: '3 oz', grams: 85 }], 'it')).toEqual({ grams: 100, label: null });
+  });
+  test('dal DB: ultima quantità usata, altrimenti porzione del catalogo', () => {
+    const HUMMUS = 'usda:321358';
+    expect(quickAmounts(db, [HUMMUS], 'it').get(HUMMUS)).toEqual({ grams: 34, label: '2 cucchiai' });
+    addEntry(db, { date: '2026-10-07', mealSlotId: 'meal:snack', foodId: HUMMUS, grams: 50 });
+    expect(quickAmounts(db, [HUMMUS], 'it').get(HUMMUS)).toEqual({ grams: 50, label: null });
+  });
+});
+
+describe('gruppi e "di solito"', () => {
+  test('ogni alimento del catalogo ha il suo gruppo; si filtra e si sfoglia per gruppo', () => {
+    expect(getFood(db, 'ciqual:13039')?.foodGroup).toBe('fruit'); // mela (categoria CIQUAL larga: decide il nome)
+    expect(getFood(db, 'ciqual:17270')?.foodGroup).toBe('drop');
+    expect(searchFoods(db, 'yogurt', { lang: 'it', group: 'milk' }).every((h) => h.food.foodGroup === 'milk')).toBe(true);
+    expect(searchFoods(db, 'yogurt', { lang: 'it', group: 'meat' })).toEqual([]);
+    const fruit = browseGroup(db, 'fruit', { lang: 'it' });
+    expect(fruit.length).toBe(40);
+    expect(fruit.every((h) => h.food.foodGroup === 'fruit')).toBe(true);
+  });
+  test('"di solito": i più frequenti nel pasto, con l\'ultima quantità usata lì', () => {
+    const slot = 'meal:dinner';
+    expect(usualFoods(db, slot, '2026-09-01')).toEqual([]);
+    for (const [d, g] of [['2026-10-01', 150], ['2026-10-02', 160]] as const) addEntry(db, { date: d, mealSlotId: slot, foodId: 'ciqual:9100', grams: g });
+    addEntry(db, { date: '2026-10-03', mealSlotId: slot, foodId: 'ciqual:17270', grams: 10 });
+    addEntry(db, { date: '2026-08-01', mealSlotId: slot, foodId: 'ciqual:13039', grams: 200 }); // troppo vecchio
+    expect(usualFoods(db, slot, '2026-09-01').map((u) => [u.food.id, u.grams])).toEqual([['ciqual:9100', 160], ['ciqual:17270', 10]]);
+  });
+});
+
+describe('pasti configurabili', () => {
+  const order = () => mealSlotsQuery(db).all().map((s) => s.preset ?? s.name);
+  test('icona predefinita, scelta, rinomina', () => {
+    const lunch = mealSlotsQuery(db).all().find((s) => s.preset === 'lunch')!;
+    expect(mealIcon(lunch)).toBe('plate');
+    setMealIcon(db, lunch.id, 'sun');
+    renameMeal(db, lunch.id, '  Pranzo al lavoro ');
+    const now = mealSlotsQuery(db).all().find((s) => s.id === lunch.id)!;
+    expect([mealIcon(now), now.name]).toEqual(['sun', 'Pranzo al lavoro']);
+    renameMeal(db, lunch.id, ''); // vuoto: torna il nome tradotto
+    expect(mealSlotsQuery(db).all().find((s) => s.id === lunch.id)!.name).toBe('');
+  });
+  test('aggiungi, sposta, nascondi e mostra; il diario dei giorni passati resta', () => {
+    const id = addMeal(db, 'Pre-allenamento', 'bolt');
+    expect(order()).toEqual(['breakfast', 'lunch', 'snack', 'dinner', 'Pre-allenamento']);
+    moveMeal(db, id, -1);
+    expect(order()).toEqual(['breakfast', 'lunch', 'snack', 'Pre-allenamento', 'dinner']);
+    addEntry(db, { date: '2026-10-09', mealSlotId: id, foodId: 'ciqual:13039', grams: 150 });
+    setMealHidden(db, id, true);
+    expect(order()).toEqual(['breakfast', 'lunch', 'snack', 'dinner']);
+    expect(hiddenMealSlotsQuery(db).all().map((s) => s.name)).toEqual(['Pre-allenamento']);
+    expect(dayEntriesQuery(db, '2026-10-09').all().length).toBe(1);
+    // nel diario di quel giorno il pasto nascosto c'è ancora, con le sue kcal; negli altri giorni no
+    const day9 = groupByMeal(allMealSlotsQuery(db).all(), dayEntriesQuery(db, '2026-10-09').all());
+    expect(day9.meals.map((m) => m.slot.name || m.slot.preset)).toContain('Pre-allenamento');
+    expect(day9.totals.kcal).toBeGreaterThan(0);
+    const day8 = groupByMeal(allMealSlotsQuery(db).all(), dayEntriesQuery(db, '2026-10-08').all());
+    expect(day8.meals.map((m) => m.slot.name || m.slot.preset)).not.toContain('Pre-allenamento');
+    setMealHidden(db, id, false); // torna in fondo
+    expect(order()).toEqual(['breakfast', 'lunch', 'snack', 'dinner', 'Pre-allenamento']);
+  });
+  test('una voce tolta si rimette uguale con "Annulla"', () => {
+    addEntry(db, { date: '2026-10-10', mealSlotId: 'meal:breakfast', foodId: 'ciqual:13039', grams: 120 });
+    const row = dayEntriesQuery(db, '2026-10-10').all()[0].entry;
+    deleteEntry(db, row.id);
+    expect(getEntry(db, row.id)).toBeUndefined();
+    restoreEntry(db, row);
+    expect(getEntry(db, row.id)).toEqual(row);
   });
 });

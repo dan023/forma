@@ -1,8 +1,10 @@
-import { and, eq, inArray, like, type SQL } from 'drizzle-orm';
+import { and, asc, eq, inArray, like, sql, type SQL } from 'drizzle-orm';
 
 import { foods } from '@/db/schema';
 import type { Db } from '@/db/types';
 import { normalize, queryWords, words } from '@/lib/text';
+
+import type { CategoryIcon } from './macros';
 
 export type Food = typeof foods.$inferSelect;
 export type SearchFilter = 'all' | 'recent' | 'favorites' | 'mine';
@@ -23,13 +25,20 @@ const CANDIDATES = 500;
 export function searchFoods(
   db: Db,
   query: string,
-  { lang, filter = 'all', ids, limit = 20 }: { lang: string; filter?: SearchFilter; ids?: string[]; limit?: number },
+  {
+    lang,
+    filter = 'all',
+    ids,
+    group,
+    limit = 20,
+  }: { lang: string; filter?: SearchFilter; ids?: string[]; group?: CategoryIcon; limit?: number },
 ): FoodHit[] {
   const toks = queryWords(query);
   if (!toks.length) return [];
   if ((filter === 'recent' || filter === 'favorites') && !ids?.length) return [];
 
   const where: SQL[] = toks.map((t) => like(foods.searchText, `% ${t}%`));
+  if (group) where.push(eq(foods.foodGroup, group));
   if (filter === 'mine') where.push(eq(foods.source, 'custom'));
   if ((filter === 'recent' || filter === 'favorites') && ids) where.push(inArray(foods.id, ids));
   const rows = db.select().from(foods).where(and(...where)).limit(CANDIDATES).all();
@@ -54,4 +63,20 @@ export function searchFoods(
     else groups.set(key, { food: f, versions: [f] });
   }
   return [...groups.values()].slice(0, limit);
+}
+
+/**
+ * Alimenti di un gruppo senza parole cercate (si sfoglia una categoria): prima CIQUAL, poi i nomi più corti,
+ * nella lingua corrente.
+ */
+export function browseGroup(db: Db, group: CategoryIcon, { lang, limit = 40 }: { lang: string; limit?: number }): FoodHit[] {
+  const name = lang === 'it' ? sql`coalesce(${foods.nameIt}, ${foods.nameEn})` : sql`coalesce(${foods.nameEn}, ${foods.nameIt})`;
+  return db
+    .select()
+    .from(foods)
+    .where(eq(foods.foodGroup, group))
+    .orderBy(sql`${foods.source} != 'ciqual'`, sql`length(${name})`, asc(name))
+    .limit(limit)
+    .all()
+    .map((f) => ({ food: f, versions: [f] }));
 }

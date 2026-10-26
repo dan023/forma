@@ -62,6 +62,9 @@ Ogni scheda di allenamento ha un'icona (12: manubrio, bilanciere, kettlebell, co
 - Nella settimana un giorno con una scheda mostra la sua tessera; fatto = cerchio pieno del suo colore con spunta bianca (≥ 3:1, test in `theme.test.ts`); oggi = anello del suo colore.
 - Il contrasto del testo sulle tinte di ogni colore delle schede è fissato dallo stesso test degli accenti.
 
+### Pasti, icona senza colore
+I pasti hanno un'icona (12: tazza, piatto, mela, luna per i quattro predefiniti, poi sole, caffè, fulmine, manubrio, shaker, foglia, stella, cuore; `MEAL_ICONS`) e **nessun colore proprio**: in Pasti il colore è dei macro. La tessera del pasto (`MealTile`) è nella tinta dell'accento, come quella degli esercizi; attenuata (grigia) per un pasto ancora vuoto.
+
 ## Tipografia
 Un solo carattere: **Figtree**, in quattro pesi (400, 500, 600, 700). La gerarchia la fanno dimensione e peso.
 
@@ -79,7 +82,7 @@ Cifre sempre tabulari. Un solo h1 per schermata.
 ## Forma e spazio
 - Raggi: card 22 · tessere e campi 14 · pulsanti, chip, giorni, barra delle tab: pillola (999).
 - Margini laterali 20; padding card 20; spazio tra card 14.
-- Pulsanti rotondi neutri da 44–56 px (bianchi sul fondo, grigi dentro una card). Mai icone in riquadri colorati, salvo **le tessere**, dove il colore è un dato: alimento (il macro), scheda (il colore scelto), esercizio (la tinta dell'accento, cioè della scheda nelle sue schermate).
+- Pulsanti rotondi neutri da 44–56 px (bianchi sul fondo, grigi dentro una card). Mai icone in riquadri colorati, salvo **le tessere**, dove il colore è un dato: alimento (il macro), scheda (il colore scelto), esercizio e pasto (la tinta dell'accento, cioè della scheda nelle sue schermate).
 
 ## Componenti
 - **Card** (`Card`): bianca, piatta. `tint` per la card da notare. Mai card dentro card: dentro si usano righe con filetto `line` o blocchi del colore del fondo (`Well`).
@@ -120,17 +123,18 @@ Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**.
 | Oggi | Oggi | "Ti restano N kcal" grande e centrato, card delle calorie con i macro, quattro azioni rapide (alimento, codice a barre, peso, allenati), pasti di oggi scorrevoli con tessere e barra dei macro, allenamento di oggi in card tinta, peso e allenamenti della settimana |
 | | Registra il peso | Stepper grande ±0,1 kg, nota facoltativa, recenti |
 | Allenamento | Allenamento (tab) | In alto una sola card tinta su "oggi": allenamento in corso ("Riprendi"), oppure la scheda del giorno nella sua tinta (tessera grande, "N esercizi · circa X min", tessere delle zone, "Inizia allenamento", sotto "Allenamento libero"), oppure riposo/nessuna scheda con "Inizia allenamento libero". Poi Settimana (7 giorni lun→dom con la tessera della scheda; pieno con spunta se allenato, anello oggi, nome della scheda sotto; tocco = scegli la scheda del giorno), Schede (tessera, giorni, esercizi e durata stimata, "Nuova scheda"), riga "Catalogo esercizi", Storico (tessera della scheda, o neutra se libero) |
-| | Scheda | Nel colore della scheda. Tessera e nome in alto; nome, icona (griglia 6 × 2) e colore (sei cerchi); giorni (cerchi L…D: un giorno ha una sola scheda, un puntino del colore dell'altra scheda sui giorni presi); "N esercizi · circa X min"; esercizi con tessera, − N serie +, ripetizioni min-max (o secondi), su/giù e "Collega" per le superserie; "Aggiungi esercizi" (catalogo che resta aperto: il "+" diventa spunta), "Elimina scheda"; "Inizia allenamento" fisso in basso |
+| | Scheda | Nel colore della scheda. Tessera e nome in alto; nome, icona (griglia 6 × 2) e colore (sei cerchi); giorni (cerchi L…D: un giorno ha una sola scheda, un puntino del colore dell'altra scheda sui giorni presi); "N esercizi · circa X min"; esercizi con tessera, − N serie +, ✕ per toglierli (con "Annulla" nell'avviso, che rimette posto, serie, obiettivo e superserie), ripetizioni min-max (o secondi), su/giù e "Collega" per le superserie; "Aggiungi esercizi" (catalogo che resta aperto: il "+" diventa spunta), "Elimina scheda"; "Inizia allenamento" fisso in basso |
 | | Durata stimata | Serie × (ripetizioni previste × 3 s + 30 s di preparazione), recupero di 2 min dopo ogni giro tranne l'ultimo (in superserie il giro è una serie per esercizio, 15 s di cambio), 90 s tra un esercizio e l'altro; arrotondata a 5 min (`src/features/training/estimate.ts`) |
 | | Sessione | Nel colore della scheda, con la sua tessera accanto al titolo. Una card per esercizio (tessera della zona accanto al nome) con tabella N° · Prima · kg · rip · spunta (solo rip per il corpo libero, secondi per gli esercizi a tempo); i valori dell'ultima volta sono il segnaposto e valgono se si spunta senza scrivere; senza rip né suggerimento la spunta porta al campo. Riga fatta = tinta. Recupero (2 min) in card tinta con anello e −15 s / +15 s / Salta, fisso in basso sopra "Termina", vibra alla fine. "Annulla allenamento" (`danger soft`, con conferma) |
 | | Catalogo esercizi | Ricerca (anche in italiano: "panca manubri"), chip Zona (con la figura) e Attrezzo (gli attrezzi seguono la zona), elenco virtualizzato con la tessera di ogni esercizio; dalla sessione il "+" aggiunge e torna indietro |
 | | Esercizio | Tessera grande della zona accanto al nome. Aperto dal catalogo: card "Aggiungi a una scheda" che si apre nell'elenco delle schede (tessera, nome, esercizi, casella: vuota = tocco aggiunge in fondo; piena d'accento = appena aggiunto da qui e non ancora toccato, un tocco lo toglie; in tinta = già nella scheda, si cambia dalla scheda; sempre con avviso) e "Nuova scheda con questo esercizio"; aperto dalla sessione o da una scheda: pulsante "Aggiungi" fisso in basso. Tipo, muscolo principale (pillola tinta) e secondari, attrezzo, ultime volte con 1RM stimato, istruzioni nella lingua dell'app |
 | | Riepilogo | Nel colore della scheda. Durata, volume, serie (card divisa in tre), record personali in card tinta, serie di ogni esercizio con la migliore in grassetto |
 | | Programma, mappa muscolare | Da fare: schema e regola di progressione, grafico 1RM, muscoli lavorati |
-| Pasti | Pasti | Settimana, anello delle kcal per macro, pasti con barra di composizione e tessere, "Aggiungi alimento" |
+| Pasti | Pasti | Settimana, anello delle kcal per macro con sotto la fila dei pasti (tessera e kcal); riga "Cerca alimenti" (come "Catalogo esercizi" in Allenamento); un pasto per card con la sua tessera, barra di composizione e righe (tessera, nome, quantità con la porzione se c'è, mini barra dei macro, kcal e cestino a destra; togliere si annulla dall'avviso); pasto vuoto: "Di solito" (i 3 alimenti più frequenti lì negli ultimi 60 giorni, un tocco li aggiunge con l'ultima quantità). In alto "Modifica pasti" |
+| | Modifica pasti | Pasti con tessera, su/giù e cursori per aprire nome e icona (griglia 6 × 2) e "Nascondi"; sezione "Nascosti" con "Mostra"; "Aggiungi pasto". Le voci dei pasti nascosti restano nei giorni passati |
 | | Ricerca alimento | Vedi "Ricerca alimenti" |
-| | Scheda alimento | Tessera grande e nome, grammi con − / + e porzioni, anello della porzione per macro, valori per 100 g, "Aggiungi a …" fisso in basso |
-| | Versioni, crea alimento, barcode, ricette, pasti configurabili | Da disegnare con queste regole |
+| | Scheda alimento | Tessera grande e nome, gruppo con il suo glifo, fonte; grammi con − / + e porzioni come tessere (ultima volta, porzioni del catalogo con l'unità tradotta, 100 g); anello della porzione per macro; valori per la quantità scelta (energia, macro con il pallino, zuccheri, saturi, fibre, sale). In basso "Oggi diventa N kcal", il pasto (pillola con la tessera, si tocca per cambiarlo) e "Aggiungi a … · N kcal" |
+| | Versioni, crea alimento, barcode, ricette | Da disegnare con queste regole |
 | Statistiche | Statistiche | Settimana / mese / anno; semianello dei giorni nell'obiettivo; calorie degli ultimi 7 giorni a pillole tratteggiate con la linea dell'obiettivo; peso; volume |
 | Impostazioni | Impostazioni | Lingua, tema, accento, obiettivi, promemoria, dati (export/import) |
 
@@ -160,6 +164,11 @@ Implementata in `src/features/foods/search.ts` (`searchFoods`, sul DB locale) e 
 - Alcune traduzioni sono ancora sbagliate: correggerle nel glossario partendo dai cibi più comuni.
 - La classifica ha bisogno di un segnale "comune" più forte dei soli caratteri del nome.
 
+
+**Filtri e righe (round 4)**
+- Il pasto è in alto a destra (pillola con la tessera), si cambia senza uscire.
+- Due righe di chip: elenco (Tutti, Recenti, Preferiti, Miei) e gruppo con il suo glifo (11: cereali, frutta, verdura e legumi, carne, pesce, latticini e uova, frutta secca, grassi e oli, dolci, bevande, piatti). Si combinano; un gruppo senza parole si sfoglia (prima CIQUAL, poi i nomi corti). Il gruppo è calcolato all'import (`foods.food_group`, da `categoryIcon`).
+- Riga: tessera, nome, "quantità · kcal" di quello che aggiunge il "+", mini barra dei macro. Il "+" aggiunge l'ultima quantità usata, altrimenti la prima porzione del catalogo con un nome leggibile, altrimenti 100 g (`quickAmount`); l'avviso ha "Annulla". Le unità USDA si traducono ("2 tbsp" → "2 cucchiai"); misure imperiali ed etichette lunghe restano solo in grammi (`portionLabel`).
 ## Accessibilità
 - Contrasto testo ≥ 4,5:1 (`ink2` su `card` e su `bg`; `accentInk` sulle tinte). Il colore non è mai l'unico segnale: i macro hanno sempre il nome accanto al pallino.
 - Ogni controllo ha un'etichetta accessibile; lo stato (`selected`) è esposto.
