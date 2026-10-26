@@ -16,13 +16,18 @@ const TABS: Record<string, { label: string; icon: IconName }> = {
   impostazioni: { label: "tabs.more", icon: "sliders" },
 };
 
-const layout = LinearTransition.springify().damping(40).stiffness(400);
+const layout = LinearTransition.springify().damping(100).stiffness(2000);
 
 /**
  * Barra delle tab su Android (e iOS prima del 26): pillola scura flottante; la voce attiva è una pillola
  * chiara con icona ed etichetta, le altre solo icona. Su iOS 26 c'è la barra nativa (GlassTabs).
  */
-export function PillTabBar({ state, emitter, navigateToTab, insets }: BottomTabBarProps) {
+export function PillTabBar({
+  state,
+  emitter,
+  navigateToTab,
+  insets,
+}: BottomTabBarProps) {
   const t = useTheme();
   const { t: tr } = useTranslation();
   const idle = mix(t.onPrimary, t.primary, 0.62);
@@ -52,9 +57,13 @@ export function PillTabBar({ state, emitter, navigateToTab, insets }: BottomTabB
               }}
               className={`h-12 min-w-12 flex-row items-center justify-center gap-2 rounded-full ${focused ? "bg-on-primary pl-3.5 pr-[18px]" : ""}`}
             >
-              {tab && <Icon name={tab.icon} color={focused ? t.primary : idle} />}
+              {tab && (
+                <Icon name={tab.icon} color={focused ? t.primary : idle} />
+              )}
               {focused && (
-                <Text className="font-sans-semibold text-sm text-primary">{label}</Text>
+                <Text className="font-sans-semibold text-sm text-primary">
+                  {label}
+                </Text>
               )}
             </Pressable>
           </Animated.View>

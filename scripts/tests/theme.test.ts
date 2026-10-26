@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { accentScale, Accents, mix, ON_WARNING, Palette, statusScale, type Scheme } from '@/constants/theme';
+import { accentScale, Accents, mix, ON_WARNING, Palette, RoutineColors, statusScale, type Scheme } from '@/constants/theme';
 
 const lum = (hex: string) => {
   const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
@@ -33,12 +33,15 @@ describe('contrasto del testo (≥ 4,5:1)', () => {
       expect(contrast(p.onPrimary, p.primary)).toBeGreaterThanOrEqual(4.5);
     }
   });
-  test('testo sulle tinte di ogni accento', () => {
-    for (const s of SCHEMES) for (const accent of Object.values(Accents)) {
+  test('testo sulle tinte di ogni accento (anche i colori delle schede, che fanno da accento)', () => {
+    for (const s of SCHEMES) for (const accent of [...Object.values(Accents), ...Object.values(RoutineColors)]) {
       const a = accentScale(accent, s);
       expect(contrast(a.accentInk, a.tint)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(a.accentInk, a.tintStrong)).toBeGreaterThanOrEqual(4.5);
     }
+  });
+  test('spunta bianca sul colore pieno di una scheda (giorno fatto): segno grafico, almeno 3:1', () => {
+    for (const c of Object.values(RoutineColors)) expect(contrast('#FFFFFF', c)).toBeGreaterThanOrEqual(3);
   });
   test('testo sui pulsanti di stato pieni', () => {
     const st = statusScale('light');

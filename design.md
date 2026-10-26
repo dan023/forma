@@ -9,7 +9,7 @@ Prototipo di riferimento: `design/index.html` (`cd design && python3 -m http.ser
 ## Principi
 1. **Una domanda per schermata, la risposta è la cosa più grande.** Oggi: "quanto mi resta?". Pasti: "cosa ho mangiato?". Scheda alimento: "quanto ne aggiungo?". Allenamento: "qual è la prossima serie?". Statistiche: "come sto andando?".
 2. **I numeri sono protagonisti.** Calorie, grammi, kg e rip sono il testo più grande e più nero della schermata, sempre con cifre tabulari. Lo stesso dato non si ripete in tre forme sulla stessa schermata.
-3. **Colore con un significato.** L'accento segna l'azione e lo stato attivo; i colori dei macro dicono di quale macro si parla. Niente colore decorativo.
+3. **Colore con un significato.** L'accento segna l'azione e lo stato attivo; i colori dei macro dicono di quale macro si parla; il colore di una scheda (scelto dall'utente) dice di quale scheda si parla. Niente colore decorativo.
 4. **Piatto.** La profondità è un solo gradino di tono (card bianca su fondo grigio). Niente ombre nel contenuto, niente gradienti, niente vetro nel contenuto.
 5. **Pollice prima di tutto.** Bersagli ≥ 44 px, azione principale in basso, una mano sola in palestra.
 
@@ -54,6 +54,14 @@ Tinte e inchiostri si calcolano da `statusScale` in `src/constants/theme.ts`. Il
 
 Sempre in quest'ordine (proteine, carboidrati, grassi) e sempre con lo stesso colore: pallino della legenda, barra, segmento dell'anello, barra di composizione del pasto, icona dell'alimento. Le kcal di ogni macro si calcolano 4/4/9 kcal per grammo (`src/features/foods/macros.ts`).
 
+### Schede, icona e colore scelti
+Ogni scheda di allenamento ha un'icona (12: manubrio, bilanciere, kettlebell, corsa, bici, fiamma, fulmine, cuore, montagna, bersaglio, coppa, foglia) e un colore tra sei (`RoutineColors` in `theme.ts`): i quattro accenti più **Viola** `#7C5CE0` e **Cacao** `#9A6448`. Anche questi lontani da blu, ambra e verde dei macro. Una scheda nuova prende il primo colore non ancora usato.
+
+- **Tessera della scheda** (`RoutineTile`): glifo nel colore su una sua tinta (come la tessera dell'alimento). Ovunque si parli della scheda: elenco, settimana, card di oggi, storico, scelta del giorno, intestazioni.
+- **Il colore della scheda fa da accento nelle sue schermate** (editor, sessione, riepilogo, card di oggi): `AccentScope` (`src/components/theme-provider.tsx`) ricalcola tinte, spunte, anello del recupero e testo d'accento da quel colore, nelle classi e in `useTheme()`. Fuori dalle schermate di una scheda resta l'accento dell'utente.
+- Nella settimana un giorno con una scheda mostra la sua tessera; fatto = cerchio pieno del suo colore con spunta bianca (≥ 3:1, test in `theme.test.ts`); oggi = anello del suo colore.
+- Il contrasto del testo sulle tinte di ogni colore delle schede è fissato dallo stesso test degli accenti.
+
 ## Tipografia
 Un solo carattere: **Figtree**, in quattro pesi (400, 500, 600, 700). La gerarchia la fanno dimensione e peso.
 
@@ -71,7 +79,7 @@ Cifre sempre tabulari. Un solo h1 per schermata.
 ## Forma e spazio
 - Raggi: card 22 · tessere e campi 14 · pulsanti, chip, giorni, barra delle tab: pillola (999).
 - Margini laterali 20; padding card 20; spazio tra card 14.
-- Pulsanti rotondi neutri da 44–56 px (bianchi sul fondo, grigi dentro una card). Mai icone in riquadri colorati, con **un'unica eccezione**: la tessera dell'alimento (sotto), dove il colore è un dato.
+- Pulsanti rotondi neutri da 44–56 px (bianchi sul fondo, grigi dentro una card). Mai icone in riquadri colorati, salvo **le tessere**, dove il colore è un dato: alimento (il macro), scheda (il colore scelto), esercizio (la tinta dell'accento, cioè della scheda nelle sue schermate).
 
 ## Componenti
 - **Card** (`Card`): bianca, piatta. `tint` per la card da notare. Mai card dentro card: dentro si usano righe con filetto `line` o blocchi del colore del fondo (`Well`).
@@ -82,6 +90,8 @@ Cifre sempre tabulari. Un solo h1 per schermata.
 - **Anello** (`Donut`): segmenti per macro con 3 px di stacco, binario `track`, il totale al centro. Oggi mostra la composizione (quota di kcal di ogni macro); quando ci saranno gli obiettivi mostrerà la parte dell'obiettivo raggiunta.
 - **Barre** (`Progress`): pieno nel colore, binario nella sua tinta; `StackBar` per la composizione di un pasto.
 - **Tessera alimento** (`FoodTile`): il glifo dice la categoria (cereali, frutta, carne, pesce, latticini, verdura, olio, frutta secca, dolci, bevande; ciotola per piatti e senza categoria), il colore dice il macro che porta più kcal. Per le categorie CIQUAL larghe ("meat, egg and fish", "fruits, vegetables, legumes and nuts") decide il nome inglese.
+- **Tessera scheda** (`RoutineTile`): vedi "Schede, icona e colore scelti". `onTint` per metterla su una card tinta (fondo bianco).
+- **Tessera esercizio** (`ExerciseTile`, `src/features/training/exercise-tile.tsx`): una piccola figura a capsule sempre uguale, in tono tenue, con la zona allenata piena (petto, schiena, spalle, braccia, avambracci, addome, cosce e glutei, polpacci, collo); busto o gambe inquadrati da vicino perché la zona si legga anche a 28 px. Il cardio è un cuore con il battito. Nella tinta dell'accento. La stessa figura (`ZoneGlyph`) va nei chip delle zone del catalogo.
 - **Icone** (`Icon`): contorno, tratto 1,75, griglia 24, disegnate in SVG (`react-native-svg`); stesse forme del prototipo.
 - **Liste:** righe ≥ 56 px: tessera, nome e grammi, kcal a destra.
 - **Stati vuoti:** dicono cosa fare ("Registra il primo alimento"), non solo "nessun dato".
@@ -102,15 +112,21 @@ Il vetro è solo **chrome di sistema** (barra, tasto indietro, avvisi, in futuro
 - Niente rimbalzi, niente animazioni d'ingresso a cascata. Rispettare "riduci movimento" (`useReducedMotion`).
 
 ## Schermate
-Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**. Nel prototipo ci sono Oggi, Pasti, Scheda alimento, Allenamento in corso, Statistiche e Pasti vuoto; le altre seguono le stesse regole.
+Nav principale: **Oggi · Allenamento · Pasti · Statistiche · Impostazioni**. Nel prototipo ci sono Oggi, Pasti, Scheda alimento, Allenamento, Scheda, Allenamento in corso, Catalogo esercizi, Statistiche e Pasti vuoto; le altre seguono le stesse regole.
 
 | Sezione | Schermata | Contenuto e note |
 |---|---|---|
 | Primo avvio | Onboarding | Obiettivo, dati, giorni di allenamento, tema e accento. Una scelta per schermata, nav nascosta |
 | Oggi | Oggi | "Ti restano N kcal" grande e centrato, card delle calorie con i macro, quattro azioni rapide (alimento, codice a barre, peso, allenati), pasti di oggi scorrevoli con tessere e barra dei macro, allenamento di oggi in card tinta, peso e allenamenti della settimana |
 | | Registra il peso | Stepper grande ±0,1 kg, nota facoltativa, recenti |
-| Allenamento | Sessione | Prossima serie grande (75 kg × 6), serie con spunta, "Serie fatta", recupero in card tinta con anello e ±15 s, esercizi dopo |
-| | Programma, esercizio, catalogo, mappa muscolare | Schema e regola di progressione, grafico 1RM, ricerca per muscolo |
+| Allenamento | Allenamento (tab) | In alto una sola card tinta su "oggi": allenamento in corso ("Riprendi"), oppure la scheda del giorno nella sua tinta (tessera grande, "N esercizi · circa X min", tessere delle zone, "Inizia allenamento", sotto "Allenamento libero"), oppure riposo/nessuna scheda con "Inizia allenamento libero". Poi Settimana (7 giorni lun→dom con la tessera della scheda; pieno con spunta se allenato, anello oggi, nome della scheda sotto; tocco = scegli la scheda del giorno), Schede (tessera, giorni, esercizi e durata stimata, "Nuova scheda"), riga "Catalogo esercizi", Storico (tessera della scheda, o neutra se libero) |
+| | Scheda | Nel colore della scheda. Tessera e nome in alto; nome, icona (griglia 6 × 2) e colore (sei cerchi); giorni (cerchi L…D: un giorno ha una sola scheda, un puntino del colore dell'altra scheda sui giorni presi); "N esercizi · circa X min"; esercizi con tessera, − N serie +, ripetizioni min-max (o secondi), su/giù e "Collega" per le superserie; "Aggiungi esercizi" (catalogo che resta aperto: il "+" diventa spunta), "Elimina scheda"; "Inizia allenamento" fisso in basso |
+| | Durata stimata | Serie × (ripetizioni previste × 3 s + 30 s di preparazione), recupero di 2 min dopo ogni giro tranne l'ultimo (in superserie il giro è una serie per esercizio, 15 s di cambio), 90 s tra un esercizio e l'altro; arrotondata a 5 min (`src/features/training/estimate.ts`) |
+| | Sessione | Nel colore della scheda, con la sua tessera accanto al titolo. Una card per esercizio (tessera della zona accanto al nome) con tabella N° · Prima · kg · rip · spunta (solo rip per il corpo libero, secondi per gli esercizi a tempo); i valori dell'ultima volta sono il segnaposto e valgono se si spunta senza scrivere; senza rip né suggerimento la spunta porta al campo. Riga fatta = tinta. Recupero (2 min) in card tinta con anello e −15 s / +15 s / Salta, fisso in basso sopra "Termina", vibra alla fine. "Annulla allenamento" (`danger soft`, con conferma) |
+| | Catalogo esercizi | Ricerca (anche in italiano: "panca manubri"), chip Zona (con la figura) e Attrezzo (gli attrezzi seguono la zona), elenco virtualizzato con la tessera di ogni esercizio; dalla sessione il "+" aggiunge e torna indietro |
+| | Esercizio | Tessera grande della zona accanto al nome. Aperto dal catalogo: card "Aggiungi a una scheda" che si apre nell'elenco delle schede (tessera, nome, esercizi, casella: vuota = tocco aggiunge in fondo; piena d'accento = appena aggiunto da qui e non ancora toccato, un tocco lo toglie; in tinta = già nella scheda, si cambia dalla scheda; sempre con avviso) e "Nuova scheda con questo esercizio"; aperto dalla sessione o da una scheda: pulsante "Aggiungi" fisso in basso. Tipo, muscolo principale (pillola tinta) e secondari, attrezzo, ultime volte con 1RM stimato, istruzioni nella lingua dell'app |
+| | Riepilogo | Nel colore della scheda. Durata, volume, serie (card divisa in tre), record personali in card tinta, serie di ogni esercizio con la migliore in grassetto |
+| | Programma, mappa muscolare | Da fare: schema e regola di progressione, grafico 1RM, muscoli lavorati |
 | Pasti | Pasti | Settimana, anello delle kcal per macro, pasti con barra di composizione e tessere, "Aggiungi alimento" |
 | | Ricerca alimento | Vedi "Ricerca alimenti" |
 | | Scheda alimento | Tessera grande e nome, grammi con − / + e porzioni, anello della porzione per macro, valori per 100 g, "Aggiungi a …" fisso in basso |
@@ -154,7 +170,7 @@ Implementata in `src/features/foods/search.ts` (`searchFoods`, sul DB locale) e 
 - Nomi dei colori, font e raggi in `src/global.css` (`@theme`); valori per tema e accento in `src/constants/theme.ts` (`Palette`, `Accents`, `accentScale`), iniettati come variabili CSS da `ThemeProvider`. Classi: `bg-card`, `bg-tint`, `text-ink-2`, `text-accent-ink`, `bg-primary`, `rounded-card`, `font-sans-semibold`…
 - Nuovo colore = `@theme` + `:root` in `global.css`, `theme.ts`, `ThemeProvider` e `inlineVariables.exclude` in `metro.config.js`.
 - Colori che servono a SVG o calcolati (macro, tinte delle tessere, anelli) si leggono da `useTheme()`.
-- Componenti base in `src/components/ui/`: `Card`, `Well`, `Text`, `Screen`, `Button`, `Chip`, `IconButton`, `Icon`, `Donut`, `Progress`, `StackBar`, `Toast`.
+- Componenti base in `src/components/ui/`: `Card`, `Well`, `Text`, `Screen` (con `leading` accanto al titolo), `Button`, `Chip` (con `leading`), `IconButton`, `Icon`, `Donut`, `Progress`, `StackBar`, `Toast`. Accento locale: `AccentScope` in `src/components/theme-provider.tsx`.
 - Verifica del prototipo con la skill **design-taste-frontend** (stile `accent-ladder`, vedi `.taste-skill/README.md`): `lint.mjs --app` e `inspect.mjs --app` a 390 px su ogni schermata.
 
 ## Da definire

@@ -39,6 +39,46 @@ const GLYPHS = {
   ),
   back: <Path d="m14.5 5-7 7 7 7" />,
   forward: <Path d="m9.5 5 7 7-7 7" />,
+  up: <Path d="m5 14.5 7-7 7 7" />,
+  down: <Path d="m5 9.5 7 7 7-7" />,
+  // icone delle schede (le sceglie l'utente; `ROUTINE_ICONS` in schema/training.ts)
+  barbell: <Path d="M2.5 12h19M6 7.5v9M8.5 9v6M18 7.5v9M15.5 9v6" />,
+  kettlebell: (
+    <>
+      <Path d="M8.6 9.2 8 6.6A2 2 0 0 1 10 4h4a2 2 0 0 1 2 2.6l-.6 2.6" />
+      <Circle cx="12" cy="14.5" r="5.5" />
+    </>
+  ),
+  run: (
+    <>
+      <Circle cx="15" cy="4.5" r="1.8" />
+      <Path d="m13 8-3.5 2.5L7 13.5M13 8l-1 5.5 3 3-1 4.5M12 13.5 8.5 21M13 8l3 3h3" />
+    </>
+  ),
+  bike: (
+    <>
+      <Circle cx="6" cy="16" r="3.5" />
+      <Circle cx="18" cy="16" r="3.5" />
+      <Path d="m6 16 4-7h5l3 7M10 9l3 7H6M14 6h3" />
+    </>
+  ),
+  bolt: <Path d="M13 3 5 13.5h6L10 21l8-11h-6Z" />,
+  heart: <Path d="M12 19.5s-7.5-4.5-7.5-10A4 4 0 0 1 12 7a4 4 0 0 1 7.5 2.5c0 5.5-7.5 10-7.5 10Z" />,
+  mountain: <Path d="M3 19 9.5 8l4 6.5L16 11l5 8Z" />,
+  target: (
+    <>
+      <Circle cx="12" cy="12" r="8" />
+      <Circle cx="12" cy="12" r="4.5" />
+      <Circle cx="12" cy="12" r="1" />
+    </>
+  ),
+  trophy: <Path d="M8 4h8v5a4 4 0 0 1-8 0ZM8 6H5.5a2.5 2.5 0 0 0 2.6 3.8M16 6h2.5a2.5 2.5 0 0 1-2.6 3.8M12 13v4M8.5 20.5h7M10 17h4v3.5h-4Z" />,
+  link: (
+    <>
+      <Path d="M10 14a3.5 3.5 0 0 0 5 0l3.5-3.5a3.5 3.5 0 0 0-5-5L12 7" />
+      <Path d="M14 10a3.5 3.5 0 0 0-5 0l-3.5 3.5a3.5 3.5 0 0 0 5 5L12 17" />
+    </>
+  ),
   star: <Path d="m12 4 2.4 5 5.4.6-4 3.7 1.1 5.3L12 16l-4.9 2.6 1.1-5.3-4-3.7 5.4-.6Z" />,
   flame: <Path d="M12 3c.5 3.5 5 5.5 5 10.5a5 5 0 0 1-10 0c0-2.4 1.2-3.9 2.4-5 .2 1.6.9 2.6 2 3C11 9 11 6 12 3Z" />,
   // categorie di alimenti

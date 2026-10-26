@@ -17,12 +17,14 @@ La fonte di verità sono `CLAUDE.md` e `design.md`; qui l'elenco da controllare 
 - Colori solo da token (`bg-card`, `text-ink`, `bg-tint`, `text-accent-ink`, `bg-primary`…) o da `useTheme()` per SVG e colori calcolati. Un colore nuovo va in `src/global.css`, `src/constants/theme.ts`, `ThemeProvider` **e** `inlineVariables.exclude` in `metro.config.js`.
 - Piatto: niente ombre, gradienti o vetro nel contenuto; profondità = card bianca su fondo grigio. Mai card dentro card.
 - Accento a scala: pieno solo su piccoli segni (giorno scelto, anello, spunte); tinte (`bg-tint`, `bg-tint-strong`) sulle aree, una card tinta per schermata. `Button` ha le varianti `primary` (quasi nero, una per schermata), `secondary`, `accent`, `outline`, `ghost`, `link`, `danger`, `warning`, `success` (+ `soft`): azioni distruttive sempre `danger`, mai un `primary` colorato a mano. I colori di stato (`danger`, `warning`, `success`) servono solo a pulsanti e avvisi, mai ai dati.
-- Macro: sempre proteine, carboidrati, grassi in quest'ordine e con i colori fissi `prot`/`carb`/`fat` (`MACROS` in `src/features/foods/macros.ts`). Un alimento si mostra con `FoodTile`. Niente altre icone su riquadri colorati: i pulsanti rotondi sono neutri.
+- Macro: sempre proteine, carboidrati, grassi in quest'ordine e con i colori fissi `prot`/`carb`/`fat` (`MACROS` in `src/features/foods/macros.ts`). Un alimento si mostra con `FoodTile`, una scheda con `RoutineTile`, un esercizio con `ExerciseTile`: sono le sole icone su riquadri colorati (il colore è un dato); i pulsanti rotondi sono neutri.
+- Le schermate di una scheda (editor, sessione, riepilogo) stanno dentro `AccentScope` con il colore della scheda: `useTheme()` va chiamato **dentro** lo scope, altrimenti torna l'accento dell'utente.
 - Un solo carattere (Figtree) con le varianti di `Text` (`title` 28, `titleSm`, `h2`, `label`, `num`); titoli ≤ 28 px, cifre ≤ 40 px, cifre tabulari. Bersagli ≥ 44 px.
 - Il **vetro (Liquid Glass) è solo chrome di sistema su iOS 26** (barra tab, tasto indietro, avvisi, sheet): usa `USE_LIQUID_GLASS` (`src/constants/glass.ts`) e `GlassView`. Mai dentro le card. Guarda ogni schermata nuova su iOS **e** Android (selettori "Piattaforma" e "Tema" in `design/index.html`).
 - Ogni controllo ha etichetta accessibile e stato (`accessibilityRole`, `accessibilityState`), mai solo colore o ombra.
 
 **Codice**
+- Una schermata nuova che si apre sopra le tab va aggiunta a `PUSHED_SCREENS` in `src/app/_layout.tsx` (niente doppioni con i tocchi ripetuti).
 - Codice usato sia dall'app sia dai test deve girare in **Hermes**: niente `crypto.randomUUID`, `structuredClone`, `node:*`, `Buffer`. Se serve, due file: `x.ts` (Bun/Node) e `x.native.ts` (telefono). `bun run check:runtime` lo controlla.
 - Logica di dati (ricerca, diario, seed) in `src/features/` e `src/db/`, senza React, così si testa con `bun:sqlite` (tipo `Db` in `src/db/types.ts`). Le schermate la chiamano.
 - Modifica allo schema = `bunx drizzle-kit generate`. Mai a mano: `drizzle/`, `assets/data/foods*.json`, `translations-it.json`, `.expo/types` (c'è un hook che lo blocca).
